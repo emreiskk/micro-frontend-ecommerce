@@ -63,6 +63,14 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
 
   const activeSort = SORT_OPTIONS.find((s) => s.id === sortBy) || SORT_OPTIONS[0];
 
+  const truncatedSearchQuery = useMemo(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed.length > 24) {
+      return `${trimmed.slice(0, 24)}...`;
+    }
+    return trimmed;
+  }, [searchQuery]);
+
   const categories = useMemo(() => {
     const list = Array.from(new Set(initialProducts.map((p) => p.category)));
     return ["all", ...list];
@@ -99,6 +107,7 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
               type="text"
               placeholder="Ürün adı veya açıklama ile ara..."
               value={searchQuery}
+              maxLength={50}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 pl-11 pr-10 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
             />
@@ -203,13 +212,13 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight flex-shrink-0">
           Katalog ({filteredProducts.length} Ürün)
         </h2>
-        {searchQuery && (
-          <span className="text-xs text-slate-500">
-            &ldquo;{searchQuery}&rdquo; için arama sonuçları
+        {searchQuery.trim() && (
+          <span className="text-xs text-slate-500 truncate max-w-[200px] sm:max-w-md text-right">
+            &ldquo;<span className="font-semibold text-slate-700">{truncatedSearchQuery}</span>&rdquo; için arama sonuçları
           </span>
         )}
       </div>
@@ -234,9 +243,9 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
           <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             Eşleşen Ürün Bulunamadı
           </h3>
-          <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">
-            {searchQuery
-              ? `"${searchQuery}" araması için uygun ürün bulunamadı. Filtreleri sıfırlayarak tüm kataloğa göz atabilirsiniz.`
+          <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm mx-auto break-words">
+            {searchQuery.trim()
+              ? `"${truncatedSearchQuery}" araması için uygun ürün bulunamadı. Filtreleri sıfırlayarak tüm kataloğa göz atabilirsiniz.`
               : "Seçilen filtre ve kategori kriterlerine uygun ürün bulunamadı."}
           </p>
           <div className="mt-6">
