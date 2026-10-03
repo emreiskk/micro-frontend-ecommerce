@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="24" fill="url(#bg)"/>
+  <circle cx="200" cy="180" r="70" fill="url(#accent)" opacity="0.1"/>
+  <path d="M165 155 L200 130 L235 155 L235 210 L200 230 L165 210 Z" fill="none" stroke="#4f46e5" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M200 130 L200 230" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>
+  <path d="M165 155 L200 180 L235 155" fill="none" stroke="#4f46e5" stroke-width="4" stroke-linejoin="round"/>
+  <text x="200" y="275" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#334155" text-anchor="middle" letter-spacing="1">TRENDSPHERE PRODUCT</text>
+  <text x="200" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="500" fill="#64748b" text-anchor="middle">Fake Store Verified</text>
+</svg>

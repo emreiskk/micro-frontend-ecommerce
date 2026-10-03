@@ -1,0 +1,23 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import CartNavbar from "@/components/CartNavbar";
+
+export const metadata: Metadata = {
+  title: "Sepetim | TrendSphere Cart Mikro Frontend Servisi",
+  description: "Next.js App Router ile izole geliştirilmiş bağımsız Cart mikro frontend servisi.",
+};
+
+export default function CartLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="tr">
+      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+        <CartNavbar />
+        <main className="flex-1">{children}</main>
+      </body>
+    </html>
+  );
+}
