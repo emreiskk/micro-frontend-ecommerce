@@ -106,11 +106,11 @@ export default function CartPage() {
         <h1 className="text-3xl font-black text-slate-950 tracking-tight">
           Alışveriş Sepeti
         </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          {items.length > 0
-            ? `Sepetinizde toplam ${totals.totalCount} adet ürün bulunmaktadır.`
-            : "Sepetiniz henüz boş."}
-        </p>
+        {items.length > 0 && (
+          <p className="text-xs text-slate-500 mt-1">
+            Sepetinizde toplam {totals.totalCount} adet ürün bulunmaktadır.
+          </p>
+        )}
       </div>
 
       {items.length > 0 ? (
@@ -138,18 +138,18 @@ export default function CartPage() {
           </div>
         </div>
       ) : (
-        /* Empty State */
-        <div className="bg-white rounded-3xl p-12 sm:p-16 border border-slate-200/80 shadow-sm text-center max-w-2xl mx-auto">
-          <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/10 mb-6">
-            <ShoppingBag className="w-10 h-10" />
+        /* Frameless Natural Empty State */
+        <div className="py-14 sm:py-20 text-center max-w-md mx-auto">
+          <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl mx-auto flex items-center justify-center shadow-xs mb-5">
+            <ShoppingBag className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             Sepetinizde Hiç Ürün Yok
           </h2>
-          <p className="mt-2 text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
+          <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">
             TrendSphere ana mağazasındaki yüzlerce kaliteli ürünü keşfedin ve beğendiklerinizi sepetinize ekleyin.
           </p>
-          <div className="mt-8">
+          <div className="mt-6">
             <button
               onClick={() => {
                 if (typeof window !== "undefined") {
@@ -160,7 +160,7 @@ export default function CartPage() {
                   }
                 }
               }}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer"
             >
               <span>Alışverişe Başla</span>
               <ArrowRight className="w-4 h-4" />

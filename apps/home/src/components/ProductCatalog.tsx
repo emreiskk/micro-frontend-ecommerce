@@ -8,6 +8,8 @@ import {
   ChevronDown,
   ChevronUp,
   Check,
+  SearchX,
+  RotateCcw,
   X,
 } from "lucide-react";
 import type { Product } from "@repo/shared-types";
@@ -224,18 +226,31 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">
-          <p className="text-base font-semibold text-slate-800">Eşleşen ürün bulunamadı.</p>
-          <p className="text-xs text-slate-500 mt-1">Arama kriterlerinizi değiştirmeyi deneyin.</p>
-          <button
-            onClick={() => {
-              setSearchQuery("");
-              setSelectedCategory("all");
-            }}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-medium hover:bg-indigo-700"
-          >
-            Filtreleri Temizle
-          </button>
+        /* Frameless Natural Empty State */
+        <div className="py-14 sm:py-20 text-center max-w-md mx-auto">
+          <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl mx-auto flex items-center justify-center shadow-xs mb-5">
+            <SearchX className="w-8 h-8" />
+          </div>
+          <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Eşleşen Ürün Bulunamadı
+          </h3>
+          <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">
+            {searchQuery
+              ? `"${searchQuery}" araması için uygun ürün bulunamadı. Filtreleri sıfırlayarak tüm kataloğa göz atabilirsiniz.`
+              : "Seçilen filtre ve kategori kriterlerine uygun ürün bulunamadı."}
+          </p>
+          <div className="mt-6">
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("all");
+              }}
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Filtreleri Sıfırla</span>
+            </button>
+          </div>
         </div>
       )}
     </div>
