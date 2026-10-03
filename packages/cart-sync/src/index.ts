@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   type CartItem,
+  type LeanCartItem,
   type CartTotals,
   type CartSyncMessage,
   type CartActionType,
@@ -11,6 +12,8 @@ import {
   calculateProductPrice,
   CANONICAL_PRODUCT_TITLES,
   getCartItemId,
+  toLeanCartItem,
+  hydrateCartItem,
 } from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
@@ -19,7 +22,7 @@ export const FREE_SHIPPING_THRESHOLD = 75;
 export const TAX_RATE = 0.08;
 
 export interface StoredCartPayload {
-  items: CartItem[];
+  items: LeanCartItem[];
   timestamp: number;
 }
 
@@ -38,12 +41,17 @@ function getChannel(): BroadcastChannel | null {
 }
 
 // Cookie helpers to bridge isolation across different ports on localhost (:3000 and :3001)
-function setCookieCart(items: CartItem[], timestamp: number): void {
+// Uses LeanCartItem payload (<500 bytes) to stay safely within RFC 6265 4KB cookie hard limits
+function setCookieCart(items: LeanCartItem[], timestamp: number): void {
   if (typeof document === "undefined") return;
   try {
     const payload: StoredCartPayload = { items, timestamp };
     const serialized = encodeURIComponent(JSON.stringify(payload));
-    document.cookie = `${CART_STORAGE_KEY}=${serialized}; path=/; max-age=604800; SameSite=Lax`;
+    if (serialized.length < 3900) {
+      document.cookie = `${CART_STORAGE_KEY}=${serialized}; path=/; max-age=604800; SameSite=Lax`;
+    } else {
+      console.warn("Cart cookie exceeds safe size limit, dropping non-essential data");
+    }
   } catch (e) {
     console.error("Failed to save cart to cookie", e);
   }
@@ -108,34 +116,43 @@ export function getStoredCart(): CartItem[] {
     const local = getLocalPayload();
     const cookie = getCookiePayload();
 
-    // If both exist, the newer timestamp wins (resolves deletions/clear cart resurrection)
+    let chosenRawItems: any[] = [];
+    let chosenTimestamp = 0;
+
+    // Cross-Port synchronization: newer timestamp wins
     if (local && cookie) {
       if (local.timestamp >= cookie.timestamp) {
+        chosenRawItems = local.items;
+        chosenTimestamp = local.timestamp;
         if (local.timestamp > cookie.timestamp) {
-          setCookieCart(normalizeCartItems(local.items), local.timestamp);
+          const lean = local.items.map((i: any) => (i.productId ? i : toLeanCartItem(hydrateCartItem(i))));
+          setCookieCart(lean, local.timestamp);
         }
-        return normalizeCartItems(local.items);
       } else {
+        chosenRawItems = cookie.items;
+        chosenTimestamp = cookie.timestamp;
         try {
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookie));
         } catch {}
-        return normalizeCartItems(cookie.items);
       }
-    }
-
-    if (local) {
-      setCookieCart(normalizeCartItems(local.items), local.timestamp);
-      return normalizeCartItems(local.items);
-    }
-
-    if (cookie) {
+    } else if (local) {
+      chosenRawItems = local.items;
+      chosenTimestamp = local.timestamp;
+      const lean = local.items.map((i: any) => (i.productId ? i : toLeanCartItem(hydrateCartItem(i))));
+      setCookieCart(lean, local.timestamp);
+    } else if (cookie) {
+      chosenRawItems = cookie.items;
+      chosenTimestamp = cookie.timestamp;
       try {
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookie));
       } catch {}
-      return normalizeCartItems(cookie.items);
     }
 
-    return [];
+    if (!Array.isArray(chosenRawItems)) {
+      return [];
+    }
+
+    return normalizeCartItems(chosenRawItems.map(hydrateCartItem));
   } catch {
     return [];
   }
@@ -145,10 +162,17 @@ export function saveStoredCart(items: CartItem[]): void {
   if (typeof window === "undefined") return;
   try {
     const timestamp = Date.now();
-    const payload: StoredCartPayload = { items, timestamp };
+    const leanItems = items.map(toLeanCartItem);
+    const payload: StoredCartPayload = { items: leanItems, timestamp };
+    
+    // Save lean representation to localStorage
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(payload));
-    setCookieCart(items, timestamp);
-    window.dispatchEvent(new CustomEvent("local-cart-updated", { detail: items }));
+    
+    // Save lean representation to shared cross-port cookie (<500 bytes)
+    setCookieCart(leanItems, timestamp);
+    
+    // Notify same window
+    window.dispatchEvent(new CustomEvent("local-cart-updated", { detail: normalizeCartItems(items) }));
   } catch (e) {
     console.error("Failed to save cart to storage", e);
   }
@@ -223,7 +247,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
     const channel = getChannel();
     const handleChannelMessage = (event: MessageEvent<CartSyncMessage>) => {
       if (event.data && Array.isArray(event.data.items)) {
-        setItems(event.data.items);
+        setItems(normalizeCartItems(event.data.items.map(hydrateCartItem)));
       }
     };
 
@@ -235,10 +259,9 @@ export function useCartSync(source: "home" | "cart" = "home") {
       if (e.key === CART_STORAGE_KEY && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed)) {
-            setItems(parsed);
-          } else if (parsed && Array.isArray(parsed.items)) {
-            setItems(parsed.items);
+          const rawItems = Array.isArray(parsed) ? parsed : parsed.items;
+          if (Array.isArray(rawItems)) {
+            setItems(normalizeCartItems(rawItems.map(hydrateCartItem)));
           }
         } catch {}
       }
@@ -247,8 +270,8 @@ export function useCartSync(source: "home" | "cart" = "home") {
 
     const handleLocalUpdate = (e: Event) => {
       const custom = e as CustomEvent<CartItem[]>;
-      if (custom.detail) {
-        setItems(custom.detail);
+      if (custom.detail && Array.isArray(custom.detail)) {
+        setItems(normalizeCartItems(custom.detail.map(hydrateCartItem)));
       }
     };
     window.addEventListener("local-cart-updated", handleLocalUpdate);
