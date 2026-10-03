@@ -149,13 +149,13 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
 
           {/* Dynamic Price Display & Stock Badge */}
           <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-baseline gap-2.5">
+            <div className="flex items-center gap-2.5">
               <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
                 ${currentUnitPrice.toFixed(2)}
               </span>
               {priceDelta !== 0 && (
                 <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                     priceDelta > 0
                       ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
                       : "bg-emerald-50 text-emerald-700 border border-emerald-200"
@@ -192,9 +192,11 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               {attributes.map((attr) => (
                 <div key={attr.name} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                      {attr.name}:{" "}
-                      <span className="text-indigo-600 font-extrabold ml-1">
+                    <span className="text-xs font-medium text-slate-700">
+                      <span className="font-bold uppercase tracking-wider text-slate-400">
+                        {attr.name}:
+                      </span>
+                      <span className="text-indigo-600 font-extrabold ml-1.5 normal-case">
                         {selectedAttributes[attr.name] || attr.defaultValue}
                       </span>
                     </span>
@@ -239,12 +241,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                           )}
                           {delta !== undefined && delta !== 0 && (
                             <span
-                              className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${
+                              className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
                                 isSelected
-                                  ? "bg-indigo-700 text-indigo-100"
+                                  ? "bg-white/20 text-white border border-white/20"
                                   : delta > 0
-                                  ? "bg-indigo-50 text-indigo-600"
-                                  : "bg-emerald-50 text-emerald-600"
+                                  ? "bg-indigo-50 text-indigo-600 border border-indigo-100"
+                                  : "bg-emerald-50 text-emerald-600 border border-emerald-100"
                               }`}
                             >
                               {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
@@ -263,14 +265,14 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           <div className="mt-6 flex items-center gap-4">
             {/* Quantity selector */}
             <div
-              className={`flex items-center border border-slate-200 rounded-2xl bg-slate-50 p-1 transition-opacity ${
+              className={`flex items-center h-[52px] border border-slate-200 rounded-2xl bg-slate-50 p-1.5 transition-opacity ${
                 !inStock ? "opacity-40 cursor-not-allowed" : ""
               }`}
             >
               <button
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 disabled={!inStock}
-                className="p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
+                className="w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
                 aria-label="Azalt"
               >
                 <Minus className="w-4 h-4" />
@@ -281,7 +283,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               <button
                 onClick={() => setQuantity((q) => q + 1)}
                 disabled={!inStock}
-                className="p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
+                className="w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
                 aria-label="Artır"
               >
                 <Plus className="w-4 h-4" />
@@ -293,7 +295,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               <button
                 onClick={handleAdd}
                 disabled={isAdding}
-                className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
+                className={`flex-1 h-[52px] inline-flex items-center justify-center gap-2.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
                   isAdding
                     ? "bg-emerald-600 text-white shadow-emerald-500/20"
                     : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
@@ -316,7 +318,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                 type="button"
                 onClick={handleNotify}
                 disabled={isNotified}
-                className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
+                className={`flex-1 h-[52px] inline-flex items-center justify-center gap-2.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
                   isNotified
                     ? "bg-emerald-600 text-white shadow-emerald-500/20"
                     : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
@@ -338,18 +340,18 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           </div>
 
           {/* Guarantees */}
-          <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
-            <div className="flex items-center gap-2">
+          <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-3 gap-3 text-xs text-slate-600">
+            <div className="flex items-center justify-center sm:justify-start gap-2">
               <Truck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-              <span>Hızlı Kargo</span>
+              <span className="font-medium">Hızlı Kargo</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <ShieldCheck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-              <span>Orijinal Ürün</span>
+              <span className="font-medium">Orijinal Ürün</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center sm:justify-end gap-2">
               <RotateCcw className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-              <span>30 Gün İade</span>
+              <span className="font-medium">30 Gün İade</span>
             </div>
           </div>
         </div>

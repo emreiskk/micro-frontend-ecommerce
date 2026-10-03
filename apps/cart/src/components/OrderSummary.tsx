@@ -71,7 +71,7 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
       </div>
 
       {/* Total */}
-      <div className="py-5 flex items-baseline justify-between">
+      <div className="py-5 flex items-center justify-between">
         <div>
           <span className="text-xs text-slate-500 block font-medium">Genel Toplam</span>
           <span className="text-xs text-slate-400">Vergiler ve kargo dahil</span>

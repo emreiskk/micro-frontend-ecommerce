@@ -97,13 +97,13 @@ export default function EditVariantModal({
             <h4 className="text-xs font-bold text-slate-900 truncate">
               {product.title}
             </h4>
-            <div className="mt-1 flex items-baseline gap-2">
+            <div className="mt-1 flex items-center gap-2">
               <span className="text-sm font-black text-slate-900">
                 ${currentUnitPrice.toFixed(2)}
               </span>
               {priceDelta !== 0 && (
                 <span
-                  className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                     priceDelta > 0
                       ? "text-indigo-700 bg-indigo-50 border border-indigo-200"
                       : "text-emerald-700 bg-emerald-50 border border-emerald-200"
@@ -167,8 +167,12 @@ export default function EditVariantModal({
                         )}
                         {delta !== undefined && delta !== 0 && (
                           <span
-                            className={`text-[10px] ${
-                              isSelected ? "text-indigo-100" : "text-slate-500 font-normal"
+                            className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
+                              isSelected
+                                ? "bg-white/20 text-white border border-white/20"
+                                : delta > 0
+                                ? "bg-indigo-50 text-indigo-600 border border-indigo-100"
+                                : "bg-emerald-50 text-emerald-600 border border-emerald-100"
                             }`}
                           >
                             {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
