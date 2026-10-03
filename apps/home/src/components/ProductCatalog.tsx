@@ -1,7 +1,18 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Search, SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import {
+  Search,
+  SlidersHorizontal,
+  ArrowUpDown,
+  ChevronDown,
+  Check,
+  Sparkles,
+  ArrowUpRight,
+  ArrowDownRight,
+  Star,
+  X,
+} from "lucide-react";
 import type { Product } from "@repo/shared-types";
 import { getCategoryDisplayName } from "@repo/shared-types";
 import ProductCard from "./ProductCard";
@@ -11,11 +22,52 @@ interface ProductCatalogProps {
   initialProducts: Product[];
 }
 
+const SORT_OPTIONS = [
+  {
+    id: "featured" as const,
+    label: "Öne Çıkanlar",
+    icon: Sparkles,
+  },
+  {
+    id: "price-asc" as const,
+    label: "Fiyat: Düşükten Yükseğe",
+    icon: ArrowUpRight,
+  },
+  {
+    id: "price-desc" as const,
+    label: "Fiyat: Yüksekten Düşüğe",
+    icon: ArrowDownRight,
+  },
+  {
+    id: "rating" as const,
+    label: "En Çok Değerlendirilenler",
+    icon: Star,
+  },
+];
+
 export default function ProductCatalog({ initialProducts }: ProductCatalogProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<"featured" | "price-asc" | "price-desc" | "rating">("featured");
+  const [isSortOpen, setIsSortOpen] = useState(false);
   const [toastProduct, setToastProduct] = useState<Product | null>(null);
+
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const activeSort = SORT_OPTIONS.find((s) => s.id === sortBy) || SORT_OPTIONS[0];
+  const ActiveSortIcon = activeSort.icon;
 
   const categories = useMemo(() => {
     const list = Array.from(new Set(initialProducts.map((p) => p.category)));
@@ -48,32 +100,101 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Ürün adı veya açıklama ile ara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full h-12 pl-11 pr-10 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200/60 transition-colors cursor-pointer"
+                title="Aramayı temizle"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
-          {/* Sort Selection */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 flex-shrink-0">
-              <ArrowUpDown className="w-4 h-4 text-indigo-600" />
-              <span>Sırala:</span>
-            </div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="py-3 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+          {/* Custom Sort Selection */}
+          <div className="relative flex-shrink-0" ref={sortRef}>
+            <button
+              type="button"
+              onClick={() => setIsSortOpen((prev) => !prev)}
+              className={`h-12 px-4 rounded-2xl border text-xs font-semibold flex items-center gap-2.5 transition-all cursor-pointer ${
+                isSortOpen
+                  ? "bg-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-md text-indigo-700"
+                  : "bg-slate-50 hover:bg-slate-100/80 border-slate-200 text-slate-700 shadow-xs"
+              }`}
+              aria-haspopup="listbox"
+              aria-expanded={isSortOpen}
             >
-              <option value="featured">Öne Çıkanlar</option>
-              <option value="price-asc">Fiyat: Düşükten Yükseğe</option>
-              <option value="price-desc">Fiyat: Yüksekten Düşüğe</option>
-              <option value="rating">En Çok Değerlendirilenler</option>
-            </select>
+              <div className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                <ActiveSortIcon className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex items-center gap-1.5 text-left">
+                <span className="text-slate-400 font-medium hidden sm:inline">Sırala:</span>
+                <span className="font-bold text-slate-900">{activeSort.label}</span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 transition-transform duration-200 ml-1 ${
+                  isSortOpen ? "rotate-180 text-indigo-600" : ""
+                }`}
+              />
+            </button>
+
+            {/* Custom Dropdown Menu */}
+            {isSortOpen && (
+              <div
+                className="absolute right-0 top-full mt-2 w-64 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/10 p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150"
+                role="listbox"
+              >
+                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
+                  Sıralama Seçenekleri
+                </div>
+                {SORT_OPTIONS.map((opt) => {
+                  const isSelected = sortBy === opt.id;
+                  const Icon = opt.icon;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setSortBy(opt.id);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
+                        isSelected
+                          ? "bg-indigo-50 text-indigo-700 font-bold"
+                          : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
+                      }`}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                            isSelected
+                              ? "bg-indigo-600 text-white shadow-xs"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                        </div>
+                        <span>{opt.label}</span>
+                      </div>
+                      {isSelected && (
+                        <Check className="w-4 h-4 text-indigo-600 flex-shrink-0 animate-in zoom-in-50 duration-150" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
