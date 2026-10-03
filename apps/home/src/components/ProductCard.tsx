@@ -20,7 +20,14 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsAdding(true);
-    addItem(product, 1);
+    const hasAttributes = Boolean(product.attributes && product.attributes.length > 0);
+    const defaultAttrs: Record<string, string> = {};
+    if (hasAttributes && product.attributes) {
+      product.attributes.forEach((attr) => {
+        defaultAttrs[attr.name] = attr.defaultValue || attr.options[0];
+      });
+    }
+    addItem(product, 1, defaultAttrs, hasAttributes);
     if (onAddedToCart) {
       onAddedToCart(product);
     }

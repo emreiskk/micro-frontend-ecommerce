@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { CartItem, CartTotals, CartSyncMessage, CartActionType, Product } from "@repo/shared-types";
+import type { CartItem, CartTotals, CartSyncMessage, CartActionType, Product, SelectedAttributes } from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
 export const CART_CHANNEL_NAME = "ecommerce_cart_channel";
@@ -237,19 +237,63 @@ export function useCartSync(source: "home" | "cart" = "home") {
     };
   }, []);
 
-  const addItem = useCallback((product: Product, quantity = 1) => {
+  const addItem = useCallback((
+    product: Product,
+    quantity = 1,
+    selectedAttributes?: SelectedAttributes,
+    needsAttributeConfirmation?: boolean
+  ) => {
     const current = getStoredCart();
     const existingIndex = current.findIndex((i) => i.product.id === product.id);
     let next: CartItem[];
     if (existingIndex > -1) {
-      next = current.map((item, idx) =>
-        idx === existingIndex ? { ...item, quantity: item.quantity + quantity } : item
-      );
+      next = current.map((item, idx) => {
+        if (idx === existingIndex) {
+          return {
+            ...item,
+            quantity: item.quantity + quantity,
+            selectedAttributes: selectedAttributes || item.selectedAttributes,
+            needsAttributeConfirmation:
+              needsAttributeConfirmation !== undefined
+                ? needsAttributeConfirmation
+                : item.needsAttributeConfirmation,
+          };
+        }
+        return item;
+      });
     } else {
-      next = [...current, { product, quantity }];
+      next = [
+        ...current,
+        {
+          product,
+          quantity,
+          selectedAttributes,
+          needsAttributeConfirmation,
+        },
+      ];
     }
     setItems(next);
     broadcastCart(next, source, "ADD_ITEM");
+  }, [source]);
+
+  const updateItemAttributes = useCallback((
+    productId: number,
+    selectedAttributes: SelectedAttributes,
+    needsAttributeConfirmation = false
+  ) => {
+    const current = getStoredCart();
+    const next = current.map((item) => {
+      if (item.product.id === productId) {
+        return {
+          ...item,
+          selectedAttributes: { ...item.selectedAttributes, ...selectedAttributes },
+          needsAttributeConfirmation,
+        };
+      }
+      return item;
+    });
+    setItems(next);
+    broadcastCart(next, source, "UPDATE_ATTRIBUTES");
   }, [source]);
 
   const removeItem = useCallback((productId: number) => {
@@ -297,6 +341,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
     addItem,
     removeItem,
     updateQuantity,
+    updateItemAttributes,
     clearCart,
     isHydrated,
   };

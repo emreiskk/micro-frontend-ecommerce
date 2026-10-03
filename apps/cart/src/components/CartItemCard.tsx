@@ -3,19 +3,28 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Plus, Minus } from "lucide-react";
-import type { CartItem } from "@repo/shared-types";
+import { Trash2, Plus, Minus, AlertCircle, Tag } from "lucide-react";
+import type { CartItem, SelectedAttributes } from "@repo/shared-types";
+import { getProductAttributes } from "@repo/shared-types";
 
 interface CartItemCardProps {
   item: CartItem;
   onUpdateQuantity: (productId: number, quantity: number) => void;
   onRemove: (productId: number) => void;
+  onUpdateAttributes?: (productId: number, selectedAttributes: SelectedAttributes, needsConfirmation?: boolean) => void;
 }
 
-export default function CartItemCard({ item, onUpdateQuantity, onRemove }: CartItemCardProps) {
+export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdateAttributes }: CartItemCardProps) {
   const { product, quantity } = item;
   const itemTotal = (product.price * quantity).toFixed(2);
   const [imgSrc, setImgSrc] = React.useState(product.image);
+
+  const attributes = product.attributes || getProductAttributes(product);
+  const selectedAttrsSummary = item.selectedAttributes
+    ? Object.entries(item.selectedAttributes)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(" • ")
+    : null;
 
   return (
     <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center gap-5 transition-all hover:shadow-md">
@@ -37,15 +46,70 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }: CartI
 
       {/* Info */}
       <div className="flex-1 min-w-0 text-center sm:text-left">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block mb-1">
-          {product.category}
-        </span>
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block">
+            {product.category}
+          </span>
+          {item.needsAttributeConfirmation ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full animate-pulse">
+              <AlertCircle className="w-3 h-3 text-amber-600" />
+              Lütfen Seçim Yapınız
+            </span>
+          ) : (
+            selectedAttrsSummary && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full">
+                <Tag className="w-3 h-3 text-indigo-500" />
+                {selectedAttrsSummary}
+              </span>
+            )
+          )}
+        </div>
+
         <Link href={`/products/${product.id}`} className="block">
           <h4 className="text-sm font-bold text-slate-900 line-clamp-2 hover:text-indigo-600 transition-colors">
             {product.title}
           </h4>
         </Link>
-        <div className="mt-1 text-xs text-slate-500 font-medium">
+
+        {/* Inline Attribute Picker */}
+        {attributes && attributes.length > 0 && (
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            {attributes.map((attr) => (
+              <div key={attr.name} className="flex items-center gap-1.5 text-xs">
+                <span className="font-bold text-slate-500 text-[11px]">{attr.name}:</span>
+                <div className="flex items-center gap-1">
+                  {attr.options.map((opt) => {
+                    const currentVal = item.selectedAttributes?.[attr.name] || attr.defaultValue;
+                    const isSelected = currentVal === opt && !item.needsAttributeConfirmation;
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() =>
+                          onUpdateAttributes?.(
+                            product.id,
+                            { ...item.selectedAttributes, [attr.name]: opt },
+                            false
+                          )
+                        }
+                        className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-indigo-600 text-white shadow-xs"
+                            : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
+                        }`}
+                        title={`${attr.name}: ${opt}`}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-2 text-xs text-slate-500 font-medium">
           Birim Fiyat: <span className="font-semibold text-slate-700">${product.price.toFixed(2)}</span>
         </div>
       </div>

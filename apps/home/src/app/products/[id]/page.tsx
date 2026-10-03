@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Star, ShieldCheck, Truck, RotateCcw } from "lucide-react";
+import { ArrowLeft, Star, ShieldCheck, Truck, RotateCcw, Sparkles } from "lucide-react";
 import ProductDetailActions from "./ProductDetailActions";
 import { fetchProductById, fetchProducts } from "@/services/productService";
 
@@ -113,6 +113,41 @@ export default async function ProductDetailPage({
           </div>
         </div>
       </div>
+
+      {/* Technical Specifications Section */}
+      {product.specifications && product.specifications.length > 0 && (
+        <div className="mt-10 bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-10">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">
+                Ürün Özellikleri & Teknik Detaylar
+              </h2>
+              <p className="text-xs text-slate-500">
+                Bu ürün için doğrulanmış teknik spesifikasyonlar, materyal ve standartlar
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {product.specifications.map((spec) => (
+              <div
+                key={spec.label}
+                className="p-4 rounded-2xl bg-slate-50 border border-slate-100/80 hover:border-indigo-200 transition-colors"
+              >
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                  {spec.label}
+                </span>
+                <span className="text-sm font-bold text-slate-800">
+                  {spec.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

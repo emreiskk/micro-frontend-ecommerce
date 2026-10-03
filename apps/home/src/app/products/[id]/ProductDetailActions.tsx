@@ -12,9 +12,21 @@ export default function ProductDetailActions({ product }: { product: Product }) 
   const [isAdding, setIsAdding] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
 
+  const defaultAttrs = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    if (product.attributes && product.attributes.length > 0) {
+      product.attributes.forEach((attr) => {
+        map[attr.name] = attr.defaultValue || attr.options[0];
+      });
+    }
+    return map;
+  }, [product.attributes]);
+
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>(defaultAttrs);
+
   const handleAdd = () => {
     setIsAdding(true);
-    addItem(product, quantity);
+    addItem(product, quantity, selectedAttributes, false);
     setToastVisible(true);
     setTimeout(() => {
       setIsAdding(false);
@@ -23,7 +35,45 @@ export default function ProductDetailActions({ product }: { product: Product }) 
 
   return (
     <div className="mt-6">
-      <Toast product={toastVisible ? product : null} onClose={() => setToastVisible(false)} />
+      {/* Variant Selector (Beden, Boyut, Kapasite vs.) */}
+      {product.attributes && product.attributes.length > 0 && (
+        <div className="mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
+          {product.attributes.map((attr) => (
+            <div key={attr.name} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  {attr.name} Seçimi:{" "}
+                  <span className="text-indigo-600 font-extrabold ml-1">
+                    {selectedAttributes[attr.name] || attr.defaultValue}
+                  </span>
+                </span>
+                <span className="text-[11px] font-semibold text-emerald-600">Stokta Var</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {attr.options.map((opt) => {
+                  const isSelected = (selectedAttributes[attr.name] || attr.defaultValue) === opt;
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() =>
+                        setSelectedAttributes((prev) => ({ ...prev, [attr.name]: opt }))
+                      }
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-105 border-2 border-indigo-600"
+                          : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="flex items-center gap-4">
         {/* Quantity selector */}

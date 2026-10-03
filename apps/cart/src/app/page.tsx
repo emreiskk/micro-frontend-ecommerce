@@ -4,26 +4,71 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 import { useCartSync } from "@repo/cart-sync";
-import type { CartTotals } from "@repo/shared-types";
+import type { CartTotals, CartItem, SelectedAttributes } from "@repo/shared-types";
 import CartItemCard from "@/components/CartItemCard";
 import OrderSummary from "@/components/OrderSummary";
 import CheckoutModal from "@/components/CheckoutModal";
+import AttributePromptModal from "@/components/AttributePromptModal";
 
 export default function CartPage() {
-  const { items, totals, updateQuantity, removeItem, clearCart, isHydrated } = useCartSync("cart");
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [completedOrderTotals, setCompletedOrderTotals] = useState<CartTotals | null>(null);
+  const {
+    items,
+    totals,
+    updateQuantity,
+    updateItemAttributes,
+    removeItem,
+    clearCart,
+    isHydrated,
+  } = useCartSync("cart");
 
-  const handleCheckoutSuccess = () => {
-    // Capture snapshot of totals before wiping cart
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isAttributePromptOpen, setIsAttributePromptOpen] = useState(false);
+  const [completedOrderTotals, setCompletedOrderTotals] = useState<CartTotals | null>(null);
+  const [completedOrderItems, setCompletedOrderItems] = useState<CartItem[]>([]);
+
+  const proceedWithCheckout = (finalItems: CartItem[]) => {
     setCompletedOrderTotals({ ...totals });
+    setCompletedOrderItems([...finalItems]);
     setIsCheckoutOpen(true);
     clearCart();
+  };
+
+  const handleInitiateCheckout = () => {
+    const unconfirmed = items.filter((i) => i.needsAttributeConfirmation);
+    if (unconfirmed.length > 0) {
+      setIsAttributePromptOpen(true);
+      return;
+    }
+    proceedWithCheckout(items);
+  };
+
+  const handleConfirmAttributes = (
+    updated: { productId: number; attributes: SelectedAttributes }[]
+  ) => {
+    updated.forEach(({ productId, attributes }) => {
+      updateItemAttributes(productId, attributes, false);
+    });
+
+    const updatedList = items.map((item) => {
+      const match = updated.find((u) => u.productId === item.product.id);
+      if (match) {
+        return {
+          ...item,
+          selectedAttributes: { ...item.selectedAttributes, ...match.attributes },
+          needsAttributeConfirmation: false,
+        };
+      }
+      return item;
+    });
+
+    setIsAttributePromptOpen(false);
+    proceedWithCheckout(updatedList);
   };
 
   const handleCloseCheckout = () => {
     setIsCheckoutOpen(false);
     setCompletedOrderTotals(null);
+    setCompletedOrderItems([]);
   };
 
   if (!isHydrated) {
@@ -35,12 +80,22 @@ export default function CartPage() {
     );
   }
 
+  const unconfirmedItems = items.filter((i) => i.needsAttributeConfirmation);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <CheckoutModal
         isOpen={isCheckoutOpen}
         totals={completedOrderTotals || totals}
+        items={completedOrderItems}
         onClose={handleCloseCheckout}
+      />
+
+      <AttributePromptModal
+        isOpen={isAttributePromptOpen}
+        unconfirmedItems={unconfirmedItems}
+        onConfirm={handleConfirmAttributes}
+        onClose={() => setIsAttributePromptOpen(false)}
       />
 
       <div className="mb-8">
@@ -63,6 +118,7 @@ export default function CartPage() {
                 key={item.product.id}
                 item={item}
                 onUpdateQuantity={updateQuantity}
+                onUpdateAttributes={updateItemAttributes}
                 onRemove={removeItem}
               />
             ))}
@@ -72,7 +128,7 @@ export default function CartPage() {
           <div className="lg:col-span-1">
             <OrderSummary
               totals={totals}
-              onCheckout={handleCheckoutSuccess}
+              onCheckout={handleInitiateCheckout}
               onClearCart={clearCart}
             />
           </div>

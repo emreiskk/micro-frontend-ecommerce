@@ -2,23 +2,24 @@
 
 import React from "react";
 import { CheckCircle2, ShoppingBag, ArrowRight } from "lucide-react";
-import type { CartTotals } from "@repo/shared-types";
+import type { CartTotals, CartItem } from "@repo/shared-types";
 
 interface CheckoutModalProps {
   isOpen: boolean;
   totals: CartTotals;
+  items?: CartItem[];
   onClose: () => void;
 }
 
-export default function CheckoutModal({ isOpen, totals, onClose }: CheckoutModalProps) {
+export default function CheckoutModal({ isOpen, totals, items, onClose }: CheckoutModalProps) {
   if (!isOpen) return null;
 
   const orderNumber = Math.floor(100000 + Math.random() * 900000);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 text-center transform animate-in zoom-in-95 duration-200">
-        <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/10 mb-5">
+      <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 text-center transform animate-in zoom-in-95 duration-200">
+        <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/10 mb-4">
           <CheckCircle2 className="w-9 h-9" />
         </div>
 
@@ -33,6 +34,31 @@ export default function CheckoutModal({ isOpen, totals, onClose }: CheckoutModal
           Tebrikler! Toplam <strong>${totals.total.toFixed(2)}</strong> tutarındaki siparişiniz hazırlanıyor.
           Sepetiniz sıfırlandı ve tüm mikro-frontend servisleri ile senkronize edildi.
         </p>
+
+        {/* Purchased Items with Attributes */}
+        {items && items.length > 0 && (
+          <div className="mt-5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-left text-xs max-h-36 overflow-y-auto space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+              Satın Alınan Ürünler & Tercihler:
+            </span>
+            {items.map((i) => {
+              const attrStr = i.selectedAttributes
+                ? Object.entries(i.selectedAttributes)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(", ")
+                : null;
+              return (
+                <div key={i.product.id} className="flex justify-between items-center text-slate-700 pb-1.5 border-b border-slate-200/50 last:border-b-0 last:pb-0">
+                  <div className="truncate pr-2">
+                    <span className="font-semibold text-slate-900 block truncate">{i.product.title}</span>
+                    {attrStr && <span className="text-[11px] text-indigo-600 font-semibold">{attrStr}</span>}
+                  </div>
+                  <span className="font-bold flex-shrink-0 text-slate-800">{i.quantity} Adet</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left text-xs space-y-2.5 text-slate-600">
           <div className="flex justify-between">

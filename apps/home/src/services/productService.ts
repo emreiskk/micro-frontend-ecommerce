@@ -1,4 +1,4 @@
-import type { Product } from "@repo/shared-types";
+import { type Product, enrichProductWithSpecs } from "@repo/shared-types";
 
 export const PRODUCT_IMAGE_MAP: Record<number, string> = {
   1: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&h=800&q=80", // Fjallraven Backpack
@@ -25,10 +25,11 @@ export const PRODUCT_IMAGE_MAP: Record<number, string> = {
 
 export function sanitizeProduct(p: Product): Product {
   const reliableImage = PRODUCT_IMAGE_MAP[p.id] || p.image || "/images/fallback/placeholder.svg";
-  return {
+  const sanitized = {
     ...p,
     image: reliableImage,
   };
+  return enrichProductWithSpecs(sanitized);
 }
 
 export const FALLBACK_PRODUCTS: Product[] = [
