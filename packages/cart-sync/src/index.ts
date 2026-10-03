@@ -22,11 +22,54 @@ function getChannel(): BroadcastChannel | null {
   return globalChannel;
 }
 
+// Cookie helpers to bridge isolation across different ports on localhost (:3000 and :3001)
+function setCookieCart(items: CartItem[]): void {
+  if (typeof document === "undefined") return;
+  try {
+    const serialized = encodeURIComponent(JSON.stringify(items));
+    document.cookie = `${CART_STORAGE_KEY}=${serialized}; path=/; max-age=604800; SameSite=Lax`;
+  } catch (e) {
+    console.error("Failed to save cart to cookie", e);
+  }
+}
+
+function getCookieCart(): CartItem[] | null {
+  if (typeof document === "undefined") return null;
+  try {
+    const match = document.cookie.match(new RegExp(`(^|;\\s*)(${CART_STORAGE_KEY})=([^;]*)`));
+    if (match && match[3]) {
+      const decoded = decodeURIComponent(match[3]);
+      const parsed = JSON.parse(decoded);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.error("Failed to read cart from cookie", e);
+  }
+  return null;
+}
+
 export function getStoredCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
+    // 1. Try LocalStorage
     const raw = localStorage.getItem(CART_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setCookieCart(parsed);
+        return parsed;
+      }
+    }
+
+    // 2. Try Shared Cookie (Shared across :3000 and :3001)
+    const cookieData = getCookieCart();
+    if (cookieData && Array.isArray(cookieData) && cookieData.length > 0) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookieData));
+      } catch {}
+      return cookieData;
+    }
+    return [];
   } catch {
     return [];
   }
@@ -36,9 +79,10 @@ export function saveStoredCart(items: CartItem[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    setCookieCart(items);
     window.dispatchEvent(new CustomEvent("local-cart-updated", { detail: items }));
   } catch (e) {
-    console.error("Failed to save cart to localStorage", e);
+    console.error("Failed to save cart to storage", e);
   }
 }
 
@@ -80,8 +124,31 @@ export function useCartSync(source: "home" | "cart" = "home") {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    const syncCurrent = () => {
+      const current = getStoredCart();
+      setItems((prev) => {
+        // Only update state if serialized data actually changed to prevent re-renders
+        if (JSON.stringify(prev) !== JSON.stringify(current)) {
+          return current;
+        }
+        return prev;
+      });
+    };
+
     setItems(getStoredCart());
     setIsHydrated(true);
+
+    // Cross-Tab and Cross-Port listeners
+    window.addEventListener("focus", syncCurrent);
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        syncCurrent();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    // Periodic sync (every 1s) for side-by-side cross-port browser windows
+    const intervalId = setInterval(syncCurrent, 1000);
 
     const channel = getChannel();
     const handleChannelMessage = (event: MessageEvent<CartSyncMessage>) => {
@@ -112,6 +179,9 @@ export function useCartSync(source: "home" | "cart" = "home") {
     window.addEventListener("local-cart-updated", handleLocalUpdate);
 
     return () => {
+      window.removeEventListener("focus", syncCurrent);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      clearInterval(intervalId);
       if (channel) {
         channel.removeEventListener("message", handleChannelMessage);
       }
@@ -159,6 +229,9 @@ export function useCartSync(source: "home" | "cart" = "home") {
 
   const clearCart = useCallback(() => {
     setItems([]);
+    if (typeof document !== "undefined") {
+      document.cookie = `${CART_STORAGE_KEY}=; path=/; max-age=0; SameSite=Lax`;
+    }
     broadcastCart([], source, "CLEAR_CART");
   }, [source]);
 
