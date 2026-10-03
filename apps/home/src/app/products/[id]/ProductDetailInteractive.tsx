@@ -204,7 +204,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                       {attr.options.length} Seçenek
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2.5 pt-1.5">
                     {attr.options.map((opt) => {
                       const isSelected = (selectedAttributes[attr.name] || attr.defaultValue) === opt;
                       const detail = attr.optionDetails?.find((d) => d.label === opt);
@@ -219,29 +219,55 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                           onClick={() =>
                             setSelectedAttributes((prev) => ({ ...prev, [attr.name]: opt }))
                           }
-                          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          className={`relative px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                            opt.length <= 3 ? "min-w-[42px]" : ""
+                          } ${
                             isSelected
                               ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
                               : isOptInStock
                               ? "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
-                              : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-slate-300"
+                              : "bg-slate-50/80 text-slate-400 border border-slate-200 hover:border-slate-300 hover:bg-slate-100/60"
                           }`}
                         >
-                          <span>{opt}</span>
+                          <span className="relative z-10">{opt}</span>
+
+                          {/* Diagonal Out-of-Stock Line (Trendyol Style) */}
+                          {!isOptInStock && (
+                            <svg
+                              className="absolute inset-0 w-full h-full pointer-events-none rounded-xl overflow-hidden"
+                              preserveAspectRatio="none"
+                              viewBox="0 0 100 100"
+                            >
+                              <line
+                                x1="0"
+                                y1="100"
+                                x2="100"
+                                y2="0"
+                                stroke="currentColor"
+                                strokeWidth={isSelected ? "2" : "1.5"}
+                                className={isSelected ? "text-white/40" : "text-slate-300"}
+                              />
+                            </svg>
+                          )}
+
+                          {/* Top-Right Notification Bell Icon (Trendyol Style) */}
                           {!isOptInStock && (
                             <span
-                              className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                              className={`absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow-xs transition-transform z-20 ${
                                 isSelected
-                                  ? "bg-indigo-700/80 text-white"
-                                  : "bg-rose-50 text-rose-600 border border-rose-100"
+                                  ? "bg-amber-500 text-white ring-2 ring-white scale-110"
+                                  : "bg-slate-100 text-slate-500 border border-slate-200"
                               }`}
+                              title="Tükendi - Gelince Haber Ver"
                             >
-                              Tükendi
+                              <Bell className="w-2.5 h-2.5" />
                             </span>
                           )}
+
+                          {/* Price Delta Badge */}
                           {delta !== undefined && delta !== 0 && (
                             <span
-                              className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
+                              className={`relative z-10 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
                                 isSelected
                                   ? "bg-white/20 text-white border border-white/20"
                                   : delta > 0
