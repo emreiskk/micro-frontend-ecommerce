@@ -80,196 +80,735 @@ export interface CartSyncMessage {
 }
 
 export function getProductAttributes(product: Product): ProductAttribute[] {
+  const id = product.id;
   const cat = (product.category || "").toLowerCase();
   const title = (product.title || "").toLowerCase();
-  const id = product.id;
 
-  // 1. Backpacks and Bags (e.g. Fjallraven No. 1)
-  if (id === 1 || title.includes("backpack") || title.includes("foldsack") || title.includes("bag")) {
+  // Deterministic ID-First Matching for all 20 catalog products
+  switch (id) {
+    // 1. Fjallraven Sırt Çantası
+    case 1:
+      return [
+        {
+          name: "Hacim / Kapasite",
+          options: ["16 Litre (Standart)", "20 Litre (Genişletilmiş)"],
+          optionDetails: [
+            {
+              label: "16 Litre (Standart)",
+              priceDelta: 0,
+              specsOverrides: {
+                "Hacim / Kapasite": "16 Litre Standart İç Alan",
+                "Laptop Bölmesi": "15.6 inçe Kadar Pedli Bölme",
+                "Ürün Ağırlığı": "460 gram Ultra Hafif",
+              },
+            },
+            {
+              label: "20 Litre (Genişletilmiş)",
+              priceDelta: 25,
+              specsOverrides: {
+                "Hacim / Kapasite": "20 Litre Genişletilmiş Kapasite",
+                "Laptop Bölmesi": "17 inçe Kadar Büyük Pedli Bölme",
+                "Ürün Ağırlığı": "580 gram Takviyeli",
+              },
+            },
+          ],
+          defaultValue: "16 Litre (Standart)",
+        },
+        {
+          name: "Renk",
+          options: ["Donanma Mavisi", "Gece Siyahı", "Haki Yeşili", "Hardal Sarısı"],
+          defaultValue: "Donanma Mavisi",
+        },
+      ];
+
+    // 2. Erkek Tişört
+    case 2:
+      return [
+        {
+          name: "Beden",
+          options: ["S", "M", "L", "XL", "XXL"],
+          optionDetails: [
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+            { label: "XXL", priceDelta: 2 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Koyu Gri Raglan", "Beyaz / Lacivert", "Bordo Melanj", "Antrasit Siyah"],
+          defaultValue: "Koyu Gri Raglan",
+        },
+      ];
+
+    // 3. Erkek Pamuklu Mevsimlik Ceket
+    case 3:
+      return [
+        {
+          name: "Beden",
+          options: ["S", "M", "L", "XL", "XXL"],
+          optionDetails: [
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+            { label: "XXL", priceDelta: 5 },
+          ],
+          defaultValue: "L",
+        },
+        {
+          name: "Renk",
+          options: ["Askeri Haki", "Koyu Lacivert", "Toprak Kahvesi", "Mat Siyah"],
+          defaultValue: "Askeri Haki",
+        },
+      ];
+
+    // 4. Erkek Gömlek
+    case 4:
+      return [
+        {
+          name: "Beden",
+          options: ["S", "M", "L", "XL"],
+          optionDetails: [
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Oxford Açık Mavi", "Klasik Beyaz", "Koyu Lacivert", "Açık Gri"],
+          defaultValue: "Oxford Açık Mavi",
+        },
+      ];
+
+    // 5. John Hardy Ejderha Zincir Bileklik
+    case 5:
+      return [
+        {
+          name: "Bileklik Uzunluğu",
+          options: ["18 cm (Zarif Bilek)", "20 cm (Standart Bilek)", "22 cm (Geniş Bilek)"],
+          optionDetails: [
+            {
+              label: "18 cm (Zarif Bilek)",
+              priceDelta: 0,
+              specsOverrides: {
+                "Uzunluk / Boyut": "18 cm (Zarif Bilek Ölçüsü)",
+                "Net Ağırlık / Gramaj": "42 gram Masif İşçilik",
+              },
+            },
+            {
+              label: "20 cm (Standart Bilek)",
+              priceDelta: 0,
+              specsOverrides: {
+                "Uzunluk / Boyut": "20 cm (Standart Bilek Ölçüsü)",
+                "Net Ağırlık / Gramaj": "46 gram Masif İşçilik",
+              },
+            },
+            {
+              label: "22 cm (Geniş Bilek)",
+              priceDelta: 35,
+              specsOverrides: {
+                "Uzunluk / Boyut": "22 cm (Geniş Bilek Ölçüsü)",
+                "Net Ağırlık / Gramaj": "52 gram Masif İşçilik",
+              },
+            },
+          ],
+          defaultValue: "20 cm (Standart Bilek)",
+        },
+        {
+          name: "Maden & Taş Detayı",
+          options: ["925 Masif Gümüş & Mavi Safir", "18K Altın & Gümüş Kombin & Safir"],
+          optionDetails: [
+            {
+              label: "925 Masif Gümüş & Mavi Safir",
+              priceDelta: 0,
+              specsOverrides: {
+                "Maden Türü & Ayar": "925 Ayar Masif Gümüş (Bali El Sanatları)",
+                "Taş & Detay": "Ejderha Başında Doğal Yuvarlak Mavi Safir Gözler",
+              },
+            },
+            {
+              label: "18K Altın & Gümüş Kombin & Safir",
+              priceDelta: 180,
+              specsOverrides: {
+                "Maden Türü & Ayar": "18K Masif Sarı Altın ve 925 Gümüş El İşçiliği Kombinasyon",
+                "Taş & Detay": "Ejderha Başında El Mıhlaması Parlak Doğal Mavi Safir Gözler",
+              },
+            },
+          ],
+          defaultValue: "925 Masif Gümüş & Mavi Safir",
+        },
+      ];
+
+    // 6. Petite Micropave Zarafet Yüzüğü
+    case 6:
+      return [
+        {
+          name: "Yüzük Ölçüsü",
+          options: ["12 Numara", "14 Numara", "16 Numara", "18 Numara"],
+          defaultValue: "14 Numara",
+        },
+        {
+          name: "Maden & Taş Türü",
+          options: ["14K Sarı Altın & Doğal Pırlanta", "18K Beyaz Altın & Ekstra Parlak Pırlanta"],
+          optionDetails: [
+            {
+              label: "14K Sarı Altın & Doğal Pırlanta",
+              priceDelta: 0,
+              specsOverrides: {
+                "Maden Türü & Ayar": "14K Masif Sarı Altın (585 Milyem)",
+                "Pırlanta Özellikleri": "0.12 Karat F-G Renk / VS Berraklık Doğal Pırlanta",
+              },
+            },
+            {
+              label: "18K Beyaz Altın & Ekstra Parlak Pırlanta",
+              priceDelta: 75,
+              specsOverrides: {
+                "Maden Türü & Ayar": "18K Masif Beyaz Altın (750 Milyem)",
+                "Pırlanta Özellikleri": "0.18 Karat D-E Renk / VVS1 Berraklık Doğal Pırlanta",
+              },
+            },
+          ],
+          defaultValue: "14K Sarı Altın & Doğal Pırlanta",
+        },
+      ];
+
+    // 7. Prenses Kesim Solitaire Yüzük
+    case 7:
+      return [
+        {
+          name: "Yüzük Ölçüsü",
+          options: ["12 Numara", "14 Numara", "16 Numara", "18 Numara"],
+          defaultValue: "14 Numara",
+        },
+        {
+          name: "Kaplama & Seri",
+          options: ["14K Beyaz Altın Kaplama (925 Gümüş)", "18K Rose Gold Kaplama (925 Gümüş)"],
+          optionDetails: [
+            {
+              label: "14K Beyaz Altın Kaplama (925 Gümüş)",
+              priceDelta: 0,
+              specsOverrides: {
+                "Maden & Kaplama": "925 Ayar Gümüş Üzeri 14K Rodyum & Beyaz Altın Kaplama",
+              },
+            },
+            {
+              label: "18K Rose Gold Kaplama (925 Gümüş)",
+              priceDelta: 5,
+              specsOverrides: {
+                "Maden & Kaplama": "925 Ayar Gümüş Üzeri 18K Rose Gold Mikron Kaplama",
+              },
+            },
+          ],
+          defaultValue: "14K Beyaz Altın Kaplama (925 Gümüş)",
+        },
+      ];
+
+    // 8. Pierced Owl Çift Taraflı Tünel Küpe
+    case 8:
+      return [
+        {
+          name: "Küpe Çapı",
+          options: ["6 mm (Küçük)", "8 mm (Standart)", "10 mm (Geniş)", "12 mm (Büyük)"],
+          optionDetails: [
+            {
+              label: "6 mm (Küçük)",
+              priceDelta: -2,
+              specsOverrides: {
+                "Çap / Kalınlık": "6 mm Çap / 2 GA Ölçüsü",
+                "Net Ağırlık / Çift": "2.2 gram Hafif Kullanım",
+              },
+            },
+            {
+              label: "8 mm (Standart)",
+              priceDelta: 0,
+              specsOverrides: {
+                "Çap / Kalınlık": "8 mm Çap / 0 GA Ölçüsü",
+                "Net Ağırlık / Çift": "3.4 gram Standart Kullanım",
+              },
+            },
+            {
+              label: "10 mm (Geniş)",
+              priceDelta: 4,
+              specsOverrides: {
+                "Çap / Kalınlık": "10 mm Çap / 00 GA Ölçüsü",
+                "Net Ağırlık / Çift": "4.8 gram Genişletilmiş Kullanım",
+              },
+            },
+            {
+              label: "12 mm (Büyük)",
+              priceDelta: 8,
+              specsOverrides: {
+                "Çap / Kalınlık": "12 mm Çap / 1/2 inç Ölçüsü",
+                "Net Ağırlık / Çift": "6.2 gram Büyük Boyut",
+              },
+            },
+          ],
+          defaultValue: "8 mm (Standart)",
+        },
+        {
+          name: "Renk / Kaplama",
+          options: ["Rose Gold", "Metalik Çelik Gümüşü", "Mat Gece Siyahı"],
+          defaultValue: "Rose Gold",
+        },
+      ];
+
+    // 9. WD Elements Taşınabilir Harici Disk
+    case 9:
+      return [
+        {
+          name: "Depolama Kapasitesi",
+          options: ["1 TB", "2 TB", "4 TB", "5 TB"],
+          optionDetails: [
+            {
+              label: "1 TB",
+              priceDelta: -15,
+              specsOverrides: {
+                "Depolama Kapasitesi": "1 TB (1.000 GB Veri Alanı)",
+              },
+            },
+            {
+              label: "2 TB",
+              priceDelta: 0,
+              specsOverrides: {
+                "Depolama Kapasitesi": "2 TB (2.000 GB Standart Veri Alanı)",
+              },
+            },
+            {
+              label: "4 TB",
+              priceDelta: 45,
+              specsOverrides: {
+                "Depolama Kapasitesi": "4 TB (4.000 GB Geniş Arşiv Alanı)",
+              },
+            },
+            {
+              label: "5 TB",
+              priceDelta: 75,
+              specsOverrides: {
+                "Depolama Kapasitesi": "5 TB (5.000 GB Maksimum Arşiv Alanı)",
+              },
+            },
+          ],
+          defaultValue: "2 TB",
+        },
+      ];
+
+    // 10. SanDisk SSD PLUS Dahili SSD
+    case 10:
+      return [
+        {
+          name: "Depolama Kapasitesi",
+          options: ["500 GB", "1 TB", "2 TB"],
+          optionDetails: [
+            {
+              label: "500 GB",
+              priceDelta: -35,
+              specsOverrides: {
+                "Depolama Kapasitesi": "500 GB Hızlı Katı Hal Sürücü",
+                "Sıralı Okuma / Yazma": "535 MB/sn Okuma, 445 MB/sn Yazma",
+              },
+            },
+            {
+              label: "1 TB",
+              priceDelta: 0,
+              specsOverrides: {
+                "Depolama Kapasitesi": "1 TB (1000 GB) Hızlı Katı Hal Sürücü",
+                "Sıralı Okuma / Yazma": "535 MB/sn Okuma, 450 MB/sn Yazma",
+              },
+            },
+            {
+              label: "2 TB",
+              priceDelta: 70,
+              specsOverrides: {
+                "Depolama Kapasitesi": "2 TB (2000 GB) Hızlı Katı Hal Sürücü",
+                "Sıralı Okuma / Yazma": "545 MB/sn Okuma, 450 MB/sn Yazma",
+              },
+            },
+          ],
+          defaultValue: "1 TB",
+        },
+      ];
+
+    // 11. Silicon Power A55 3D NAND Dahili SSD
+    case 11:
+      return [
+        {
+          name: "Depolama Kapasitesi",
+          options: ["256 GB", "512 GB", "1 TB", "2 TB"],
+          optionDetails: [
+            {
+              label: "256 GB",
+              priceDelta: -40,
+              specsOverrides: {
+                "Depolama Kapasitesi": "256 GB Katı Hal Depolama",
+              },
+            },
+            {
+              label: "512 GB",
+              priceDelta: -20,
+              specsOverrides: {
+                "Depolama Kapasitesi": "512 GB Katı Hal Depolama",
+              },
+            },
+            {
+              label: "1 TB",
+              priceDelta: 0,
+              specsOverrides: {
+                "Depolama Kapasitesi": "1 TB (1000 GB) Katı Hal Depolama",
+              },
+            },
+            {
+              label: "2 TB",
+              priceDelta: 75,
+              specsOverrides: {
+                "Depolama Kapasitesi": "2 TB (2000 GB) Katı Hal Depolama",
+              },
+            },
+          ],
+          defaultValue: "1 TB",
+        },
+      ];
+
+    // 12. WD Gaming Drive PS4 Uyumlu Disk
+    case 12:
+      return [
+        {
+          name: "Depolama Kapasitesi",
+          options: ["2 TB", "4 TB", "5 TB"],
+          optionDetails: [
+            {
+              label: "2 TB",
+              priceDelta: -25,
+              specsOverrides: {
+                "Oyun Kapasitesi": "Yaklaşık 50+ PS4/PS5 Oyunu Depolama",
+              },
+            },
+            {
+              label: "4 TB",
+              priceDelta: 0,
+              specsOverrides: {
+                "Oyun Kapasitesi": "Yaklaşık 100+ PS4/PS5 Oyunu Depolama",
+              },
+            },
+            {
+              label: "5 TB",
+              priceDelta: 40,
+              specsOverrides: {
+                "Oyun Kapasitesi": "Yaklaşık 125+ PS4/PS5 Oyunu Depolama",
+              },
+            },
+          ],
+          defaultValue: "4 TB",
+        },
+      ];
+
+    // 13. Acer SB220Q Düz IPS Monitör
+    case 13:
+      return [
+        {
+          name: "Ekran Boyutu (Düz Panel)",
+          options: ['21.5" FHD (75Hz Düz)', '24" FHD (100Hz Düz)', '27" QHD (165Hz Düz)'],
+          optionDetails: [
+            {
+              label: '21.5" FHD (75Hz Düz)',
+              priceDelta: 0,
+              specsOverrides: {
+                "Ekran Boyutu": "21.5 inç Çerçevesiz Düz Panel",
+                "Çözünürlük": "1920 x 1080 Full HD (75Hz)",
+                "Panel Teknolojisi": "Ultra-İnce Çerçevesiz Düz IPS Panel",
+                "Giriş Portları": "1x HDMI, 1x VGA",
+              },
+            },
+            {
+              label: '24" FHD (100Hz Düz)',
+              priceDelta: 60,
+              specsOverrides: {
+                "Ekran Boyutu": "24 inç Çerçevesiz Düz Panel",
+                "Çözünürlük": "1920 x 1080 Full HD (100Hz)",
+                "Panel Teknolojisi": "Ultra-İnce Çerçevesiz Düz IPS Panel",
+                "Giriş Portları": "2x HDMI, 1x DisplayPort",
+              },
+            },
+            {
+              label: '27" QHD (165Hz Düz)',
+              priceDelta: 140,
+              specsOverrides: {
+                "Ekran Boyutu": "27 inç Çerçevesiz Düz Panel",
+                "Çözünürlük": "2560 x 1440 2K QHD (165Hz)",
+                "Panel Teknolojisi": "Ultra-İnce Çerçevesiz Düz IPS Panel",
+                "Giriş Portları": "2x HDMI 2.1, 1x DisplayPort 1.4",
+              },
+            },
+          ],
+          defaultValue: '21.5" FHD (75Hz Düz)',
+        },
+      ];
+
+    // 14. Samsung CHG90 Kavisli QLED Monitör
+    case 14:
+      return [
+        {
+          name: "Ekran Boyutu (Kavisli Panel)",
+          options: ['34" Kavisli UltraWide (144Hz)', '49" Kavisli Süper Ultra (144Hz)', '57" Kavisli Dual 4K (240Hz)'],
+          optionDetails: [
+            {
+              label: '34" Kavisli UltraWide (144Hz)',
+              priceDelta: -200,
+              specsOverrides: {
+                "Ekran Boyutu": "34 inç 21:9 UltraWide Kavisli Panel",
+                "Çözünürlük": "3440 x 1440 UltraWide QHD (144Hz)",
+                "Kavis Oranı": "1800R Derin Panoramik Kavis",
+              },
+            },
+            {
+              label: '49" Kavisli Süper Ultra (144Hz)',
+              priceDelta: 0,
+              specsOverrides: {
+                "Ekran Boyutu": "49 inç 32:9 Süper UltraWide Kavisli Panel",
+                "Çözünürlük": "5120 x 1440 Dual QHD (144Hz)",
+                "Kavis Oranı": "1800R Derin Panoramik Kavis",
+              },
+            },
+            {
+              label: '57" Kavisli Dual 4K (240Hz)',
+              priceDelta: 400,
+              specsOverrides: {
+                "Ekran Boyutu": "57 inç 32:9 Dünyanın İlk Dual 4K Kavisli Ekranı",
+                "Çözünürlük": "7680 x 2160 Dual UHD 4K (240Hz)",
+                "Kavis Oranı": "1000R Agresif Panoramik Kavis",
+              },
+            },
+          ],
+          defaultValue: '49" Kavisli Süper Ultra (144Hz)',
+        },
+      ];
+
+    // 15. BIYLACLESEN Kadın Kayak Montu
+    case 15:
+      return [
+        {
+          name: "Beden",
+          options: ["S", "M", "L", "XL"],
+          optionDetails: [
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Mor / Siyah", "Gül Kurusu", "Gece Mavisi", "Zümrüt Yeşili"],
+          defaultValue: "Mor / Siyah",
+        },
+      ];
+
+    // 16. Lock and Love Kadın Deri Motorcu Ceketi
+    case 16:
+      return [
+        {
+          name: "Beden",
+          options: ["XS", "S", "M", "L", "XL"],
+          optionDetails: [
+            { label: "XS", priceDelta: 0 },
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Siyah (Gümüş Fermuar)", "Kahve Taba", "Bordo Deri", "Koyu Zeytin"],
+          defaultValue: "Siyah (Gümüş Fermuar)",
+        },
+      ];
+
+    // 17. Kadın Çizgili Yağmurluk
+    case 17:
+      return [
+        {
+          name: "Beden",
+          options: ["S", "M", "L", "XL"],
+          optionDetails: [
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Klasik Sarı", "Lacivert Denizci", "Toz Pembe", "Haki Doğa"],
+          defaultValue: "Klasik Sarı",
+        },
+      ];
+
+    // 18. MBJ Kadın V Yaka Tişört
+    case 18:
+      return [
+        {
+          name: "Beden",
+          options: ["XS", "S", "M", "L", "XL", "XXL"],
+          optionDetails: [
+            { label: "XS", priceDelta: 0 },
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+            { label: "XXL", priceDelta: 2 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Bordo Melanj", "Siyah", "Kırık Beyaz", "Mürdüm", "Lacivert"],
+          defaultValue: "Bordo Melanj",
+        },
+      ];
+
+    // 19. Opna Kadın Spor Tişört
+    case 19:
+      return [
+        {
+          name: "Beden",
+          options: ["XS", "S", "M", "L", "XL"],
+          optionDetails: [
+            { label: "XS", priceDelta: 0 },
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Elektrik Pembesi", "Turkuaz Canlı", "Siyah", "Koyu Mor", "Gümüş Gri"],
+          defaultValue: "Elektrik Pembesi",
+        },
+      ];
+
+    // 20. DANVOUY Kadın Günlük Tişört
+    case 20:
+      return [
+        {
+          name: "Beden",
+          options: ["S", "M", "L", "XL"],
+          optionDetails: [
+            { label: "S", priceDelta: 0 },
+            { label: "M", priceDelta: 0 },
+            { label: "L", priceDelta: 0 },
+            { label: "XL", priceDelta: 0 },
+          ],
+          defaultValue: "M",
+        },
+        {
+          name: "Renk",
+          options: ["Zeytin Yeşili (Outdoor)", "Bebek Sarısı", "Pudra Pembesi", "Antrasit Gri"],
+          defaultValue: "Zeytin Yeşili (Outdoor)",
+        },
+      ];
+
+    default:
+      break;
+  }
+
+  // Robust Category-Based Fallbacks for dynamic products
+  if (cat.includes("jewelery")) {
+    if (title.includes("ring")) {
+      return [
+        {
+          name: "Yüzük Ölçüsü",
+          options: ["12 Numara", "14 Numara", "16 Numara", "18 Numara"],
+          defaultValue: "14 Numara",
+        },
+        {
+          name: "Maden Türü",
+          options: ["14K Sarı Altın", "18K Beyaz Altın"],
+          optionDetails: [
+            { label: "14K Sarı Altın", priceDelta: 0 },
+            { label: "18K Beyaz Altın", priceDelta: 50 },
+          ],
+          defaultValue: "14K Sarı Altın",
+        },
+      ];
+    }
+    if (title.includes("bracelet") || title.includes("chain")) {
+      return [
+        {
+          name: "Bileklik Uzunluğu",
+          options: ["18 cm (Zarif)", "20 cm (Standart)", "22 cm (Geniş)"],
+          optionDetails: [
+            { label: "18 cm (Zarif)", priceDelta: 0 },
+            { label: "20 cm (Standart)", priceDelta: 0 },
+            { label: "22 cm (Geniş)", priceDelta: 20 },
+          ],
+          defaultValue: "20 cm (Standart)",
+        },
+      ];
+    }
+    if (title.includes("earring") || title.includes("tunnel") || title.includes("plug")) {
+      return [
+        {
+          name: "Küpe Çapı",
+          options: ["6 mm", "8 mm", "10 mm"],
+          defaultValue: "8 mm",
+        },
+      ];
+    }
     return [
       {
-        name: "Hacim / Boyut",
-        options: ["16 Litre (Standart)", "20 Litre (Genişletilmiş)"],
-        optionDetails: [
-          {
-            label: "16 Litre (Standart)",
-            priceDelta: 0,
-            specsOverrides: {
-              "Hacim / Kapasite": "16 Litre Standart İç Alan",
-              "Laptop Bölmesi": "15.6 inçe Kadar Pedli Bölme",
-              "Ürün Ağırlığı": "460 gram Ultra Hafif Ergonomik Tasarım",
-            },
-          },
-          {
-            label: "20 Litre (Genişletilmiş)",
-            priceDelta: 25,
-            specsOverrides: {
-              "Hacim / Kapasite": "20 Litre Genişletilmiş Kapasite",
-              "Laptop Bölmesi": "17 inçe Kadar Büyük Pedli Bölme",
-              "Ürün Ağırlığı": "580 gram Takviyeli Tasarım",
-            },
-          },
-        ],
-        defaultValue: "16 Litre (Standart)",
-      },
-      {
-        name: "Renk",
-        options: ["Donanma Mavisi", "Gece Siyahı", "Haki Yeşili"],
-        defaultValue: "Donanma Mavisi",
+        name: "Zincir / Boyut",
+        options: ["45 cm (Kısa)", "50 cm (Standart)", "55 cm (Uzun)"],
+        defaultValue: "50 cm (Standart)",
       },
     ];
   }
 
-  // 2. Monitors & Displays (FLAT vs. CURVED CLEAR SEPARATION)
-  // 2A: Acer Monitor (FLAT IPS PANEL ONLY)
-  if (id === 13 || title.includes("acer") || (title.includes("monitor") && !title.includes("curved") && !title.includes("chg90"))) {
-    return [
-      {
-        name: "Ekran Boyutu (Düz Panel)",
-        options: ['21.5" FHD (75Hz Düz)', '24" FHD (100Hz Düz)', '27" QHD (165Hz Düz)'],
-        optionDetails: [
-          {
-            label: '21.5" FHD (75Hz Düz)',
-            priceDelta: 0,
-            specsOverrides: {
-              "Ekran Boyutu": "21.5 inç Çerçevesiz Düz Panel",
-              "Çözünürlük": "1920 x 1080 Full HD (75Hz)",
-              "Panel Teknolojisi": "Ultra-İnce Çerçevesiz Düz IPS Panel",
-              "Giriş Portları": "1x HDMI, 1x VGA",
-            },
-          },
-          {
-            label: '24" FHD (100Hz Düz)',
-            priceDelta: 60,
-            specsOverrides: {
-              "Ekran Boyutu": "24 inç Çerçevesiz Düz Panel",
-              "Çözünürlük": "1920 x 1080 Full HD (100Hz)",
-              "Panel Teknolojisi": "Ultra-İnce Çerçevesiz Düz IPS Panel",
-              "Giriş Portları": "2x HDMI, 1x DisplayPort",
-            },
-          },
-          {
-            label: '27" QHD (165Hz Düz)',
-            priceDelta: 140,
-            specsOverrides: {
-              "Ekran Boyutu": "27 inç Çerçevesiz Düz Panel",
-              "Çözünürlük": "2560 x 1440 2K QHD (165Hz)",
-              "Panel Teknolojisi": "Ultra-İnce Çerçevesiz Düz IPS Panel",
-              "Giriş Portları": "2x HDMI 2.1, 1x DisplayPort 1.4",
-            },
-          },
-        ],
-        defaultValue: '21.5" FHD (75Hz Düz)',
-      },
-    ];
-  }
-
-  // 2B: Samsung Monitor (CURVED ULTRAWIDE PANEL ONLY)
-  if (id === 14 || title.includes("samsung") || title.includes("curved") || title.includes("chg90")) {
-    return [
-      {
-        name: "Ekran Boyutu (Kavisli Panel)",
-        options: ['34" Kavisli UltraWide (144Hz)', '49" Kavisli Süper Ultra (144Hz)', '57" Kavisli Dual 4K (240Hz)'],
-        optionDetails: [
-          {
-            label: '34" Kavisli UltraWide (144Hz)',
-            priceDelta: -200,
-            specsOverrides: {
-              "Ekran Boyutu": "34 inç 21:9 UltraWide Kavisli Panel",
-              "Çözünürlük": "3440 x 1440 UltraWide QHD (144Hz)",
-              "Kavis Oranı": "1800R Derin Panoramik Kavis",
-            },
-          },
-          {
-            label: '49" Kavisli Süper Ultra (144Hz)',
-            priceDelta: 0,
-            specsOverrides: {
-              "Ekran Boyutu": "49 inç 32:9 Süper UltraWide Kavisli Panel",
-              "Çözünürlük": "5120 x 1440 Dual QHD (144Hz)",
-              "Kavis Oranı": "1800R Derin Panoramik Kavis",
-            },
-          },
-          {
-            label: '57" Kavisli Dual 4K (240Hz)',
-            priceDelta: 400,
-            specsOverrides: {
-              "Ekran Boyutu": "57 inç 32:9 Dünyanın İlk Dual 4K Kavisli Ekranı",
-              "Çözünürlük": "7680 x 2160 Dual UHD 4K (240Hz)",
-              "Kavis Oranı": "1000R Agresif Panoramik Kavis",
-            },
-          },
-        ],
-        defaultValue: '49" Kavisli Süper Ultra (144Hz)',
-      },
-    ];
-  }
-
-  // 3. Hard Drives & SSDs
-  if (title.includes("drive") || title.includes("ssd") || title.includes("hard") || title.includes("elements")) {
-    const isWdElements = title.includes("elements");
+  if (cat.includes("electronics")) {
+    if (title.includes("curved") || title.includes("chg90") || title.includes("samsung")) {
+      return [
+        {
+          name: "Ekran Boyutu (Kavisli Panel)",
+          options: ['34" Kavisli UltraWide (144Hz)', '49" Kavisli Süper Ultra (144Hz)'],
+          defaultValue: '49" Kavisli Süper Ultra (144Hz)',
+        },
+      ];
+    }
+    if (title.includes("monitor") || title.includes("screen") || title.includes("display")) {
+      return [
+        {
+          name: "Ekran Boyutu (Düz Panel)",
+          options: ['21.5" FHD (75Hz Düz)', '24" FHD (100Hz Düz)', '27" QHD (165Hz Düz)'],
+          defaultValue: '21.5" FHD (75Hz Düz)',
+        },
+      ];
+    }
+    // Hard drives & SSDs
     return [
       {
         name: "Depolama Kapasitesi",
         options: ["500 GB", "1 TB", "2 TB", "4 TB"],
         optionDetails: [
-          {
-            label: "500 GB",
-            priceDelta: isWdElements ? -20 : -30,
-            specsOverrides: {
-              "Okuma / Yazma Hızı": "550 MB/sn Okuma, 500 MB/sn Yazma",
-            },
-          },
-          {
-            label: "1 TB",
-            priceDelta: 0,
-            specsOverrides: {
-              "Okuma / Yazma Hızı": "1050 MB/sn Okuma, 1000 MB/sn Yazma",
-            },
-          },
-          {
-            label: "2 TB",
-            priceDelta: isWdElements ? 35 : 55,
-            specsOverrides: {
-              "Okuma / Yazma Hızı": "1050 MB/sn Okuma, 1000 MB/sn Yazma",
-            },
-          },
-          {
-            label: "4 TB",
-            priceDelta: isWdElements ? 75 : 135,
-            specsOverrides: {
-              "Okuma / Yazma Hızı": "1050 MB/sn Okuma, 1000 MB/sn Yazma",
-            },
-          },
+          { label: "500 GB", priceDelta: -25 },
+          { label: "1 TB", priceDelta: 0 },
+          { label: "2 TB", priceDelta: 45 },
+          { label: "4 TB", priceDelta: 95 },
         ],
-        defaultValue: title.includes("2tb") ? "2 TB" : title.includes("4tb") ? "4 TB" : "1 TB",
+        defaultValue: "1 TB",
       },
     ];
   }
 
-  // 4. Jackets, Coats, Outerwear
-  if (title.includes("jacket") || title.includes("coat") || title.includes("windbreaker") || title.includes("biker")) {
-    return [
-      {
-        name: "Beden",
-        options: ["S", "M", "L", "XL", "XXL"],
-        optionDetails: [
-          { label: "S", priceDelta: 0 },
-          { label: "M", priceDelta: 0 },
-          { label: "L", priceDelta: 0 },
-          { label: "XL", priceDelta: 0 },
-          { label: "XXL", priceDelta: 5 },
-        ],
-        defaultValue: "L",
-      },
-      {
-        name: "Renk",
-        options: ["Kömür Siyahı", "Haki Asker Yeşili", "Koyu Lacivert"],
-        defaultValue: "Kömür Siyahı",
-      },
-    ];
-  }
-
-  // 5. T-Shirts & General Clothing
   if (cat.includes("clothing")) {
     return [
       {
@@ -287,73 +826,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
       },
       {
         name: "Renk",
-        options: ["Beyaz", "Siyah", "Gri Melanj", "Donanma Mavisi"],
-        defaultValue: "Beyaz",
-      },
-    ];
-  }
-
-  // 6. Rings
-  if (title.includes("ring")) {
-    return [
-      {
-        name: "Yüzük Ölçüsü",
-        options: ["12 Numara", "14 Numara", "16 Numara", "18 Numara"],
-        defaultValue: "14 Numara",
-      },
-      {
-        name: "Ayar & Seri",
-        options: ["14K Beyaz Altın Kaplama", "18K Pırlantalı Özel Seri"],
-        optionDetails: [
-          { label: "14K Beyaz Altın Kaplama", priceDelta: 0 },
-          {
-            label: "18K Pırlantalı Özel Seri",
-            priceDelta: 60,
-            specsOverrides: {
-              "Maden Türü & Ayar": "18K Hakiki Masif Altın ve 0.15ct Parlak Pırlanta",
-              "Garanti & Sertifika": "Uluslararası Gemoloji Pırlanta Sertifikalı",
-            },
-          },
-        ],
-        defaultValue: "14K Beyaz Altın Kaplama",
-      },
-    ];
-  }
-
-  // 7. Bracelets & Chains
-  if (title.includes("bracelet") || title.includes("chain")) {
-    return [
-      {
-        name: "Bileklik Uzunluğu",
-        options: ["18 cm (Zarif)", "20 cm (Standart)", "22 cm (Geniş)"],
-        optionDetails: [
-          { label: "18 cm (Zarif)", priceDelta: 0 },
-          { label: "20 cm (Standart)", priceDelta: 0 },
-          { label: "22 cm (Geniş)", priceDelta: 15 },
-        ],
-        defaultValue: "20 cm (Standart)",
-      },
-    ];
-  }
-
-  // 8. Earrings
-  if (title.includes("earring") || title.includes("tunnel") || title.includes("plug")) {
-    return [
-      {
-        name: "Küpe Çapı",
-        options: ["6 mm (Zarif)", "8 mm (Standart)", "10 mm (Belirgin)"],
-        defaultValue: "8 mm (Standart)",
-      },
-    ];
-  }
-
-  // 9. Other Jewelery
-  if (cat.includes("jewelery")) {
-    return [
-      {
-        name: "Zincir / Boyut",
-        options: ["45 cm (Kısa)", "50 cm (Standart)", "55 cm (Uzun)"],
-        defaultValue: "50 cm (Standart)",
+        options: ["Siyah", "Beyaz", "Gri Melanj", "Donanma Mavisi"],
+        defaultValue: "Siyah",
       },
     ];
   }
@@ -368,98 +842,282 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
 }
 
 export function getProductSpecifications(product: Product): ProductSpecification[] {
+  const id = product.id;
   const cat = (product.category || "").toLowerCase();
   const title = (product.title || "").toLowerCase();
-  const id = product.id;
 
-  // Backpacks & Bags
-  if (id === 1 || title.includes("backpack") || title.includes("foldsack") || title.includes("bag")) {
-    return [
-      { label: "Laptop Bölmesi", value: "15.6 inçe Kadar Darbe Korumalı Pedli Bölme" },
-      { label: "Kumaş Materyali", value: "G-1000 HeavyDuty Eco (Dayanıklı Geri Dönüştürülmüş Kumaş)" },
-      { label: "Su Dayanıklılığı", value: "Suya ve Neme Karşı Dayanıklı Wax Dış Kaplama" },
-      { label: "Hacim / Kapasite", value: "16 Litre Geniş İç Alan" },
-      { label: "Ürün Ağırlığı", value: "460 gram Ultra Hafif Ergonomik Tasarım" },
-      { label: "Boyutlar", value: "38 cm (Y) x 27 cm (G) x 13 cm (D)" },
-      { label: "Menşei & Tasarım", value: "İsveç Tasarımı (Orijinal Lisanslı)" },
-      { label: "Garanti Süresi", value: "2 Yıl TrendSphere Resmi Garanti" },
-    ];
+  // Deterministic ID-First Specifications for all 20 catalog products
+  switch (id) {
+    // 1. Fjallraven Sırt Çantası
+    case 1:
+      return [
+        { label: "Hacim / Kapasite", value: "16 Litre Standart İç Alan" },
+        { label: "Laptop Bölmesi", value: "15.6 inçe Kadar Pedli Bölme" },
+        { label: "Kumaş Materyali", value: "G-1000 HeavyDuty Eco (%65 Geri Dönüştürülmüş Polyester, %35 Organik Pamuk)" },
+        { label: "Su Dayanıklılığı", value: "Grönland Vaksı ile Suya & Rüzgara Dayanıklı Kaplama" },
+        { label: "Ürün Ağırlığı", value: "460 gram Ultra Hafif" },
+        { label: "Boyutlar", value: "38 cm (Y) x 27 cm (G) x 13 cm (D)" },
+        { label: "Cepler", value: "Fermuarlı Ön Güvenlik Cebi, Yan Matara Bölmeleri, İç Evrak Cebi" },
+        { label: "Garanti Süresi", value: "2 Yıl TrendSphere Resmi Distribütör Garantisi" },
+      ];
+
+    // 2. Erkek Tişört
+    case 2:
+      return [
+        { label: "Kumaş Materyali", value: "%100 Organik Taranmış Ringel Pamuk (220 gr/m²)" },
+        { label: "Yaka & Kol Modeli", value: "3 Düğmeli Henley Patlı Ribana Yaka & Kontrast Raglan Kol" },
+        { label: "Kalıp (Fit)", value: "Modern Slim Fit (Vücuda Oturan Kesim)" },
+        { label: "Nefes Alabilirlik", value: "Terletmeyen Doğal Pamuklu Doku" },
+        { label: "Yıkama & Bakım", value: "30°C Makinede Tersten Yıkama, Çekmezlik Sanforlu" },
+        { label: "Sertifikasyon", value: "OEKO-TEX® Standard 100 Ekolojik Tekstil Sertifikalı" },
+        { label: "Menşei", value: "Türkiye (Yerli Üretim)" },
+      ];
+
+    // 3. Erkek Pamuklu Mevsimlik Ceket
+    case 3:
+      return [
+        { label: "Dış Kumaş", value: "%100 Ağır Hizmet Tipi Ağartılmış Pamuklu Kanvas Kumaş" },
+        { label: "İç Astar", value: "Nefes Alabilir Ekose Pamuk Astar" },
+        { label: "Kapama", value: "Tam Boy Ağır Hizmet Pirinç Fermuar ve Çıtçıtlı Rüzgar Patı" },
+        { label: "Cepler", value: "2 Göğüs Fleto Cebi, 2 Geniş Yan Cep, 1 İç Güvenlik Cebi" },
+        { label: "Kalıp (Fit)", value: "Rahat Hareket Sağlayan Mevsimlik Regular Fit" },
+        { label: "Mevsim", value: "İlkbahar / Sonbahar / Ilık Kış" },
+        { label: "Yıkama & Bakım", value: "Kuru Temizleme veya 30°C Hassas Program" },
+      ];
+
+    // 4. Erkek Gömlek
+    case 4:
+      return [
+        { label: "Kumaş Dokusu", value: "%100 Saf Pamuk Premium Oxford Dokuma (Kolay Ütülenebilir)" },
+        { label: "Kalıp (Fit)", value: "Şık ve Modern Slim Fit Kesim" },
+        { label: "Yaka Tipi", value: "Düğmeli Gizli Yaka (Button-Down Collar)" },
+        { label: "Manşet Detayı", value: "Çift Düğmeli Ayarlanabilir İtalyan Manşet" },
+        { label: "Dikiş Kalitesi", value: "Çift İğne Takviyeli Dayanıklı Yan Dikişler" },
+        { label: "Menşei", value: "Türkiye (TrendSphere Özel Terzilik Koleksiyonu)" },
+      ];
+
+    // 5. John Hardy Ejderha Zincir Bileklik
+    case 5:
+      return [
+        { label: "Koleksiyon", value: "John Hardy Legends Naga Özel Bali Zanaatkar Koleksiyonu" },
+        { label: "Maden Türü & Ayar", value: "925 Ayar Masif Gümüş (Bali El Sanatları)" },
+        { label: "Taş & Detay", value: "Ejderha Başında Doğal Yuvarlak Mavi Safir Gözler" },
+        { label: "Uzunluk / Boyut", value: "20 cm (Standart Bilek Ölçüsü)" },
+        { label: "Net Ağırlık / Gramaj", value: "46 gram Masif İşçilik" },
+        { label: "Kilit Mekanizması", value: "Ejderha Ağzından Açılan Entegre Emniyetli Gizli Yaylı Kilit" },
+        { label: "Sembolik Anlam", value: "Naga Su Ejderhası; Aşkı, Korumayı ve Refahı Temsil Eder" },
+        { label: "Kutu & Sertifika", value: "TrendSphere Ahşap Mücevher Kutusu & Orijinallik Sertifikası Dahil" },
+        { label: "Garanti Süresi", value: "Ömür Boyu Uluslararası İşçilik Garantisi" },
+      ];
+
+    // 6. Petite Micropave Zarafet Yüzüğü
+    case 6:
+      return [
+        { label: "Model Tipi", value: "Mikro Pavé Taş Dizimli Zarif Tamtur & Tektaş Yanı Yüzük" },
+        { label: "Maden Türü & Ayar", value: "14K Masif Sarı Altın (585 Milyem)" },
+        { label: "Pırlanta Özellikleri", value: "0.12 Karat F-G Renk / VS Berraklık Doğal Pırlanta" },
+        { label: "Montür / Dizim", value: "Düşmeye Karşı Korumalı 4 Tırnaklı Mikro Pavé Zanaat Montürü" },
+        { label: "Net Ağırlık / Gramaj", value: "2.1 gram Zarif Duruş" },
+        { label: "Kutu & Sertifika", value: "TrendSphere Lüks Işıklı Kadife Kutu & Gemoloji Sertifikası" },
+        { label: "Bakım Garantisi", value: "Ömür Boyu Ücretsiz Taş Kontrolü ve Parlatma Bakımı" },
+      ];
+
+    // 7. Prenses Kesim Solitaire Yüzük
+    case 7:
+      return [
+        { label: "Merkez Taş", value: "1.5 Karat Eşdeğer 8mm Prenses Kare Kesim Işıltılı Kübik Zirkon" },
+        { label: "Yan Taşlar", value: "Çift Sıra Omuz Mikro Pave Zirkon Kristal Dizimi" },
+        { label: "Maden & Kaplama", value: "925 Ayar Gümüş Üzeri 14K Rodyum & Beyaz Altın Kaplama" },
+        { label: "Kararma Direnci", value: "Kararmaya Karşı Özel Şeffaf E-Coating Koruyucu Kaplama" },
+        { label: "Alerjen Testi", value: "%100 Nikelsiz, Kurşunsuz ve Hipoalerjenik Cilt Dostu" },
+        { label: "Kutu & Paketleme", value: "TrendSphere Özel Işıklı Tektaş Yüzük Kutusu" },
+      ];
+
+    // 8. Pierced Owl Çift Taraflı Tünel Küpe
+    case 8:
+      return [
+        { label: "Materyal", value: "316L Medikal Sınıf Cerrahi Paslanmaz Çelik" },
+        { label: "Çap / Kalınlık", value: "8 mm Çap / 0 GA Ölçüsü" },
+        { label: "Net Ağırlık / Çift", value: "3.4 gram Standart Kullanım" },
+        { label: "Kaplama", value: "Aşınmaya Dayanıklı Vakum PVD Titanyum İyon Kaplama" },
+        { label: "Tasarım", value: "Çift Taraflı Genişleyen Flared Vidalı Tünel Plug" },
+        { label: "Biyouyumluluk", value: "İmplant Sınıfı Hipoalerjenik, Paslanmaz ve Kararmaz" },
+        { label: "Paket İçeriği", value: "1 Takım = 2 Adet Çift Taraflı Vidalı Küpe" },
+        { label: "Hijyen Durumu", value: "UV Sterilize Edilmiş Vakumlu Hijyenik Ambalaj" },
+      ];
+
+    // 9. WD Elements Taşınabilir Harici Disk
+    case 9:
+      return [
+        { label: "Depolama Kapasitesi", value: "2 TB (2.000 GB Standart Veri Alanı)" },
+        { label: "Bağlantı Arayüzü", value: "Yüksek Hızlı USB 3.0 (USB 2.0 ile Geriye Dönük Tam Uyumlu)" },
+        { label: "Veri Aktarım Hızı", value: "130 MB/sn'ye Varan Kararlı Veri Transfer Hızı" },
+        { label: "Disk Formatı", value: "Windows NTFS Hazır Formatlı (macOS için Kolay Reformat)" },
+        { label: "Güç Gereksinimi", value: "Harici Adaptörsüz, Doğrudan USB Portundan Güç Alan Kasa" },
+        { label: "Kasa Yapısı", value: "Darbeye Dayanıklı Kompakt Hafif Polikarbonat Gövde (134 gr)" },
+        { label: "Boyutlar", value: "111 mm x 82 mm x 15 mm Cep Boyu" },
+        { label: "Garanti Süresi", value: "2 Yıl Western Digital Resmi Distribütör Garantisi" },
+      ];
+
+    // 10. SanDisk SSD PLUS Dahili SSD
+    case 10:
+      return [
+        { label: "Depolama Kapasitesi", value: "1 TB (1000 GB) Hızlı Katı Hal Sürücü" },
+        { label: "Sıralı Okuma / Yazma", value: "535 MB/sn Okuma, 450 MB/sn Yazma" },
+        { label: "Form Faktörü", value: "2.5 inç / 7 mm Ultra-İnce Standart Laptop & Masaüstü Kasası" },
+        { label: "Arayüz", value: "SATA III 6 Gb/sn (SATA II ve I ile Geriye Dönük Uyumlu)" },
+        { label: "Darbe Dayanımı", value: "1500G'ye Kadar Şok ve Titreşime Karşı Dayanıklı Kasa" },
+        { label: "Isınma & Güç", value: "Düşük Güç Tüketimi ile Sessiz Çalışma & Uzayan Pil Ömrü" },
+        { label: "Garanti Süresi", value: "3 Yıl SanDisk Resmi Birebir Değişim Garantisi" },
+      ];
+
+    // 11. Silicon Power A55 3D NAND Dahili SSD
+    case 11:
+      return [
+        { label: "Depolama Kapasitesi", value: "1 TB (1000 GB) Katı Hal Depolama" },
+        { label: "Flash Bellek Tipi", value: "Gelişmiş 3D NAND Flash Teknolojisi" },
+        { label: "Sıralı Okuma / Yazma", value: "500 MB/sn Okuma, 450 MB/sn Yazma Hızı" },
+        { label: "Önbellek Desteği", value: "SLC Cache Teknolojisi ile Hız Aşırtma Desteği" },
+        { label: "Arayüz & Form", value: "2.5 inç SATA III 6 Gb/sn (7 mm Kalınlık)" },
+        { label: "Güvenlik", value: "ECC Otomatik Hata Düzeltme & S.M.A.R.T. Sağlık Takibi" },
+        { label: "Garanti Süresi", value: "3 Yıl Silicon Power Resmi Garantisi" },
+      ];
+
+    // 12. WD Gaming Drive PS4 Uyumlu Disk
+    case 12:
+      return [
+        { label: "Konsol Uyumluluğu", value: "Sony PlayStation 4, PS4 Pro, PlayStation 5 (PS4 oyunları) & PC" },
+        { label: "Oyun Kapasitesi", value: "Yaklaşık 100+ PS4/PS5 Oyunu Depolama" },
+        { label: "Bağlantı Tipi", value: "Yüksek Hızlı Mavi LED Göstergeli USB 3.0" },
+        { label: "Kurulum Kolaylığı", value: "Doğrudan Konsola Bağla ve Oyna (3 Dakikada Formatlama)" },
+        { label: "Tasarım", value: "Konsol ile Uyumlu Şık Mat Siyah ve Mavi Vurgulu Kasa" },
+        { label: "Garanti Süresi", value: "3 Yıl Western Digital Sınırlı Garantisi" },
+      ];
+
+    // 13. Acer SB220Q Düz IPS Monitör
+    case 13:
+      return [
+        { label: "Panel Teknolojisi", value: "Ultra-İnce Çerçevesiz Düz IPS Panel" },
+        { label: "Ekran Boyutu", value: "21.5 inç Çerçevesiz Düz Panel" },
+        { label: "Çözünürlük", value: "1920 x 1080 Full HD (75Hz)" },
+        { label: "Tepki Süresi", value: "1ms VRB Hızlı Tepki Süresi" },
+        { label: "Senkronizasyon", value: "AMD Radeon FreeSync Ekran Yırtılmasını Önleyen Teknoloji" },
+        { label: "Giriş Portları", value: "1x HDMI, 1x VGA" },
+        { label: "Tasarım Kalınlığı", value: "Yalnızca 6.6 mm Ultra İnce Kenar Tasarımı" },
+        { label: "Ölü Piksel Garantisi", value: "3 Yıl Sıfır Ölü Piksel Birebir Değişim Garantisi" },
+      ];
+
+    // 14. Samsung CHG90 Kavisli QLED Monitör
+    case 14:
+      return [
+        { label: "Panel Teknolojisi", value: "1800R Kavisli Quantum Dot QLED Panel (HDR600 Desteği)" },
+        { label: "Ekran Boyutu", value: "49 inç 32:9 Süper UltraWide Kavisli Panel" },
+        { label: "Çözünürlük", value: "5120 x 1440 Dual QHD (144Hz)" },
+        { label: "Kavis Oranı", value: "1800R Derin Panoramik Kavis" },
+        { label: "Tepki Süresi", value: "1ms (GtG) Ekstrem Hızlı Tepki" },
+        { label: "Giriş Portları", value: "2x HDMI 2.1, 1x DisplayPort 1.4, USB 3.0 Çoklu Port Hub" },
+        { label: "Ergonomi", value: "Yüksekliği Ayarlanabilir, Sağa/Sola Eğimli Ağır Hizmet Standı" },
+        { label: "Ölü Piksel Garantisi", value: "3 Yıl Sıfır Ölü Piksel Birebir Değişim Garantisi" },
+      ];
+
+    // 15. BIYLACLESEN Kadın Kayak Montu
+    case 15:
+      return [
+        { label: "Su Geçirmezlik", value: "10.000 mm/H2O Profesyonel Su ve Kar Geçirmez Membran" },
+        { label: "3-in-1 Modüler Yapı", value: "Çıkarılabilir Fermuarlı İç Polar Astar + Rüzgar Geçirmez Dış Kabuk" },
+        { label: "Rüzgar Koruması", value: "Ayarlanabilir Cırt Cırtlı Manşetler ve İpli Çıkarılabilir Fırtına Kapüşonu" },
+        { label: "Cepler", value: "Su Geçirmez Fermuarlı 2 Göğüs Cebi, 2 Yan Isıtmalı Cep, Kayak Kartı Cebi" },
+        { label: "Astar & Isı Yalıtımı", value: "Ağır Hizmet Tipi Termal Polar İç Yalıtım" },
+        { label: "Kullanım Alanları", value: "Snowboard, Kayak, Kış Dağcılığı, Soğuk Hava Doğa Yürüyüşü" },
+        { label: "Garanti", value: "2 Yıl TrendSphere Dış Giyim Garantisi" },
+      ];
+
+    // 16. Lock and Love Kadın Deri Motorcu Ceketi
+    case 16:
+      return [
+        { label: "Dış Yüzey", value: "%100 Yüksek Kalite Yumuşak Dokulu Vegan Poliüretan (PU) Deri" },
+        { label: "Kapüşon Tasarımı", value: "Fermuarlı Çıkarılabilir Gri Melanj Sweatshirt Kapüşon & Ön Pat" },
+        { label: "Kalıp (Fit)", value: "Kadın Vücut Hatlarına Oturan Modern Biker / Moto Kesim" },
+        { label: "Cepler", value: "2 Fermuarlı Yan Cep ve Detay Amaçlı Göğüs Fermuarları" },
+        { label: "Astar", value: "%100 İpeksi Polyester Astar" },
+        { label: "Bakım & Temizlik", value: "Nemli Bezle Kolay Silinebilir, Kuru Temizleme Tavsiye Edilir" },
+      ];
+
+    // 17. Kadın Çizgili Yağmurluk
+    case 17:
+      return [
+        { label: "Dış Kumaş", value: "Su İtici ve Hafif Rüzgarlık Teknolojili Özel Dokuma Kumaş" },
+        { label: "İç Astar", value: "Gövde ve Kapüşon İçinde Şık Çizgili Marin Pamuk Astar" },
+        { label: "Bel Tasarımı", value: "Ayarlanabilir Büzgülü İp ile Vücuda Göre Şekillendirilebilir Bel Detayı" },
+        { label: "Kapama & Güvenlik", value: "Çift Yönlü Tam Fermuar ve Üzerine Kapanan Rüzgar Düğmeleri" },
+        { label: "Taşınabilirlik", value: "Çantada Kolay Taşınabilen Ultra Hafif Katlanabilir Yapı" },
+        { label: "Yıkama & Bakım", value: "30°C Hassas Yıkama veya Elde Ilık Suyla Temizleme" },
+      ];
+
+    // 18. MBJ Kadın V Yaka Tişört
+    case 18:
+      return [
+        { label: "Kumaş Karışımı", value: "%95 Doğal Viskon (Rayon), %5 Esnek Likra (Spandex)" },
+        { label: "Kumaş Dokusu", value: "İpeksi Yumuşaklıkta, Dökümlü ve Nefes Alan Lüks Viskon Kumaş" },
+        { label: "Yaka Stili", value: "Derin Olmayan Zarif ve Şık V Yaka Kesim" },
+        { label: "Esneklik", value: "4 Yöne Esneyen Gün Boyu Konforlu Formunu Koruyan Kumaş" },
+        { label: "Kalıp (Fit)", value: "Vücudu Sıkmayan Dökümlü Regular Fit" },
+        { label: "Sertifikasyon", value: "OEKO-TEX® Standard 100 Ekolojik Tekstil Sertifikalı" },
+      ];
+
+    // 19. Opna Kadın Spor Tişört
+    case 19:
+      return [
+        { label: "Kumaş Teknolojisi", value: "%100 Nem Emici Cationic Interlock Polyester (Dry-Fit)" },
+        { label: "Ter Tutmazlık", value: "Hızlı Kuruyan ve Nemi Dışarı Atan Mikro Gözenekli Yapı" },
+        { label: "Dikiş Tipi", value: "Sürtünmeyi ve Tahrişi Önleyen 4 İğneli Düz Reçme Dikişler" },
+        { label: "Koku Önleme", value: "Bakteri ve Koku Oluşumunu Engelleyen Antimikrobiyal Dokuma" },
+        { label: "Kullanım Alanı", value: "Fitness, Koşu, Yoga, Pilates ve Günlük Aktif Spor Giyim" },
+        { label: "Bakım Kolaylığı", value: "Makinede Hızlı Yıkama & Çabuk Kuruma (Ütü Gerektirmez)" },
+      ];
+
+    // 20. DANVOUY Kadın Günlük Tişört
+    case 20:
+      return [
+        { label: "Kumaş Materyali", value: "%95 Organik Penye Pamuk, %5 Elastan" },
+        { label: "Yaka & Kol", value: "Klasik Bisiklet Yaka (Crew Neck) ve Duble Katlamalı Kısa Kol" },
+        { label: "Ön Baskı", value: "Çatlama ve Solma Yapmayan Su Bazlı Ekolojik Doğa Temalı Tipografik Baskı" },
+        { label: "Kalıp (Fit)", value: "Rahat ve Dökümlü Günlük Casual Kesim" },
+        { label: "Yıkama Dayanımı", value: "50+ Yıkamada Rengini ve Formunu Koruyan Sanforize Edilmiş Kumaş" },
+        { label: "Menşei", value: "Türkiye (TrendSphere Günlük Koleksiyonu)" },
+      ];
+
+    default:
+      break;
   }
 
-  // Acer Monitor (Flat IPS)
-  if (id === 13 || title.includes("acer") || (title.includes("monitor") && !title.includes("curved") && !title.includes("chg90"))) {
-    return [
-      { label: "Panel Teknolojisi", value: "Ultra-İnce Çerçevesiz Düz IPS Panel" },
-      { label: "Ekran Boyutu", value: "21.5 inç Çerçevesiz Düz Panel" },
-      { label: "Çözünürlük", value: "1920 x 1080 Full HD (75Hz)" },
-      { label: "Tepki Süresi", value: "1ms VRB Hızlı Tepki" },
-      { label: "Renk Doğruluğu", value: "%99 sRGB Canlı Renk Skalası" },
-      { label: "Giriş Portları", value: "1x HDMI, 1x VGA" },
-      { label: "Ölü Piksel Garantisi", value: "3 Yıl Sıfır Ölü Piksel Birebir Değişim Garantisi" },
-    ];
-  }
-
-  // Samsung Gaming Monitor (Curved UltraWide)
-  if (id === 14 || title.includes("samsung") || title.includes("curved") || title.includes("chg90")) {
-    return [
-      { label: "Panel Teknolojisi", value: "1800R Kavisli Quantum Dot QLED Panel" },
-      { label: "Ekran Boyutu", value: "49 inç 32:9 Süper UltraWide Kavisli Panel" },
-      { label: "Çözünürlük", value: "5120 x 1440 Dual QHD (144Hz)" },
-      { label: "Kavis Oranı", value: "1800R Derin Panoramik Kavis" },
-      { label: "Tepki Süresi", value: "1ms (GtG) Ekstrem Hızlı" },
-      { label: "Giriş Portları", value: "2x HDMI 2.1, 1x DisplayPort 1.4, USB 3.0 Hub" },
-      { label: "Ölü Piksel Garantisi", value: "3 Yıl Sıfır Ölü Piksel Birebir Değişim Garantisi" },
-    ];
-  }
-
-  // Jackets & Outerwear
-  if (title.includes("jacket") || title.includes("coat") || title.includes("windbreaker") || title.includes("biker")) {
-    return [
-      { label: "Dış Yüzey", value: "%100 Su İtici ve Rüzgar Geçirmez Özel Dokuma" },
-      { label: "İç Astar", value: "Isı Yalıtımlı Polar / Termal Dolgu Astar" },
-      { label: "Kalıp (Fit)", value: "Modern Kışlık Regular Fit" },
-      { label: "Cepler", value: "4 Adet Fermuarlı Güvenli Dış ve İç Cep" },
-      { label: "Yıkama Talimatı", value: "30°C Hassas Yıkama / Kuru Temizleme Uyumlu" },
-      { label: "Menşei", value: "Türkiye (TrendSphere Dış Giyim Koleksiyonu)" },
-      { label: "Sertifikasyon", value: "OEKO-TEX® Standard 100 Sertifikalı" },
-    ];
-  }
-
-  // T-Shirts & Clothing
-  if (cat.includes("clothing")) {
-    return [
-      { label: "Materyal", value: "%100 Organik Taranmış Penye Pamuk" },
-      { label: "Kumaş Gramajı", value: "240 gr/m² Ağır Gramaj / Tok Duruş" },
-      { label: "Kalıp (Fit)", value: "Modern Regular / Slim Fit Kesim" },
-      { label: "Yaka & Kol", value: "Çift İğne Güçlendirilmiş Ribana Yaka" },
-      { label: "Yıkama Talimatı", value: "30°C Makinede Tersten Yıkama" },
-      { label: "Menşei", value: "Türkiye (Yerli Üretim)" },
-      { label: "Sertifikasyon", value: "OEKO-TEX® Standard 100 Ekolojik Güvenli" },
-    ];
-  }
-
-  // Hard Drives & SSDs
-  if (title.includes("drive") || title.includes("ssd") || title.includes("hard") || title.includes("elements")) {
-    return [
-      { label: "Okuma / Yazma Hızı", value: "1050 MB/sn Okuma, 1000 MB/sn Yazma Hızı" },
-      { label: "Arayüz / Bağlantı", value: "USB-C 3.2 Gen 2 / Thunderbolt Uyumlu" },
-      { label: "Darbe Dayanımı", value: "2 Metreye Kadar Düşmeye Karşı Dayanıklı Kasa" },
-      { label: "Güvenlik", value: "256-Bit AES Donanımsal Veri Şifreleme" },
-      { label: "Uyumluluk", value: "macOS, Windows, Linux, iOS & Android" },
-      { label: "Kutu İçeriği", value: "Disk, Örgülü Type-C Kablo, Type-A Adaptör, Kılavuz" },
-      { label: "Garanti Süresi", value: "3 Yıl Resmi Distribütör Birebir Değişim Garantili" },
-    ];
-  }
-
-  // Jewelery (Rings, Bracelets, Necklaces, Earrings)
+  // Robust Category-Based Fallbacks for dynamic products
   if (cat.includes("jewelery")) {
     return [
-      { label: "Maden Türü & Ayar", value: "925 Ayar Hakiki Gümüş Üzeri Mikron Kaplama" },
+      { label: "Maden Türü & Ayar", value: "925 Ayar Hakiki Masif Gümüş Üzeri Kaplama" },
       { label: "Taş Özelliği", value: "Özel Işıltılı Parlak Zirkon Kristali" },
       { label: "Alerjen Testi", value: "%100 Nikelsiz, Kurşunsuz ve Hipoalerjenik" },
-      { label: "Net Ağırlık / Gramaj", value: "8.6 gr Hassas Kuyumcu İşçiliği" },
       { label: "Kutu & Paketleme", value: "TrendSphere Işıklı Lüks Kadife Mücevher Kutusu" },
       { label: "Garanti & Sertifika", value: "Orijinallik Sertifikası ve Bakım Bezi Dahil" },
+    ];
+  }
+
+  if (cat.includes("electronics")) {
+    return [
+      { label: "Bağlantı & Arayüz", value: "Yüksek Hızlı Standart Bağlantı Arabirimi" },
+      { label: "Uyumluluk", value: "Tüm Modern Sistemler ile Tak-Çalıştır Uyumlu" },
+      { label: "Güvenlik & Sertifika", value: "CE, RoHS, FCC Uluslararası Standartlarına Sahip" },
+      { label: "Garanti Süresi", value: "2 Yıl Resmi Distribütör Garantili" },
+    ];
+  }
+
+  if (cat.includes("clothing")) {
+    return [
+      { label: "Materyal", value: "%100 Doğal ve Nefes Alabilir Kumaş" },
+      { label: "Kalıp (Fit)", value: "Modern ve Rahat Kesim" },
+      { label: "Yıkama Talimatı", value: "30°C Makinede Tersten Yıkama" },
+      { label: "Sertifikasyon", value: "OEKO-TEX® Standard 100 Ekolojik Güvenli" },
+      { label: "Menşei", value: "Türkiye (Yerli Üretim)" },
     ];
   }
 
@@ -505,12 +1163,22 @@ export function calculateDynamicSpecifications(product: Product, selectedAttribu
     }
   });
 
-  return baseSpecs.map((spec) => {
+  const updatedSpecs = baseSpecs.map((spec) => {
     if (overrides[spec.label]) {
       return { ...spec, value: overrides[spec.label] };
     }
     return spec;
   });
+
+  // Ensure any override that wasn't already in baseSpecs is seamlessly appended
+  const existingLabels = new Set(baseSpecs.map((s) => s.label));
+  Object.entries(overrides).forEach(([label, value]) => {
+    if (!existingLabels.has(label)) {
+      updatedSpecs.push({ label, value });
+    }
+  });
+
+  return updatedSpecs;
 }
 
 export const CANONICAL_PRODUCT_TITLES: Record<number, string> = {
