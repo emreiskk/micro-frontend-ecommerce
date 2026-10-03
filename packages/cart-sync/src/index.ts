@@ -9,6 +9,7 @@ import {
   type Product,
   type SelectedAttributes,
   calculateProductPrice,
+  CANONICAL_PRODUCT_TITLES,
 } from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
@@ -85,6 +86,22 @@ function getLocalPayload(): StoredCartPayload | null {
   return null;
 }
 
+export function normalizeCartItems(items: CartItem[]): CartItem[] {
+  return items.map((item) => {
+    const canonical = CANONICAL_PRODUCT_TITLES[item.product.id];
+    if (canonical && item.product.title !== canonical) {
+      return {
+        ...item,
+        product: {
+          ...item.product,
+          title: canonical,
+        },
+      };
+    }
+    return item;
+  });
+}
+
 export function getStoredCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
@@ -95,27 +112,27 @@ export function getStoredCart(): CartItem[] {
     if (local && cookie) {
       if (local.timestamp >= cookie.timestamp) {
         if (local.timestamp > cookie.timestamp) {
-          setCookieCart(local.items, local.timestamp);
+          setCookieCart(normalizeCartItems(local.items), local.timestamp);
         }
-        return local.items;
+        return normalizeCartItems(local.items);
       } else {
         try {
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookie));
         } catch {}
-        return cookie.items;
+        return normalizeCartItems(cookie.items);
       }
     }
 
     if (local) {
-      setCookieCart(local.items, local.timestamp);
-      return local.items;
+      setCookieCart(normalizeCartItems(local.items), local.timestamp);
+      return normalizeCartItems(local.items);
     }
 
     if (cookie) {
       try {
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookie));
       } catch {}
-      return cookie.items;
+      return normalizeCartItems(cookie.items);
     }
 
     return [];

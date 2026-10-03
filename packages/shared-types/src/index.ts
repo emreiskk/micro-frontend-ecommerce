@@ -498,10 +498,36 @@ export function calculateDynamicSpecifications(product: Product, selectedAttribu
   });
 }
 
+export const CANONICAL_PRODUCT_TITLES: Record<number, string> = {
+  1: "Fjallraven - Foldsack No. 1 Sırt Çantası",
+  2: "Erkek Casual Premium Slim Fit Tişört",
+  3: "Erkek Pamuklu Mevsimlik Ceket",
+  4: "Erkek Casual Slim Fit Uzun Kollu Gömlek",
+  5: "John Hardy Legends Naga Ejderha Zincir Bileklik",
+  6: "Petite Micropave Zarafet Yüzüğü",
+  7: "Prenses Kesim Tektaş Solitaire Yüzük",
+  8: "Pierced Owl Çift Taraflı Tünel Küpe",
+  9: "WD Elements Taşınabilir Harici Disk (USB 3.0)",
+  10: "SanDisk SSD PLUS Dahili SSD (SATA III)",
+  11: "Silicon Power A55 3D NAND Dahili SSD",
+  12: "WD Gaming Drive PS4 Uyumlu Taşınabilir Disk",
+  13: "Acer SB220Q Ultra-İnce Düz IPS Monitör",
+  14: "Samsung CHG90 Kavisli QLED Oyuncu Monitörü",
+  15: "BIYLACLESEN Kadın 3-in-1 Snowboard Kayak Montu",
+  16: "Lock and Love Kadın Kapüşonlu Deri Motorcu Ceketi",
+  17: "Kadın Çizgili Rüzgarlık & Su Geçirmez Yağmurluk",
+  18: "MBJ Kadın Kısa Kollu V Yaka Tişört",
+  19: "Opna Kadın Spor Nefes Alabilir Tişört",
+  20: "DANVOUY Kadın Pamuklu Günlük Tişört",
+};
+
 export function enrichProductWithSpecs(product: Product): Product {
+  const canonicalTitle = CANONICAL_PRODUCT_TITLES[product.id] || product.title;
   return {
     ...product,
+    title: canonicalTitle,
     attributes: getProductAttributes(product),
     specifications: getProductSpecifications(product),
   };
 }
+
