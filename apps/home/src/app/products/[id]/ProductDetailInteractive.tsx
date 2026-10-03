@@ -23,7 +23,7 @@ import {
 } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
 import Toast from "@/components/Toast";
-import NotifyStockModal from "@/components/NotifyStockModal";
+import StockNotifyToast from "@/components/StockNotifyToast";
 
 interface ProductDetailInteractiveProps {
   product: Product;
@@ -34,7 +34,8 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
-  const [isNotifyOpen, setIsNotifyOpen] = useState(false);
+  const [notifyToastVisible, setNotifyToastVisible] = useState(false);
+  const [isNotified, setIsNotified] = useState(false);
 
   // Compute attributes list
   const attributes = useMemo(() => {
@@ -78,6 +79,26 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
     setTimeout(() => {
       setIsAdding(false);
     }, 1000);
+  };
+
+  const handleNotify = () => {
+    try {
+      const stored = localStorage.getItem("stock_notifications") || "[]";
+      const list = JSON.parse(stored);
+      list.push({
+        productId: product.id,
+        title: product.title,
+        attributes: selectedAttributes,
+        createdAt: new Date().toISOString(),
+      });
+      localStorage.setItem("stock_notifications", JSON.stringify(list));
+    } catch {}
+
+    setIsNotified(true);
+    setNotifyToastVisible(true);
+    setTimeout(() => {
+      setIsNotified(false);
+    }, 3000);
   };
 
   return (
@@ -253,11 +274,24 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
         ) : (
           <button
             type="button"
-            onClick={() => setIsNotifyOpen(true)}
-            className="flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg shadow-amber-500/25 active:scale-98 transition-all cursor-pointer"
+            onClick={handleNotify}
+            className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm transition-all active:scale-98 cursor-pointer shadow-lg ${
+              isNotified
+                ? "bg-emerald-600 text-white shadow-emerald-500/25"
+                : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-amber-500/25"
+            }`}
           >
-            <Bell className="w-5 h-5 animate-bounce" />
-            <span>Gelince Haber Ver</span>
+            {isNotified ? (
+              <>
+                <Check className="w-5 h-5 animate-in zoom-in" />
+                <span>Haber Verilecek (Kaydedildi)</span>
+              </>
+            ) : (
+              <>
+                <Bell className="w-5 h-5 animate-bounce" />
+                <span>Gelince Haber Ver</span>
+              </>
+            )}
           </button>
         )}
       </div>
@@ -313,12 +347,11 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
         </div>
       )}
 
-      {/* Out of Stock / Notify Me Modal */}
-      <NotifyStockModal
-        isOpen={isNotifyOpen}
-        onClose={() => setIsNotifyOpen(false)}
-        product={product}
+      {/* Out of Stock Toast Notification */}
+      <StockNotifyToast
+        product={notifyToastVisible ? product : null}
         selectedAttributes={selectedAttributes}
+        onClose={() => setNotifyToastVisible(false)}
       />
     </>
   );
