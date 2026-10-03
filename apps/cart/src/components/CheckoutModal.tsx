@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import confetti from "canvas-confetti";
+import React from "react";
 import { CheckCircle2, ShoppingBag, ArrowRight } from "lucide-react";
-import Link from "next/link";
 import type { CartTotals } from "@repo/shared-types";
 
 interface CheckoutModalProps {
@@ -13,20 +11,6 @@ interface CheckoutModalProps {
 }
 
 export default function CheckoutModal({ isOpen, totals, onClose }: CheckoutModalProps) {
-  useEffect(() => {
-    if (isOpen) {
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
-      } catch (e) {
-        console.warn("Confetti triggered", e);
-      }
-    }
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
   const orderNumber = Math.floor(100000 + Math.random() * 900000);
