@@ -2,9 +2,14 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { SlidersHorizontal, Check, X, Tag } from "lucide-react";
+import { SlidersHorizontal, Check, X, Tag, AlertCircle } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
-import { getProductAttributes, calculateProductPrice } from "@repo/shared-types";
+import {
+  getProductAttributes,
+  calculateProductPrice,
+  isVariantInStock,
+  getOptionStockDetail,
+} from "@repo/shared-types";
 
 interface EditVariantModalProps {
   isOpen: boolean;
@@ -32,6 +37,7 @@ export default function EditVariantModal({
 
   if (!isOpen) return null;
 
+  const isSelectedVariantInStock = isVariantInStock(product, tempAttributes);
   const currentUnitPrice = calculateProductPrice(product, tempAttributes);
   const currentTotal = (currentUnitPrice * item.quantity).toFixed(2);
   const priceDelta = Number((currentUnitPrice - product.price).toFixed(2));
@@ -45,6 +51,7 @@ export default function EditVariantModal({
 
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSelectedVariantInStock) return;
     onSave(tempAttributes);
     onClose();
   };
@@ -130,6 +137,8 @@ export default function EditVariantModal({
                     const isSelected = (tempAttributes[attr.name] || attr.defaultValue) === opt;
                     const detail = attr.optionDetails?.find((d) => d.label === opt);
                     const delta = detail?.priceDelta;
+                    const stockDetail = getOptionStockDetail(attr, opt);
+                    const isOptInStock = stockDetail.inStock;
 
                     return (
                       <button
@@ -138,11 +147,26 @@ export default function EditVariantModal({
                         onClick={() => handleSelect(attr.name, opt)}
                         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                           isSelected
-                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-102 border-2 border-indigo-600"
-                            : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
+                            ? isOptInStock
+                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-102 border-2 border-indigo-600"
+                              : "bg-rose-600 text-white shadow-md shadow-rose-500/20 scale-102 border-2 border-rose-600"
+                            : isOptInStock
+                            ? "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
+                            : "bg-slate-100 text-slate-400 border border-dashed border-slate-300 hover:text-slate-600"
                         }`}
                       >
                         <span>{opt}</span>
+                        {!isOptInStock && (
+                          <span
+                            className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded ${
+                              isSelected
+                                ? "bg-rose-700 text-white"
+                                : "bg-rose-100 text-rose-600"
+                            }`}
+                          >
+                            Tükendi
+                          </span>
+                        )}
                         {delta !== undefined && delta !== 0 && (
                           <span
                             className={`text-[10px] ${
@@ -160,6 +184,16 @@ export default function EditVariantModal({
             ))}
           </div>
 
+          {/* Out of Stock Warning */}
+          {!isSelectedVariantInStock && (
+            <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600" />
+              <span>
+                Seçtiğiniz bu varyant şu anda stoklarımızda tükenmiştir. Lütfen mevcut bir seçenek belirleyin.
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <button
               type="button"
@@ -170,7 +204,12 @@ export default function EditVariantModal({
             </button>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all cursor-pointer"
+              disabled={!isSelectedVariantInStock}
+              className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
+                isSelectedVariantInStock
+                  ? "bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white shadow-indigo-500/25 cursor-pointer"
+                  : "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
+              }`}
             >
               <Check className="w-4 h-4" />
               <span>Seçimi Kaydet</span>

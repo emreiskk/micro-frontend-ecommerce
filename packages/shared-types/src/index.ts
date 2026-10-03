@@ -7,6 +7,8 @@ export interface VariantOptionDetail {
   label: string;
   priceDelta?: number;
   specsOverrides?: Record<string, string>;
+  inStock?: boolean;
+  stockCount?: number;
 }
 
 export interface ProductAttribute {
@@ -137,11 +139,11 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
           name: "Beden",
           options: ["S", "M", "L", "XL", "XXL"],
           optionDetails: [
-            { label: "S", priceDelta: 0 },
-            { label: "M", priceDelta: 0 },
-            { label: "L", priceDelta: 0 },
-            { label: "XL", priceDelta: 0 },
-            { label: "XXL", priceDelta: 2 },
+            { label: "S", priceDelta: 0, inStock: true, stockCount: 8 },
+            { label: "M", priceDelta: 0, inStock: true, stockCount: 15 },
+            { label: "L", priceDelta: 0, inStock: false, stockCount: 0 },
+            { label: "XL", priceDelta: 0, inStock: false, stockCount: 0 },
+            { label: "XXL", priceDelta: 2, inStock: true, stockCount: 3 },
           ],
           defaultValue: "M",
         },
@@ -205,6 +207,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
             {
               label: "18 cm (Zarif Bilek)",
               priceDelta: 0,
+              inStock: true,
+              stockCount: 3,
               specsOverrides: {
                 "Uzunluk / Boyut": "18 cm (Zarif Bilek Ölçüsü)",
                 "Net Ağırlık / Gramaj": "42 gram Masif İşçilik",
@@ -213,6 +217,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
             {
               label: "20 cm (Standart Bilek)",
               priceDelta: 0,
+              inStock: true,
+              stockCount: 7,
               specsOverrides: {
                 "Uzunluk / Boyut": "20 cm (Standart Bilek Ölçüsü)",
                 "Net Ağırlık / Gramaj": "46 gram Masif İşçilik",
@@ -221,6 +227,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
             {
               label: "22 cm (Geniş Bilek)",
               priceDelta: 35,
+              inStock: false,
+              stockCount: 0,
               specsOverrides: {
                 "Uzunluk / Boyut": "22 cm (Geniş Bilek Ölçüsü)",
                 "Net Ağırlık / Gramaj": "52 gram Masif İşçilik",
@@ -568,6 +576,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
             {
               label: '34" Kavisli UltraWide (144Hz)',
               priceDelta: -200,
+              inStock: true,
+              stockCount: 4,
               specsOverrides: {
                 "Ekran Boyutu": "34 inç 21:9 UltraWide Kavisli Panel",
                 "Çözünürlük": "3440 x 1440 UltraWide QHD (144Hz)",
@@ -577,6 +587,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
             {
               label: '49" Kavisli Süper Ultra (144Hz)',
               priceDelta: 0,
+              inStock: true,
+              stockCount: 6,
               specsOverrides: {
                 "Ekran Boyutu": "49 inç 32:9 Süper UltraWide Kavisli Panel",
                 "Çözünürlük": "5120 x 1440 Dual QHD (144Hz)",
@@ -586,6 +598,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
             {
               label: '57" Kavisli Dual 4K (240Hz)',
               priceDelta: 400,
+              inStock: false,
+              stockCount: 0,
               specsOverrides: {
                 "Ekran Boyutu": "57 inç 32:9 Dünyanın İlk Dual 4K Kavisli Ekranı",
                 "Çözünürlük": "7680 x 2160 Dual UHD 4K (240Hz)",
@@ -625,11 +639,11 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
           name: "Beden",
           options: ["XS", "S", "M", "L", "XL"],
           optionDetails: [
-            { label: "XS", priceDelta: 0 },
-            { label: "S", priceDelta: 0 },
-            { label: "M", priceDelta: 0 },
-            { label: "L", priceDelta: 0 },
-            { label: "XL", priceDelta: 0 },
+            { label: "XS", priceDelta: 0, inStock: false, stockCount: 0 },
+            { label: "S", priceDelta: 0, inStock: true, stockCount: 5 },
+            { label: "M", priceDelta: 0, inStock: true, stockCount: 11 },
+            { label: "L", priceDelta: 0, inStock: true, stockCount: 4 },
+            { label: "XL", priceDelta: 0, inStock: false, stockCount: 0 },
           ],
           defaultValue: "M",
         },
@@ -1500,5 +1514,38 @@ export function hydrateCartItem(item: any): CartItem {
     needsAttributeConfirmation: Boolean(item.needsAttributeConfirmation),
   };
 }
+
+export function isVariantInStock(product: Product, selectedAttributes?: SelectedAttributes): boolean {
+  if (!selectedAttributes) return true;
+  const attrs = product.attributes || getProductAttributes(product);
+  for (const attr of attrs) {
+    const selectedVal = selectedAttributes[attr.name];
+    if (selectedVal && attr.optionDetails) {
+      const detail = attr.optionDetails.find((d) => d.label === selectedVal);
+      if (detail && detail.inStock === false) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+export function getOptionStockDetail(
+  attr: ProductAttribute,
+  optionLabel: string
+): { inStock: boolean; stockCount?: number } {
+  if (!attr.optionDetails) {
+    return { inStock: true };
+  }
+  const detail = attr.optionDetails.find((d) => d.label === optionLabel);
+  if (!detail) {
+    return { inStock: true };
+  }
+  return {
+    inStock: detail.inStock !== false,
+    stockCount: detail.stockCount,
+  };
+}
+
 
 
