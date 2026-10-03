@@ -10,7 +10,7 @@
     "dev": "concurrently -n \"home,cart\" -c \"blue,green\" \"npm run dev -w @repo/home\" \"npm run dev -w @repo/cart\"",
     "dev:home": "npm run dev -w @repo/home",
     "dev:cart": "npm run dev -w @repo/cart",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces --if-present",
     "build:home": "npm run build -w @repo/home",
     "build:cart": "npm run build -w @repo/cart",
     "start": "concurrently -n \"home,cart\" -c \"blue,green\" \"npm run start -w @repo/home\" \"npm run start -w @repo/cart\"",

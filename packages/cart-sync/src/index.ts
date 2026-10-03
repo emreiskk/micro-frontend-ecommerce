@@ -8,6 +8,11 @@ export const CART_CHANNEL_NAME = "ecommerce_cart_channel";
 export const FREE_SHIPPING_THRESHOLD = 75;
 export const TAX_RATE = 0.08;
 
+export interface StoredCartPayload {
+  items: CartItem[];
+  timestamp: number;
+}
+
 let globalChannel: BroadcastChannel | null = null;
 
 function getChannel(): BroadcastChannel | null {
@@ -23,24 +28,30 @@ function getChannel(): BroadcastChannel | null {
 }
 
 // Cookie helpers to bridge isolation across different ports on localhost (:3000 and :3001)
-function setCookieCart(items: CartItem[]): void {
+function setCookieCart(items: CartItem[], timestamp: number): void {
   if (typeof document === "undefined") return;
   try {
-    const serialized = encodeURIComponent(JSON.stringify(items));
+    const payload: StoredCartPayload = { items, timestamp };
+    const serialized = encodeURIComponent(JSON.stringify(payload));
     document.cookie = `${CART_STORAGE_KEY}=${serialized}; path=/; max-age=604800; SameSite=Lax`;
   } catch (e) {
     console.error("Failed to save cart to cookie", e);
   }
 }
 
-function getCookieCart(): CartItem[] | null {
+function getCookiePayload(): StoredCartPayload | null {
   if (typeof document === "undefined") return null;
   try {
     const match = document.cookie.match(new RegExp(`(^|;\\s*)(${CART_STORAGE_KEY})=([^;]*)`));
     if (match && match[3]) {
       const decoded = decodeURIComponent(match[3]);
       const parsed = JSON.parse(decoded);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        return { items: parsed, timestamp: 0 };
+      }
+      if (parsed && Array.isArray(parsed.items)) {
+        return { items: parsed.items, timestamp: parsed.timestamp || 0 };
+      }
     }
   } catch (e) {
     console.error("Failed to read cart from cookie", e);
@@ -48,27 +59,57 @@ function getCookieCart(): CartItem[] | null {
   return null;
 }
 
+function getLocalPayload(): StoredCartPayload | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return { items: parsed, timestamp: 0 };
+    }
+    if (parsed && Array.isArray(parsed.items)) {
+      return { items: parsed.items, timestamp: parsed.timestamp || 0 };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 export function getStoredCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
-    // 1. Try LocalStorage
-    const raw = localStorage.getItem(CART_STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        setCookieCart(parsed);
-        return parsed;
+    const local = getLocalPayload();
+    const cookie = getCookiePayload();
+
+    // If both exist, the newer timestamp wins (resolves deletions/clear cart resurrection)
+    if (local && cookie) {
+      if (local.timestamp >= cookie.timestamp) {
+        if (local.timestamp > cookie.timestamp) {
+          setCookieCart(local.items, local.timestamp);
+        }
+        return local.items;
+      } else {
+        try {
+          localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookie));
+        } catch {}
+        return cookie.items;
       }
     }
 
-    // 2. Try Shared Cookie (Shared across :3000 and :3001)
-    const cookieData = getCookieCart();
-    if (cookieData && Array.isArray(cookieData) && cookieData.length > 0) {
-      try {
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookieData));
-      } catch {}
-      return cookieData;
+    if (local) {
+      setCookieCart(local.items, local.timestamp);
+      return local.items;
     }
+
+    if (cookie) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cookie));
+      } catch {}
+      return cookie.items;
+    }
+
     return [];
   } catch {
     return [];
@@ -78,8 +119,10 @@ export function getStoredCart(): CartItem[] {
 export function saveStoredCart(items: CartItem[]): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-    setCookieCart(items);
+    const timestamp = Date.now();
+    const payload: StoredCartPayload = { items, timestamp };
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(payload));
+    setCookieCart(items, timestamp);
     window.dispatchEvent(new CustomEvent("local-cart-updated", { detail: items }));
   } catch (e) {
     console.error("Failed to save cart to storage", e);
@@ -127,7 +170,6 @@ export function useCartSync(source: "home" | "cart" = "home") {
     const syncCurrent = () => {
       const current = getStoredCart();
       setItems((prev) => {
-        // Only update state if serialized data actually changed to prevent re-renders
         if (JSON.stringify(prev) !== JSON.stringify(current)) {
           return current;
         }
@@ -164,7 +206,12 @@ export function useCartSync(source: "home" | "cart" = "home") {
     const handleStorageEvent = (e: StorageEvent) => {
       if (e.key === CART_STORAGE_KEY && e.newValue) {
         try {
-          setItems(JSON.parse(e.newValue));
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) {
+            setItems(parsed);
+          } else if (parsed && Array.isArray(parsed.items)) {
+            setItems(parsed.items);
+          }
         } catch {}
       }
     };
@@ -229,10 +276,17 @@ export function useCartSync(source: "home" | "cart" = "home") {
 
   const clearCart = useCallback(() => {
     setItems([]);
-    if (typeof document !== "undefined") {
-      document.cookie = `${CART_STORAGE_KEY}=; path=/; max-age=0; SameSite=Lax`;
+    saveStoredCart([]);
+    const channel = getChannel();
+    if (channel) {
+      const msg: CartSyncMessage = {
+        type: "CLEAR_CART",
+        items: [],
+        timestamp: Date.now(),
+        source,
+      };
+      channel.postMessage(msg);
     }
-    broadcastCart([], source, "CLEAR_CART");
   }, [source]);
 
   const totals = calculateCartTotals(items);

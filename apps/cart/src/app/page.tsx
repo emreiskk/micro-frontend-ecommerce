@@ -81,13 +81,21 @@ export default function CartPage() {
             TrendSphere ana mağazasındaki yüzlerce kaliteli ürünü keşfedin ve beğendiklerinizi sepetinize ekleyin.
           </p>
           <div className="mt-8">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95"
+            <button
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  if (window.location.port === "3001") {
+                    window.location.href = "http://localhost:3000/";
+                  } else {
+                    window.location.href = "/";
+                  }
+                }
+              }}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
             >
               <span>Alışverişe Başla</span>
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </button>
           </div>
         </div>
       )}

@@ -68,15 +68,24 @@ export default function CheckoutModal({ isOpen, totals, onClose }: CheckoutModal
         </div>
 
         <div className="mt-8 flex items-center justify-center gap-3">
-          <Link
-            href="/"
-            onClick={onClose}
-            className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all"
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              if (typeof window !== "undefined") {
+                if (window.location.port === "3001") {
+                  window.location.href = "http://localhost:3000/";
+                } else {
+                  window.location.href = "/";
+                }
+              }
+            }}
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4" />
             <span>Alışverişe Devam Et</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </button>
         </div>
       </div>
     </div>
