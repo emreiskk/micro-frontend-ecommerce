@@ -240,7 +240,7 @@ export async function fetchProducts(): Promise<Product[]> {
   } catch (error) {
     // Graceful fallback
   }
-  return FALLBACK_PRODUCTS;
+  return FALLBACK_PRODUCTS.map(sanitizeProduct);
 }
 
 export async function fetchProductById(id: string | number): Promise<Product | null> {
@@ -271,5 +271,5 @@ export async function fetchProductById(id: string | number): Promise<Product | n
   }
 
   const found = FALLBACK_PRODUCTS.find((p) => p.id === numericId);
-  return found || null;
+  return found ? sanitizeProduct(found) : null;
 }

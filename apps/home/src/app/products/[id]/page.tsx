@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Star, ShieldCheck, Truck, RotateCcw, Sparkles } from "lucide-react";
+import { enrichProductWithSpecs } from "@repo/shared-types";
 import ProductDetailActions from "./ProductDetailActions";
 import { fetchProductById, fetchProducts } from "@/services/productService";
 
@@ -18,11 +19,13 @@ export default async function ProductDetailPage({
 }: {
   params: { id: string };
 }) {
-  const product = await fetchProductById(params.id);
+  const rawProduct = await fetchProductById(params.id);
 
-  if (!product) {
+  if (!rawProduct) {
     notFound();
   }
+
+  const product = enrichProductWithSpecs(rawProduct);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
