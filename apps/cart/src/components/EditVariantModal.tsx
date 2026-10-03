@@ -180,12 +180,12 @@ export default function EditVariantModal({
                           <span
                             className={`absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow-xs transition-transform z-20 ${
                               isSelected
-                                ? "bg-white text-indigo-600 ring-2 ring-indigo-600 shadow-md scale-110"
-                                : "bg-indigo-50 text-indigo-600 border border-indigo-200/80"
+                                ? "bg-indigo-600 text-white ring-2 ring-white scale-110"
+                                : "bg-slate-100 text-slate-500 border border-slate-200"
                             }`}
                             title="Tükendi"
                           >
-                            <Bell className="w-2.5 h-2.5 text-indigo-600" />
+                            <Bell className="w-2.5 h-2.5" />
                           </span>
                         )}
 
