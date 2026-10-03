@@ -5,7 +5,8 @@ import {
   Search,
   SlidersHorizontal,
   ArrowUpDown,
-  ChevronsUpDown,
+  ChevronDown,
+  ChevronUp,
   Check,
   X,
 } from "lucide-react";
@@ -133,11 +134,11 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
                 <span className="font-semibold text-slate-800 truncate text-left">
                   {activeSort.label}
                 </span>
-                <ChevronsUpDown
-                  className={`w-4 h-4 transition-colors flex-shrink-0 ml-2 ${
-                    isSortOpen ? "text-indigo-600" : "text-slate-400"
-                  }`}
-                />
+                {isSortOpen ? (
+                  <ChevronUp className="w-4 h-4 text-indigo-600 transition-colors flex-shrink-0 ml-2 animate-in zoom-in-75 duration-150" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-slate-400 transition-colors flex-shrink-0 ml-2 animate-in zoom-in-75 duration-150" />
+                )}
               </button>
 
               {/* Custom Dropdown Menu */}
