@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 import {
   ShoppingCart,
   Check,
@@ -9,8 +10,7 @@ import {
   Truck,
   ShieldCheck,
   RotateCcw,
-  Sparkles,
-  Tag,
+  Star,
   Bell,
 } from "lucide-react";
 import type { Product, SelectedAttributes } from "@repo/shared-types";
@@ -105,234 +105,272 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
     <>
       <Toast product={toastVisible ? product : null} onClose={() => setToastVisible(false)} />
 
-      {/* Dynamic Price Display & Stock Badge */}
-      <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-baseline gap-2.5">
-          <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
-            ${currentUnitPrice.toFixed(2)}
+      {/* Top 2-Column Section: Left Image, Right Product Details */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+        {/* Left Column: Product Image (Top-aligned, zero empty top gap, sticky on large screens) */}
+        <div className="relative aspect-square w-full max-h-[500px] bg-slate-50/50 rounded-3xl p-8 flex items-center justify-center border border-slate-100 overflow-hidden lg:sticky lg:top-24">
+          <Image
+            src={product.image}
+            alt={product.title}
+            fill
+            unoptimized
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+            className="object-contain p-6 hover:scale-105 transition-transform duration-300 ease-out"
+          />
+        </div>
+
+        {/* Right Column: Title, Category, Rating, Price, Variants, Actions, Guarantees */}
+        <div className="flex flex-col justify-start">
+          {/* Category Pill */}
+          <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block w-fit mb-3">
+            {product.category}
           </span>
-          {priceDelta !== 0 && (
-            <span
-              className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                priceDelta > 0
-                  ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
-                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-              }`}
-            >
-              {priceDelta > 0 ? `+ $${priceDelta.toFixed(2)} opsiyon farkı` : `- $${Math.abs(priceDelta).toFixed(2)} indirimli`}
+
+          {/* Product Title */}
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug">
+            {product.title}
+          </h1>
+
+          {/* Rating */}
+          <div className="mt-3 flex items-center gap-2">
+            <div className="flex items-center text-amber-500">
+              <Star className="w-4 h-4 fill-amber-400 stroke-amber-400" />
+              <span className="ml-1 text-sm font-bold text-slate-800">
+                {product.rating?.rate ?? 4.5}
+              </span>
+            </div>
+            <span className="text-slate-300">•</span>
+            <span className="text-xs text-slate-500 font-medium">
+              {product.rating?.count ?? 120} kullanıcı değerlendirmesi
             </span>
-          )}
-        </div>
-        {inStock ? (
-          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Stokta Mevcut
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-bold bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-            Tükendi / Stokta Yok
-          </span>
-        )}
-      </div>
-
-      {/* Product Description */}
-      <div className="mt-6">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Ürün Açıklaması</h3>
-        <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-          {product.description}
-        </p>
-      </div>
-
-      {/* Variant Selector (Beden, Ekran Boyutu, Depolama vs.) */}
-      {attributes && attributes.length > 0 && (
-        <div className="mt-6 p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
-          {attributes.map((attr) => (
-            <div key={attr.name} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                  {attr.name}:{" "}
-                  <span className="text-indigo-600 font-extrabold ml-1">
-                    {selectedAttributes[attr.name] || attr.defaultValue}
-                  </span>
-                </span>
-                <span className="text-[11px] font-semibold text-slate-400">
-                  {attr.options.length} Seçenek
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {attr.options.map((opt) => {
-                  const isSelected = (selectedAttributes[attr.name] || attr.defaultValue) === opt;
-                  const detail = attr.optionDetails?.find((d) => d.label === opt);
-                  const delta = detail?.priceDelta;
-                  const stockDetail = getOptionStockDetail(attr, opt);
-                  const isOptInStock = stockDetail.inStock;
-
-                  return (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() =>
-                        setSelectedAttributes((prev) => ({ ...prev, [attr.name]: opt }))
-                      }
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                        isSelected
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
-                          : isOptInStock
-                          ? "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
-                          : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <span>{opt}</span>
-                      {!isOptInStock && (
-                        <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                            isSelected
-                              ? "bg-indigo-700/80 text-white"
-                              : "bg-rose-50 text-rose-600 border border-rose-100"
-                          }`}
-                        >
-                          Tükendi
-                        </span>
-                      )}
-                      {delta !== undefined && delta !== 0 && (
-                        <span
-                          className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${
-                            isSelected
-                              ? "bg-indigo-700 text-indigo-100"
-                              : delta > 0
-                              ? "bg-indigo-50 text-indigo-600"
-                              : "bg-emerald-50 text-emerald-600"
-                          }`}
-                        >
-                          {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Add to Cart Actions */}
-      <div className="mt-6 flex items-center gap-4">
-        {/* Quantity selector */}
-        <div
-          className={`flex items-center border border-slate-200 rounded-2xl bg-slate-50 p-1 transition-opacity ${
-            !inStock ? "opacity-40 cursor-not-allowed" : ""
-          }`}
-        >
-          <button
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            disabled={!inStock}
-            className="p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
-            aria-label="Azalt"
-          >
-            <Minus className="w-4 h-4" />
-          </button>
-          <span className="w-10 text-center font-bold text-sm text-slate-800">
-            {quantity}
-          </span>
-          <button
-            onClick={() => setQuantity((q) => q + 1)}
-            disabled={!inStock}
-            className="p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
-            aria-label="Artır"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Action button: Sepete Ekle or Gelince Haber Ver */}
-        {inStock ? (
-          <button
-            onClick={handleAdd}
-            disabled={isAdding}
-            className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
-              isAdding
-                ? "bg-emerald-600 text-white shadow-emerald-500/20"
-                : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
-            }`}
-          >
-            {isAdding ? (
-              <>
-                <Check className="w-5 h-5 animate-in zoom-in" />
-                <span>Sepete Eklendi!</span>
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-5 h-5" />
-                <span>Sepete Ekle (${(currentUnitPrice * quantity).toFixed(2)})</span>
-              </>
-            )}
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleNotify}
-            disabled={isNotified}
-            className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
-              isNotified
-                ? "bg-emerald-600 text-white shadow-emerald-500/20"
-                : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
-            }`}
-          >
-            {isNotified ? (
-              <>
-                <Check className="w-5 h-5 animate-in zoom-in" />
-                <span>Talebiniz Alındı!</span>
-              </>
-            ) : (
-              <>
-                <Bell className="w-5 h-5" />
-                <span>Gelince Haber Ver</span>
-              </>
-            )}
-          </button>
-        )}
-      </div>
-
-      {/* Guarantees */}
-      <div className="mt-8 pt-8 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
-        <div className="flex items-center gap-2">
-          <Truck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-          <span>Hızlı Kargo</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-          <span>Orijinal Ürün</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <RotateCcw className="w-4 h-4 text-indigo-600 flex-shrink-0" />
-          <span>30 Gün İade</span>
-        </div>
-      </div>
-
-      {/* Reactive Technical Specifications Section */}
-      {dynamicSpecs && dynamicSpecs.length > 0 && (
-        <div className="mt-10 pt-8 border-t border-slate-200">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight">
-                Ürün Özellikleri & Teknik Detaylar
-              </h2>
-              <p className="text-xs text-slate-500">
-                Seçilen varyanta göre otomatik güncellenen doğrulanmış teknik özellikler
-              </p>
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Dynamic Price Display & Stock Badge */}
+          <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-baseline gap-2.5">
+              <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
+                ${currentUnitPrice.toFixed(2)}
+              </span>
+              {priceDelta !== 0 && (
+                <span
+                  className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                    priceDelta > 0
+                      ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                      : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  }`}
+                >
+                  {priceDelta > 0 ? `+ $${priceDelta.toFixed(2)} opsiyon farkı` : `- $${Math.abs(priceDelta).toFixed(2)} indirimli`}
+                </span>
+              )}
+            </div>
+            {inStock ? (
+              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Stokta Mevcut
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-bold bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 shadow-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                Tükendi / Stokta Yok
+              </span>
+            )}
+          </div>
+
+          {/* Product Description */}
+          <div className="mt-6">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Ürün Açıklaması</h3>
+            <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+              {product.description}
+            </p>
+          </div>
+
+          {/* Variant Selector (Beden, Ekran Boyutu, Depolama vs.) */}
+          {attributes && attributes.length > 0 && (
+            <div className="mt-6 p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
+              {attributes.map((attr) => (
+                <div key={attr.name} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                      {attr.name}:{" "}
+                      <span className="text-indigo-600 font-extrabold ml-1">
+                        {selectedAttributes[attr.name] || attr.defaultValue}
+                      </span>
+                    </span>
+                    <span className="text-[11px] font-semibold text-slate-400">
+                      {attr.options.length} Seçenek
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {attr.options.map((opt) => {
+                      const isSelected = (selectedAttributes[attr.name] || attr.defaultValue) === opt;
+                      const detail = attr.optionDetails?.find((d) => d.label === opt);
+                      const delta = detail?.priceDelta;
+                      const stockDetail = getOptionStockDetail(attr, opt);
+                      const isOptInStock = stockDetail.inStock;
+
+                      return (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() =>
+                            setSelectedAttributes((prev) => ({ ...prev, [attr.name]: opt }))
+                          }
+                          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                            isSelected
+                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
+                              : isOptInStock
+                              ? "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
+                              : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-slate-300"
+                          }`}
+                        >
+                          <span>{opt}</span>
+                          {!isOptInStock && (
+                            <span
+                              className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                isSelected
+                                  ? "bg-indigo-700/80 text-white"
+                                  : "bg-rose-50 text-rose-600 border border-rose-100"
+                              }`}
+                            >
+                              Tükendi
+                            </span>
+                          )}
+                          {delta !== undefined && delta !== 0 && (
+                            <span
+                              className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${
+                                isSelected
+                                  ? "bg-indigo-700 text-indigo-100"
+                                  : delta > 0
+                                  ? "bg-indigo-50 text-indigo-600"
+                                  : "bg-emerald-50 text-emerald-600"
+                              }`}
+                            >
+                              {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add to Cart Actions */}
+          <div className="mt-6 flex items-center gap-4">
+            {/* Quantity selector */}
+            <div
+              className={`flex items-center border border-slate-200 rounded-2xl bg-slate-50 p-1 transition-opacity ${
+                !inStock ? "opacity-40 cursor-not-allowed" : ""
+              }`}
+            >
+              <button
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={!inStock}
+                className="p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
+                aria-label="Azalt"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="w-10 text-center font-bold text-sm text-slate-800">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity((q) => q + 1)}
+                disabled={!inStock}
+                className="p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
+                aria-label="Artır"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Action button: Sepete Ekle or Gelince Haber Ver */}
+            {inStock ? (
+              <button
+                onClick={handleAdd}
+                disabled={isAdding}
+                className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
+                  isAdding
+                    ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
+                }`}
+              >
+                {isAdding ? (
+                  <>
+                    <Check className="w-5 h-5 animate-in zoom-in" />
+                    <span>Sepete Eklendi!</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-5 h-5" />
+                    <span>Sepete Ekle (${(currentUnitPrice * quantity).toFixed(2)})</span>
+                  </>
+                )}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleNotify}
+                disabled={isNotified}
+                className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
+                  isNotified
+                    ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
+                }`}
+              >
+                {isNotified ? (
+                  <>
+                    <Check className="w-5 h-5 animate-in zoom-in" />
+                    <span>Talebiniz Alındı!</span>
+                  </>
+                ) : (
+                  <>
+                    <Bell className="w-5 h-5" />
+                    <span>Gelince Haber Ver</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* Guarantees */}
+          <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
+            <div className="flex items-center gap-2">
+              <Truck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+              <span>Hızlı Kargo</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+              <span>Orijinal Ürün</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <RotateCcw className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+              <span>30 Gün İade</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Full-Width Horizontal Section: Technical Specifications */}
+      {dynamicSpecs && dynamicSpecs.length > 0 && (
+        <div className="mt-14 pt-10 border-t border-slate-100">
+          <div className="mb-6">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+              Ürün Özellikleri & Teknik Detaylar
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Seçilen varyanta göre otomatik güncellenen doğrulanmış teknik özellikler
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {dynamicSpecs.map((spec) => (
               <div
                 key={spec.label}
-                className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-indigo-200 transition-colors"
+                className="p-4 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-indigo-200 transition-colors"
               >
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                   {spec.label}
