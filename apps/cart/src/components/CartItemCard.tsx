@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Trash2, Plus, Minus, AlertCircle, Tag } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
 import { getProductAttributes } from "@repo/shared-types";
@@ -20,6 +19,17 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
   const itemTotal = (unitPrice * quantity).toFixed(2);
   const [imgSrc, setImgSrc] = React.useState(product.image);
 
+  const handleNavigateToProduct = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      if (window.location.port === "3001") {
+        window.location.href = `http://localhost:3000/products/${product.id}`;
+      } else {
+        window.location.href = `/products/${product.id}`;
+      }
+    }
+  };
+
   const attributes = product.attributes || getProductAttributes(product);
   const selectedAttrsSummary = item.selectedAttributes
     ? Object.entries(item.selectedAttributes)
@@ -30,9 +40,11 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
   return (
     <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center gap-5 transition-all hover:shadow-md">
       {/* Product Image */}
-      <Link
+      <a
         href={`/products/${product.id}`}
-        className="relative w-24 h-24 sm:w-28 sm:h-28 bg-slate-50 rounded-2xl p-3 flex-shrink-0 flex items-center justify-center border border-slate-100"
+        onClick={handleNavigateToProduct}
+        className="relative w-24 h-24 sm:w-28 sm:h-28 bg-slate-50 rounded-2xl p-3 flex-shrink-0 flex items-center justify-center border border-slate-100 group/img cursor-pointer"
+        title={`${product.title} detayını incele`}
       >
         <Image
           src={imgSrc}
@@ -41,9 +53,9 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
           unoptimized
           onError={() => setImgSrc("/images/fallback/placeholder.svg")}
           sizes="112px"
-          className="object-contain p-2"
+          className="object-contain p-2 group-hover/img:scale-105 transition-transform duration-200"
         />
-      </Link>
+      </a>
 
       {/* Info */}
       <div className="flex-1 min-w-0 text-center sm:text-left">
@@ -66,11 +78,15 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
           )}
         </div>
 
-        <Link href={`/products/${product.id}`} className="block">
-          <h4 className="text-sm font-bold text-slate-900 line-clamp-2 hover:text-indigo-600 transition-colors">
+        <a
+          href={`/products/${product.id}`}
+          onClick={handleNavigateToProduct}
+          className="block group/title cursor-pointer"
+        >
+          <h4 className="text-sm font-bold text-slate-900 line-clamp-2 group-hover/title:text-indigo-600 transition-colors">
             {product.title}
           </h4>
-        </Link>
+        </a>
 
         {/* Inline Attribute Picker */}
         {attributes && attributes.length > 0 && (
