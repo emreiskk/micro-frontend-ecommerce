@@ -147,21 +147,19 @@ export default function EditVariantModal({
                         onClick={() => handleSelect(attr.name, opt)}
                         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                           isSelected
-                            ? isOptInStock
-                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-102 border-2 border-indigo-600"
-                              : "bg-rose-600 text-white shadow-md shadow-rose-500/20 scale-102 border-2 border-rose-600"
+                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
                             : isOptInStock
                             ? "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
-                            : "bg-slate-100 text-slate-400 border border-dashed border-slate-300 hover:text-slate-600"
+                            : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-slate-300"
                         }`}
                       >
                         <span>{opt}</span>
                         {!isOptInStock && (
                           <span
-                            className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded ${
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                               isSelected
-                                ? "bg-rose-700 text-white"
-                                : "bg-rose-100 text-rose-600"
+                                ? "bg-indigo-700/80 text-white"
+                                : "bg-rose-50 text-rose-600 border border-rose-100"
                             }`}
                           >
                             Tükendi

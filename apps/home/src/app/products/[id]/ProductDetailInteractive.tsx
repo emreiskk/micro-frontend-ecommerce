@@ -177,21 +177,19 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                       }
                       className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                         isSelected
-                          ? isOptInStock
-                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
-                            : "bg-rose-600 text-white shadow-md shadow-rose-500/25 scale-102 border-2 border-rose-600"
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
                           : isOptInStock
                           ? "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
-                          : "bg-slate-100 text-slate-400 border border-dashed border-slate-300 hover:border-rose-300 hover:text-slate-600"
+                          : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       <span>{opt}</span>
                       {!isOptInStock && (
                         <span
-                          className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded ${
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                             isSelected
-                              ? "bg-rose-700 text-white"
-                              : "bg-rose-100 text-rose-600"
+                              ? "bg-indigo-700/80 text-white"
+                              : "bg-rose-50 text-rose-600 border border-rose-100"
                           }`}
                         >
                           Tükendi
@@ -275,20 +273,21 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           <button
             type="button"
             onClick={handleNotify}
-            className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm transition-all active:scale-98 cursor-pointer shadow-lg ${
+            disabled={isNotified}
+            className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
               isNotified
-                ? "bg-emerald-600 text-white shadow-emerald-500/25"
-                : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-amber-500/25"
+                ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
             }`}
           >
             {isNotified ? (
               <>
                 <Check className="w-5 h-5 animate-in zoom-in" />
-                <span>Haber Verilecek (Kaydedildi)</span>
+                <span>Talebiniz Alındı!</span>
               </>
             ) : (
               <>
-                <Bell className="w-5 h-5 animate-bounce" />
+                <Bell className="w-5 h-5" />
                 <span>Gelince Haber Ver</span>
               </>
             )}
