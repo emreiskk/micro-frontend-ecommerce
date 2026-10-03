@@ -1,0 +1,17 @@
+# Node & Dependencies
+node_modules/
+.pnpm-store/
+npm-debug.log*
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# Environment variables
+.env*.local
+
+# OS Files
+.DS_Store
+*.pem
