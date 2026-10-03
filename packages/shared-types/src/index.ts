@@ -38,11 +38,26 @@ export interface Product {
 }
 
 export interface CartItem {
+  cartItemId?: string;
   product: Product;
   quantity: number;
   selectedAttributes?: SelectedAttributes;
   unitPrice?: number;
   needsAttributeConfirmation?: boolean;
+}
+
+export function getCartItemId(
+  productId: number,
+  selectedAttributes?: SelectedAttributes
+): string {
+  if (!selectedAttributes || Object.keys(selectedAttributes).length === 0) {
+    return String(productId);
+  }
+  const serialized = Object.entries(selectedAttributes)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}:${v}`)
+    .join("|");
+  return `${productId}__${serialized}`;
 }
 
 export interface CartTotals {

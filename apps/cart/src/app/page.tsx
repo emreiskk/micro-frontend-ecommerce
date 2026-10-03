@@ -119,7 +119,7 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <CartItemCard
-                key={item.product.id}
+                key={item.cartItemId || `${item.product.id}-${JSON.stringify(item.selectedAttributes)}`}
                 item={item}
                 onUpdateQuantity={updateQuantity}
                 onUpdateAttributes={updateItemAttributes}

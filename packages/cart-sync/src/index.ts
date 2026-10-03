@@ -10,6 +10,7 @@ import {
   type SelectedAttributes,
   calculateProductPrice,
   CANONICAL_PRODUCT_TITLES,
+  getCartItemId,
 } from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
@@ -88,17 +89,16 @@ function getLocalPayload(): StoredCartPayload | null {
 
 export function normalizeCartItems(items: CartItem[]): CartItem[] {
   return items.map((item) => {
-    const canonical = CANONICAL_PRODUCT_TITLES[item.product.id];
-    if (canonical && item.product.title !== canonical) {
-      return {
-        ...item,
-        product: {
-          ...item.product,
-          title: canonical,
-        },
-      };
-    }
-    return item;
+    const canonical = CANONICAL_PRODUCT_TITLES[item.product.id] || item.product.title;
+    const cartItemId = item.cartItemId || getCartItemId(item.product.id, item.selectedAttributes);
+    return {
+      ...item,
+      cartItemId,
+      product: {
+        ...item.product,
+        title: canonical,
+      },
+    };
   });
 }
 
@@ -273,17 +273,20 @@ export function useCartSync(source: "home" | "cart" = "home") {
   ) => {
     const current = getStoredCart();
     const unitPrice = calculateProductPrice(product, selectedAttributes);
-    const existingIndex = current.findIndex((i) => i.product.id === product.id);
+    const targetKey = getCartItemId(product.id, selectedAttributes);
+
+    const existingIndex = current.findIndex(
+      (i) => (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) === targetKey
+    );
+
     let next: CartItem[];
     if (existingIndex > -1) {
       next = current.map((item, idx) => {
         if (idx === existingIndex) {
-          const nextAttrs = selectedAttributes || item.selectedAttributes;
           return {
             ...item,
             quantity: item.quantity + quantity,
-            selectedAttributes: nextAttrs,
-            unitPrice: calculateProductPrice(product, nextAttrs),
+            unitPrice,
             needsAttributeConfirmation:
               needsAttributeConfirmation !== undefined
                 ? needsAttributeConfirmation
@@ -296,6 +299,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
       next = [
         ...current,
         {
+          cartItemId: targetKey,
           product,
           quantity,
           selectedAttributes,
@@ -309,46 +313,92 @@ export function useCartSync(source: "home" | "cart" = "home") {
   }, [source]);
 
   const updateItemAttributes = useCallback((
-    productId: number,
+    cartItemIdOrProductId: string | number,
     selectedAttributes: SelectedAttributes,
     needsAttributeConfirmation = false
   ) => {
     const current = getStoredCart();
-    const next = current.map((item) => {
-      if (item.product.id === productId) {
-        const nextAttrs = { ...item.selectedAttributes, ...selectedAttributes };
-        const unitPrice = calculateProductPrice(item.product, nextAttrs);
-        return {
-          ...item,
-          selectedAttributes: nextAttrs,
-          unitPrice,
-          needsAttributeConfirmation,
-        };
-      }
-      return item;
-    });
+    const key = String(cartItemIdOrProductId);
+    const targetIndex = current.findIndex(
+      (i) =>
+        (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) === key ||
+        String(i.product.id) === key
+    );
+
+    if (targetIndex === -1) return;
+
+    const oldItem = current[targetIndex];
+    const nextAttrs = { ...oldItem.selectedAttributes, ...selectedAttributes };
+    const newCartItemId = getCartItemId(oldItem.product.id, nextAttrs);
+    const unitPrice = calculateProductPrice(oldItem.product, nextAttrs);
+
+    // Smart Merge: If an item already exists with this newCartItemId, merge quantities
+    const mergeIndex = current.findIndex(
+      (i, idx) =>
+        idx !== targetIndex &&
+        (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) === newCartItemId
+    );
+
+    let next: CartItem[];
+    if (mergeIndex > -1) {
+      next = current
+        .map((item, idx) => {
+          if (idx === mergeIndex) {
+            return {
+              ...item,
+              quantity: item.quantity + oldItem.quantity,
+              unitPrice,
+              needsAttributeConfirmation,
+            };
+          }
+          return item;
+        })
+        .filter((_, idx) => idx !== targetIndex);
+    } else {
+      next = current.map((item, idx) => {
+        if (idx === targetIndex) {
+          return {
+            ...item,
+            cartItemId: newCartItemId,
+            selectedAttributes: nextAttrs,
+            unitPrice,
+            needsAttributeConfirmation,
+          };
+        }
+        return item;
+      });
+    }
+
     setItems(next);
     broadcastCart(next, source, "UPDATE_ATTRIBUTES");
   }, [source]);
 
-  const removeItem = useCallback((productId: number) => {
+  const removeItem = useCallback((cartItemIdOrProductId: string | number) => {
     const current = getStoredCart();
-    const next = current.filter((i) => i.product.id !== productId);
+    const key = String(cartItemIdOrProductId);
+    const next = current.filter(
+      (i) =>
+        (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) !== key &&
+        String(i.product.id) !== key
+    );
     setItems(next);
     broadcastCart(next, source, "REMOVE_ITEM");
   }, [source]);
 
-  const updateQuantity = useCallback((productId: number, quantity: number) => {
+  const updateQuantity = useCallback((cartItemIdOrProductId: string | number, quantity: number) => {
     const current = getStoredCart();
+    const key = String(cartItemIdOrProductId);
+    const isTarget = (i: CartItem) =>
+      (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) === key ||
+      String(i.product.id) === key;
+
     if (quantity <= 0) {
-      const next = current.filter((i) => i.product.id !== productId);
+      const next = current.filter((i) => !isTarget(i));
       setItems(next);
       broadcastCart(next, source, "REMOVE_ITEM");
       return;
     }
-    const next = current.map((i) =>
-      i.product.id === productId ? { ...i, quantity } : i
-    );
+    const next = current.map((i) => (isTarget(i) ? { ...i, quantity } : i));
     setItems(next);
     broadcastCart(next, source, "UPDATE_QUANTITY");
   }, [source]);
