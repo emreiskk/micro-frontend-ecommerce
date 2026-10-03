@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Search, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import type { Product } from "@repo/shared-types";
+import { getCategoryDisplayName } from "@repo/shared-types";
 import ProductCard from "./ProductCard";
 import Toast from "./Toast";
 
@@ -86,13 +87,13 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedCategory === cat
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
                   : "bg-slate-100 hover:bg-slate-200/80 text-slate-600"
               }`}
             >
-              {cat === "all" ? "Tüm Ürünler" : cat}
+              {getCategoryDisplayName(cat)}
             </button>
           ))}
         </div>

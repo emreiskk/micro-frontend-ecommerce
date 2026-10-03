@@ -20,6 +20,7 @@ import {
   getProductAttributes,
   isVariantInStock,
   getOptionStockDetail,
+  getCategoryDisplayName,
 } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
 import Toast from "@/components/Toast";
@@ -124,7 +125,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
         <div className="flex flex-col justify-start">
           {/* Category Pill */}
           <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block w-fit mb-3">
-            {product.category}
+            {getCategoryDisplayName(product.category)}
           </span>
 
           {/* Product Title */}

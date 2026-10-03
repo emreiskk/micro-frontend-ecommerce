@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Trash2, Plus, Minus, AlertCircle, Tag, SlidersHorizontal } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
-import { getProductAttributes, getCartItemId } from "@repo/shared-types";
+import { getProductAttributes, getCartItemId, getCategoryDisplayName } from "@repo/shared-types";
 import EditVariantModal from "./EditVariantModal";
 
 interface CartItemCardProps {
@@ -75,7 +75,7 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
         <div className="flex-1 min-w-0 text-center sm:text-left">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1.5">
             <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block">
-              {product.category}
+              {getCategoryDisplayName(product.category)}
             </span>
             {item.needsAttributeConfirmation && (
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full animate-pulse">

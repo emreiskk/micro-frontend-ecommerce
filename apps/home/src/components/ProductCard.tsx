@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, ShoppingCart, Check, Eye } from "lucide-react";
 import type { Product } from "@repo/shared-types";
+import { getCategoryDisplayName } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
 
 interface ProductCardProps {
@@ -41,7 +42,7 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
       {/* Category Pill */}
       <div className="absolute top-4 left-4 z-10">
         <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-white/90 backdrop-blur-md text-slate-700 shadow-sm border border-slate-100">
-          {product.category}
+          {getCategoryDisplayName(product.category)}
         </span>
       </div>
 
