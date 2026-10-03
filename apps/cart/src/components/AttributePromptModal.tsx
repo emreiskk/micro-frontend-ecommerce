@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { AlertCircle, Check, ArrowRight, X } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
-import { getProductAttributes } from "@repo/shared-types";
+import { getProductAttributes, calculateProductPrice } from "@repo/shared-types";
 
 interface AttributePromptModalProps {
   isOpen: boolean;
@@ -104,9 +104,15 @@ export default function AttributePromptModal({
                       <h4 className="text-xs font-bold text-slate-900 truncate">
                         {item.product.title}
                       </h4>
-                      <span className="text-[11px] text-slate-500 font-medium">
-                        Adet: {item.quantity} • Fiyat: ${(item.product.price * item.quantity).toFixed(2)}
-                      </span>
+                      {(() => {
+                        const unitPrice = calculateProductPrice(item.product, currentAttrs);
+                        const itemSubtotal = (unitPrice * item.quantity).toFixed(2);
+                        return (
+                          <span className="text-[11px] text-slate-500 font-medium">
+                            Adet: {item.quantity} • Birim: <strong className="text-slate-800">${unitPrice.toFixed(2)}</strong> • Toplam: <strong className="text-indigo-600">${itemSubtotal}</strong>
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -123,18 +129,29 @@ export default function AttributePromptModal({
                       <div className="flex flex-wrap gap-1.5">
                         {attr.options.map((opt) => {
                           const isSelected = (currentAttrs[attr.name] || attr.defaultValue) === opt;
+                          const detail = attr.optionDetails?.find((d) => d.label === opt);
+                          const delta = detail?.priceDelta;
                           return (
                             <button
                               key={opt}
                               type="button"
                               onClick={() => handleSelect(item.product.id, attr.name, opt)}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
                                 isSelected
                                   ? "bg-indigo-600 text-white shadow-sm scale-105 border-2 border-indigo-600"
                                   : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
                               }`}
                             >
-                              {opt}
+                              <span>{opt}</span>
+                              {delta !== undefined && delta !== 0 && (
+                                <span
+                                  className={`text-[10px] ${
+                                    isSelected ? "text-indigo-100" : "text-slate-500 font-semibold"
+                                  }`}
+                                >
+                                  {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
+                                </span>
+                              )}
                             </button>
                           );
                         })}

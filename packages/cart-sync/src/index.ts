@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { CartItem, CartTotals, CartSyncMessage, CartActionType, Product, SelectedAttributes } from "@repo/shared-types";
+import {
+  type CartItem,
+  type CartTotals,
+  type CartSyncMessage,
+  type CartActionType,
+  type Product,
+  type SelectedAttributes,
+  calculateProductPrice,
+} from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
 export const CART_CHANNEL_NAME = "ecommerce_cart_channel";
@@ -130,7 +138,10 @@ export function saveStoredCart(items: CartItem[]): void {
 }
 
 export function calculateCartTotals(items: CartItem[]): CartTotals {
-  const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  const subtotal = items.reduce(
+    (acc, item) => acc + (item.unitPrice ?? item.product.price) * item.quantity,
+    0
+  );
   const totalCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const tax = Number((subtotal * TAX_RATE).toFixed(2));
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || items.length === 0 ? 0 : 9.99;
@@ -244,15 +255,18 @@ export function useCartSync(source: "home" | "cart" = "home") {
     needsAttributeConfirmation?: boolean
   ) => {
     const current = getStoredCart();
+    const unitPrice = calculateProductPrice(product, selectedAttributes);
     const existingIndex = current.findIndex((i) => i.product.id === product.id);
     let next: CartItem[];
     if (existingIndex > -1) {
       next = current.map((item, idx) => {
         if (idx === existingIndex) {
+          const nextAttrs = selectedAttributes || item.selectedAttributes;
           return {
             ...item,
             quantity: item.quantity + quantity,
-            selectedAttributes: selectedAttributes || item.selectedAttributes,
+            selectedAttributes: nextAttrs,
+            unitPrice: calculateProductPrice(product, nextAttrs),
             needsAttributeConfirmation:
               needsAttributeConfirmation !== undefined
                 ? needsAttributeConfirmation
@@ -268,6 +282,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
           product,
           quantity,
           selectedAttributes,
+          unitPrice,
           needsAttributeConfirmation,
         },
       ];
@@ -284,9 +299,12 @@ export function useCartSync(source: "home" | "cart" = "home") {
     const current = getStoredCart();
     const next = current.map((item) => {
       if (item.product.id === productId) {
+        const nextAttrs = { ...item.selectedAttributes, ...selectedAttributes };
+        const unitPrice = calculateProductPrice(item.product, nextAttrs);
         return {
           ...item,
-          selectedAttributes: { ...item.selectedAttributes, ...selectedAttributes },
+          selectedAttributes: nextAttrs,
+          unitPrice,
           needsAttributeConfirmation,
         };
       }

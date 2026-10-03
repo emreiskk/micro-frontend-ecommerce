@@ -53,7 +53,10 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
                     <span className="font-semibold text-slate-900 block truncate">{i.product.title}</span>
                     {attrStr && <span className="text-[11px] text-indigo-600 font-semibold">{attrStr}</span>}
                   </div>
-                  <span className="font-bold flex-shrink-0 text-slate-800">{i.quantity} Adet</span>
+                  <div className="text-right flex-shrink-0">
+                    <span className="font-bold block text-slate-800">{i.quantity} Adet</span>
+                    <span className="text-[11px] text-slate-500 font-semibold">${((i.unitPrice ?? i.product.price) * i.quantity).toFixed(2)}</span>
+                  </div>
                 </div>
               );
             })}

@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ShoppingBag, ArrowRight } from "lucide-react";
-import { useCartSync } from "@repo/cart-sync";
+import { useCartSync, calculateCartTotals } from "@repo/cart-sync";
 import type { CartTotals, CartItem, SelectedAttributes } from "@repo/shared-types";
+import { calculateProductPrice } from "@repo/shared-types";
 import CartItemCard from "@/components/CartItemCard";
 import OrderSummary from "@/components/OrderSummary";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -27,7 +28,8 @@ export default function CartPage() {
   const [completedOrderItems, setCompletedOrderItems] = useState<CartItem[]>([]);
 
   const proceedWithCheckout = (finalItems: CartItem[]) => {
-    setCompletedOrderTotals({ ...totals });
+    const freshTotals = calculateCartTotals(finalItems);
+    setCompletedOrderTotals(freshTotals);
     setCompletedOrderItems([...finalItems]);
     setIsCheckoutOpen(true);
     clearCart();
@@ -52,10 +54,12 @@ export default function CartPage() {
     const updatedList = items.map((item) => {
       const match = updated.find((u) => u.productId === item.product.id);
       if (match) {
+        const nextAttrs = { ...item.selectedAttributes, ...match.attributes };
         return {
           ...item,
-          selectedAttributes: { ...item.selectedAttributes, ...match.attributes },
+          selectedAttributes: nextAttrs,
           needsAttributeConfirmation: false,
+          unitPrice: calculateProductPrice(item.product, nextAttrs),
         };
       }
       return item;

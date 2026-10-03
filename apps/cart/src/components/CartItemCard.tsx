@@ -16,7 +16,8 @@ interface CartItemCardProps {
 
 export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdateAttributes }: CartItemCardProps) {
   const { product, quantity } = item;
-  const itemTotal = (product.price * quantity).toFixed(2);
+  const unitPrice = item.unitPrice ?? product.price;
+  const itemTotal = (unitPrice * quantity).toFixed(2);
   const [imgSrc, setImgSrc] = React.useState(product.image);
 
   const attributes = product.attributes || getProductAttributes(product);
@@ -77,10 +78,12 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
             {attributes.map((attr) => (
               <div key={attr.name} className="flex items-center gap-1.5 text-xs">
                 <span className="font-bold text-slate-500 text-[11px]">{attr.name}:</span>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-wrap">
                   {attr.options.map((opt) => {
                     const currentVal = item.selectedAttributes?.[attr.name] || attr.defaultValue;
                     const isSelected = currentVal === opt && !item.needsAttributeConfirmation;
+                    const detail = attr.optionDetails?.find((d) => d.label === opt);
+                    const delta = detail?.priceDelta;
                     return (
                       <button
                         key={opt}
@@ -92,14 +95,23 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
                             false
                           )
                         }
-                        className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                        className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                           isSelected
                             ? "bg-indigo-600 text-white shadow-xs"
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
                         }`}
                         title={`${attr.name}: ${opt}`}
                       >
-                        {opt}
+                        <span>{opt}</span>
+                        {delta !== undefined && delta !== 0 && (
+                          <span
+                            className={`text-[9px] ${
+                              isSelected ? "text-indigo-100" : "text-slate-500 font-semibold"
+                            }`}
+                          >
+                            {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
@@ -109,8 +121,23 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
           </div>
         )}
 
-        <div className="mt-2 text-xs text-slate-500 font-medium">
-          Birim Fiyat: <span className="font-semibold text-slate-700">${product.price.toFixed(2)}</span>
+        <div className="mt-2 text-xs text-slate-500 font-medium flex items-center justify-center sm:justify-start gap-2">
+          <span>
+            Birim Fiyat: <strong className="text-slate-800">${unitPrice.toFixed(2)}</strong>
+          </span>
+          {item.unitPrice && Math.abs(item.unitPrice - product.price) > 0.001 && (
+            <span
+              className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                item.unitPrice > product.price
+                  ? "text-indigo-700 bg-indigo-50 border border-indigo-200"
+                  : "text-emerald-700 bg-emerald-50 border border-emerald-200"
+              }`}
+            >
+              {item.unitPrice > product.price
+                ? `+$${(item.unitPrice - product.price).toFixed(2)} opsiyon`
+                : `-$${(product.price - item.unitPrice).toFixed(2)} indirim`}
+            </span>
+          )}
         </div>
       </div>
 
