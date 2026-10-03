@@ -1,0 +1,46 @@
+services:
+  # ==============================================================
+  # Cart Micro-Frontend Service
+  # Port: 3001 | BasePath: /cart
+  # ==============================================================
+  cart:
+    build:
+      context: .
+      dockerfile: apps/cart/Dockerfile
+    container_name: trend-sphere-cart
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOSTNAME=0.0.0.0
+    restart: unless-stopped
+    networks:
+      - mfe-network
+
+  # ==============================================================
+  # Home Micro-Frontend Service (Host & Multi-Zone Gateway)
+  # Port: 3000 | Proxies /cart to internal cart container
+  # ==============================================================
+  home:
+    build:
+      context: .
+      dockerfile: apps/home/Dockerfile
+    container_name: trend-sphere-home
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - CART_URL=http://cart:3001
+    depends_on:
+      - cart
+    restart: unless-stopped
+    networks:
+      - mfe-network
+
+networks:
+  mfe-network:
+    name: trend-sphere-mfe-network
+    driver: bridge
