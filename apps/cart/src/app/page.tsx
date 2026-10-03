@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 import { useCartSync } from "@repo/cart-sync";
+import type { CartTotals } from "@repo/shared-types";
 import CartItemCard from "@/components/CartItemCard";
 import OrderSummary from "@/components/OrderSummary";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -11,10 +12,18 @@ import CheckoutModal from "@/components/CheckoutModal";
 export default function CartPage() {
   const { items, totals, updateQuantity, removeItem, clearCart, isHydrated } = useCartSync("cart");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [completedOrderTotals, setCompletedOrderTotals] = useState<CartTotals | null>(null);
 
   const handleCheckoutSuccess = () => {
+    // Capture snapshot of totals before wiping cart
+    setCompletedOrderTotals({ ...totals });
     setIsCheckoutOpen(true);
     clearCart();
+  };
+
+  const handleCloseCheckout = () => {
+    setIsCheckoutOpen(false);
+    setCompletedOrderTotals(null);
   };
 
   if (!isHydrated) {
@@ -30,8 +39,8 @@ export default function CartPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <CheckoutModal
         isOpen={isCheckoutOpen}
-        totals={totals}
-        onClose={() => setIsCheckoutOpen(false)}
+        totals={completedOrderTotals || totals}
+        onClose={handleCloseCheckout}
       />
 
       <div className="mb-8">

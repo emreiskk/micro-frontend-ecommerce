@@ -34,20 +34,28 @@ export default function CheckoutModal({ isOpen, totals, onClose }: CheckoutModal
           Sepetiniz sıfırlandı ve tüm mikro-frontend servisleri ile senkronize edildi.
         </p>
 
-        <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left text-xs space-y-2 text-slate-600">
+        <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left text-xs space-y-2.5 text-slate-600">
           <div className="flex justify-between">
             <span>Ürün Adedi:</span>
             <span className="font-semibold text-slate-900">{totals.totalCount} Adet</span>
           </div>
           <div className="flex justify-between">
-            <span>Ödenen Tutar:</span>
-            <span className="font-bold text-slate-900">${totals.total.toFixed(2)}</span>
+            <span>Ara Toplam:</span>
+            <span className="font-semibold text-slate-900">${totals.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span>Kargo Durumu:</span>
-            <span className="font-semibold text-emerald-600">
-              {totals.shipping === 0 ? "Ücretsiz Kargo" : "$9.99 Standart Kargo"}
+            <span className={`font-semibold ${totals.shipping === 0 ? "text-emerald-600" : "text-slate-900"}`}>
+              {totals.shipping === 0 ? "Ücretsiz Kargo ($0.00)" : "Standart Ücretli Kargo ($9.99)"}
             </span>
+          </div>
+          <div className="flex justify-between">
+            <span>Tahmini Vergi (%8):</span>
+            <span className="font-semibold text-slate-900">${totals.tax.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between pt-2 border-t border-slate-200">
+            <span className="font-bold text-slate-900">Toplam Ödenen Tutar:</span>
+            <span className="font-black text-indigo-600 text-sm">${totals.total.toFixed(2)}</span>
           </div>
         </div>
 
