@@ -235,16 +235,15 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                           {!isOptInStock && (
                             <svg
                               className="absolute inset-0 w-full h-full pointer-events-none rounded-xl overflow-hidden"
-                              preserveAspectRatio="none"
-                              viewBox="0 0 100 100"
+                              style={{ width: "100%", height: "100%" }}
                             >
                               <line
-                                x1="0"
-                                y1="100"
-                                x2="100"
-                                y2="0"
+                                x1="0%"
+                                y1="100%"
+                                x2="100%"
+                                y2="0%"
                                 stroke="currentColor"
-                                strokeWidth={isSelected ? "2" : "1.5"}
+                                strokeWidth={isSelected ? "1.5" : "1.2"}
                                 className={isSelected ? "text-white/40" : "text-slate-300"}
                               />
                             </svg>
@@ -255,12 +254,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                             <span
                               className={`absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow-xs transition-transform z-20 ${
                                 isSelected
-                                  ? "bg-amber-500 text-white ring-2 ring-white scale-110"
-                                  : "bg-slate-100 text-slate-500 border border-slate-200"
+                                  ? "bg-white text-indigo-600 ring-2 ring-indigo-600 shadow-md scale-110"
+                                  : "bg-indigo-50 text-indigo-600 border border-indigo-200/80"
                               }`}
                               title="Tükendi - Gelince Haber Ver"
                             >
-                              <Bell className="w-2.5 h-2.5" />
+                              <Bell className="w-2.5 h-2.5 text-indigo-600" />
                             </span>
                           )}
 
