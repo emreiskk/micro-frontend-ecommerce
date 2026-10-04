@@ -47,7 +47,10 @@ export default function ProductDetailActions({ product }: { product: Product }) 
                     {selectedAttributes[attr.name] || attr.defaultValue}
                   </span>
                 </span>
-                <span className="text-[11px] font-semibold text-emerald-600">Stokta Var</span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-medium bg-emerald-50/70 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Stokta Mevcut
+                </span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {attr.options.map((opt) => {

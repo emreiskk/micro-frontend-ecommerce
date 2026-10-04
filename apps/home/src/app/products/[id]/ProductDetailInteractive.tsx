@@ -158,12 +158,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-slate-400 font-medium">Fiyat</span>
               {inStock ? (
-                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-medium bg-emerald-50/70 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Stokta Mevcut
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-bold bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 shadow-xs">
+                <span className="inline-flex items-center gap-1.5 text-xs text-rose-700 font-medium bg-rose-50/70 px-2.5 py-0.5 rounded-full border border-rose-200/60">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                   Tükendi / Stokta Yok
                 </span>

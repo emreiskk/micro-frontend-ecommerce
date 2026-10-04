@@ -97,24 +97,32 @@ export default function EditVariantModal({
             <h4 className="text-xs font-bold text-slate-900 truncate">
               {product.title}
             </h4>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="text-sm font-black text-slate-900">
-                ${currentUnitPrice.toFixed(2)}
-              </span>
-              {priceDelta !== 0 && (
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    priceDelta > 0
-                      ? "text-indigo-700 bg-indigo-50 border border-indigo-200"
-                      : "text-emerald-700 bg-emerald-50 border border-emerald-200"
-                  }`}
-                >
-                  {priceDelta > 0 ? `+$${priceDelta.toFixed(2)}` : `-$${Math.abs(priceDelta).toFixed(2)}`}
+            <div className="mt-1 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-black text-slate-900">
+                  ${currentUnitPrice.toFixed(2)}
+                </span>
+                {priceDelta !== 0 && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+                    <span>{priceDelta > 0 ? `+$${priceDelta.toFixed(2)}` : `-$${Math.abs(priceDelta).toFixed(2)}`}</span>
+                    <span className="text-[9px] font-medium text-indigo-500/80">opsiyon</span>
+                  </span>
+                )}
+                <span className="text-[11px] text-slate-400 font-medium">
+                  ({item.quantity} adet: ${currentTotal})
+                </span>
+              </div>
+              {isSelectedVariantInStock ? (
+                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-medium bg-emerald-50/70 px-2 py-0.5 rounded-full border border-emerald-200/60 flex-shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Stokta
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[11px] text-rose-700 font-medium bg-rose-50/70 px-2 py-0.5 rounded-full border border-rose-200/60 flex-shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  Tükendi
                 </span>
               )}
-              <span className="text-[11px] text-slate-400 font-medium">
-                ({item.quantity} adet: ${currentTotal})
-              </span>
             </div>
           </div>
         </div>
@@ -213,8 +221,8 @@ export default function EditVariantModal({
 
           {/* Out of Stock Warning */}
           {!isSelectedVariantInStock && (
-            <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600" />
+            <div className="p-3 rounded-2xl bg-rose-50/70 border border-rose-200/70 text-rose-700 text-xs font-medium flex items-center gap-2.5 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
               <span>
                 Seçtiğiniz bu varyant şu anda stoklarımızda tükenmiştir. Lütfen mevcut bir seçenek belirleyin.
               </span>
