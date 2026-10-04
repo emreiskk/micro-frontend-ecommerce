@@ -143,7 +143,7 @@ export default function CartItemCard({
         {/* Info */}
         <div className="flex-1 min-w-0 text-center sm:text-left sm:pr-4">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg inline-block">
+            <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-indigo-50 text-indigo-700 border border-indigo-200/60 inline-block">
               {getCategoryDisplayName(product.category)}
             </span>
             {!isInStock ? (

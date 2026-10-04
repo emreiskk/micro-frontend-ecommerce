@@ -65,7 +65,7 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
         <div>
           {/* Category & Rating Row */}
           <div className="flex items-center justify-between gap-2 mb-2.5">
-            <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-slate-100/90 text-slate-600 border border-slate-200/60">
+            <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-indigo-50 text-indigo-700 border border-indigo-200/60">
               {getCategoryDisplayName(product.category)}
             </span>
             <div className="flex items-center gap-1.5 text-amber-500">

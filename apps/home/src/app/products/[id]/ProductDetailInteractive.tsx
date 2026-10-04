@@ -129,7 +129,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
         {/* Right Column: Title, Category, Rating, Price, Variants, Actions, Guarantees */}
         <div className="flex flex-col justify-start">
           {/* Category Pill */}
-          <span className="px-3 py-1 rounded-lg text-xs font-semibold tracking-wide uppercase bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block w-fit mb-3">
+          <span className="px-3 py-1 rounded-lg text-xs font-bold tracking-wider uppercase bg-indigo-50 text-indigo-700 border border-indigo-200/60 inline-block w-fit mb-3">
             {getCategoryDisplayName(product.category)}
           </span>
 

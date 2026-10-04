@@ -35,7 +35,7 @@ export default async function ProductDetailPage({
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Kataloga Geri Dön
+          Alışverişe Dön
         </Link>
       </div>
 
