@@ -36,7 +36,7 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
   const modalContent = (
     <div className="fixed -inset-4 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 text-center transform animate-in zoom-in-95 duration-200">
-        <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/10 mb-4">
+        <div className="w-16 h-16 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/15 mb-4">
           <CheckCircle2 className="w-9 h-9" />
         </div>
 

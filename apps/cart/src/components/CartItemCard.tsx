@@ -141,7 +141,7 @@ export default function CartItemCard({
         </div>
 
         {/* Info */}
-        <div className="flex-1 min-w-0 text-center sm:text-left">
+        <div className="flex-1 min-w-0 text-center sm:text-left sm:pr-4">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1.5">
             <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg inline-block">
               {getCategoryDisplayName(product.category)}
@@ -179,12 +179,15 @@ export default function CartItemCard({
             </h4>
           </a>
 
-          {/* Clean Selected Attributes Badge & Dedicated Edit Button */}
-          <div className="mt-2.5 flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+          {/* Clean Selected Attributes Badge & Dedicated Edit Button - Fixed single line with ellipsis */}
+          <div className="mt-2.5 flex items-center justify-center sm:justify-start gap-2 max-w-full">
             {selectedAttrsSummary && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 bg-slate-100/90 border border-slate-200/80 px-2.5 py-1 rounded-lg">
+              <span
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 bg-slate-100/90 border border-slate-200/80 px-2.5 py-1 rounded-lg min-w-0 max-w-[170px] sm:max-w-[190px] md:max-w-[220px]"
+                title={selectedAttrsSummary}
+              >
                 <Tag className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
-                <span className="truncate max-w-[190px] sm:max-w-xs md:max-w-sm">{selectedAttrsSummary}</span>
+                <span className="truncate">{selectedAttrsSummary}</span>
               </span>
             )}
 
@@ -231,7 +234,7 @@ export default function CartItemCard({
         </div>
 
         {/* Quantity & Controls */}
-        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4">
+        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4 flex-shrink-0 sm:min-w-[130px]">
           {/* Quantity Stepper */}
           <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
             <button
