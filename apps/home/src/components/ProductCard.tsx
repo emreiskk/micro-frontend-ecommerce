@@ -96,33 +96,35 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
 
         {/* Price & Action */}
         <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-          <div>
-            <span className="text-xs text-slate-400 block font-medium">Fiyat</span>
+          <div className="flex-1 min-w-0">
             {product.originalPrice ? (
               <div className="flex flex-col">
-                <span className="text-xs text-slate-400 line-through font-medium leading-none">
-                  ${product.originalPrice.toFixed(2)}
-                </span>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <span className="text-lg font-black text-slate-900 tracking-tight leading-none">
-                    ${product.price.toFixed(2)}
+                <div className="flex items-center gap-1.5 leading-none mb-1">
+                  <span className="text-xs text-slate-400 line-through font-medium">
+                    ${product.originalPrice.toFixed(2)}
                   </span>
-                  <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200/60 px-1.5 py-0.5 rounded-md leading-none">
+                  <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200/80 px-1.5 py-0.5 rounded leading-none">
                     (-%{product.discountRate})
                   </span>
                 </div>
+                <span className="text-lg font-black text-slate-900 tracking-tight leading-none">
+                  ${product.price.toFixed(2)}
+                </span>
               </div>
             ) : (
-              <span className="text-lg font-black text-slate-900 tracking-tight">
-                ${product.price.toFixed(2)}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-xs text-slate-400 block font-medium leading-none mb-1">Fiyat</span>
+                <span className="text-lg font-black text-slate-900 tracking-tight leading-none">
+                  ${product.price.toFixed(2)}
+                </span>
+              </div>
             )}
           </div>
 
           <button
             onClick={handleAddToCart}
             disabled={isAdding}
-            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm ${
+            className={`flex-shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm cursor-pointer ${
               isAdding
                 ? "bg-emerald-600 text-white"
                 : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-95"
