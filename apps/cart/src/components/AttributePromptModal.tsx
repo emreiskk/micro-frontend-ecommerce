@@ -3,9 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, X, Bell } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
-import { getProductAttributes, calculateProductPrice, isVariantInStock } from "@repo/shared-types";
+import {
+  getProductAttributes,
+  calculateProductPrice,
+  isVariantInStock,
+  getOptionStockDetail,
+} from "@repo/shared-types";
 
 interface AttributePromptModalProps {
   isOpen: boolean;
@@ -43,7 +48,16 @@ export default function AttributePromptModal({
       const attrs = item.product.attributes || getProductAttributes(item.product);
       const itemMap: SelectedAttributes = {};
       attrs.forEach((attr) => {
-        itemMap[attr.name] = item.selectedAttributes?.[attr.name] || attr.defaultValue || attr.options[0];
+        let chosen = item.selectedAttributes?.[attr.name] || attr.defaultValue || attr.options[0];
+        // Ensure default choice is in stock if possible
+        const stock = getOptionStockDetail(attr, chosen);
+        if (!stock.inStock) {
+          const firstInStock = attr.options.find((opt) => getOptionStockDetail(attr, opt).inStock);
+          if (firstInStock) {
+            chosen = firstInStock;
+          }
+        }
+        itemMap[attr.name] = chosen;
       });
       initial[item.product.id] = itemMap;
     });
@@ -59,7 +73,15 @@ export default function AttributePromptModal({
           const attrs = item.product.attributes || getProductAttributes(item.product);
           const itemMap: SelectedAttributes = {};
           attrs.forEach((attr) => {
-            itemMap[attr.name] = item.selectedAttributes?.[attr.name] || attr.defaultValue || attr.options[0];
+            let chosen = item.selectedAttributes?.[attr.name] || attr.defaultValue || attr.options[0];
+            const stock = getOptionStockDetail(attr, chosen);
+            if (!stock.inStock) {
+              const firstInStock = attr.options.find((opt) => getOptionStockDetail(attr, opt).inStock);
+              if (firstInStock) {
+                chosen = firstInStock;
+              }
+            }
+            itemMap[attr.name] = chosen;
           });
           next[item.product.id] = itemMap;
         }
@@ -80,8 +102,14 @@ export default function AttributePromptModal({
     }));
   };
 
+  const hasAnyOutOfStock = unconfirmedItems.some((item) => {
+    const currentAttrs = selections[item.product.id] || {};
+    return !isVariantInStock(item.product, currentAttrs);
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (hasAnyOutOfStock) return;
     const result = unconfirmedItems.map((item) => ({
       productId: item.product.id,
       attributes: selections[item.product.id] || {},
@@ -92,7 +120,7 @@ export default function AttributePromptModal({
   const modalContent = (
     <div className="fixed -inset-4 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform animate-in zoom-in-95 duration-200">
-        {/* Header - Icon removed as requested */}
+        {/* Header - Clean with no icon as requested */}
         <div className="flex items-start justify-between mb-5">
           <div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">
@@ -127,7 +155,11 @@ export default function AttributePromptModal({
               return (
                 <div
                   key={item.product.id}
-                  className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-3"
+                  className={`p-4 rounded-2xl border space-y-3 transition-colors ${
+                    !inStock
+                      ? "bg-rose-50/40 border-rose-200/80"
+                      : "bg-slate-50 border-slate-100"
+                  }`}
                 >
                   {/* Product Card Top: Image + Title + Fixed Top-Right Stock Badge */}
                   <div className="flex items-start gap-3">
@@ -137,12 +169,16 @@ export default function AttributePromptModal({
                         alt={item.product.title}
                         fill
                         unoptimized
-                        className="object-contain p-1"
+                        className={`object-contain p-1 ${!inStock ? "grayscale-[0.5]" : ""}`}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <h4 className="text-xs font-bold text-slate-900 truncate">
+                        <h4
+                          className={`text-xs font-bold truncate pr-1 ${
+                            !inStock ? "line-through text-slate-400" : "text-slate-900"
+                          }`}
+                        >
                           {item.product.title}
                         </h4>
                         {/* Stock Badge - Fixed on Top Right */}
@@ -161,7 +197,11 @@ export default function AttributePromptModal({
 
                       {/* Price Row: Current Price, Original Strikethrough, Discount % (-%30), Option Delta Badge */}
                       <div className="mt-1.5 flex items-baseline gap-2 flex-wrap">
-                        <span className="text-sm font-black text-slate-900">
+                        <span
+                          className={`text-sm font-black ${
+                            !inStock ? "line-through text-slate-400" : "text-slate-900"
+                          }`}
+                        >
                           ${unitPrice.toFixed(2)}
                         </span>
                         {originalUnitPrice && originalUnitPrice > unitPrice && (
@@ -205,21 +245,60 @@ export default function AttributePromptModal({
                           const isSelected = (currentAttrs[attr.name] || attr.defaultValue) === opt;
                           const detail = attr.optionDetails?.find((d) => d.label === opt);
                           const delta = detail?.priceDelta;
+                          const stockDetail = getOptionStockDetail(attr, opt);
+                          const isOptInStock = stockDetail.inStock;
+
                           return (
                             <button
                               key={opt}
                               type="button"
-                              onClick={() => handleSelect(item.product.id, attr.name, opt)}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                              disabled={!isOptInStock}
+                              onClick={() => {
+                                if (!isOptInStock) return;
+                                handleSelect(item.product.id, attr.name, opt);
+                              }}
+                              className={`relative px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                                 isSelected
-                                  ? "bg-indigo-600 text-white shadow-sm scale-102 border-2 border-indigo-600"
-                                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
+                                  ? "bg-indigo-600 text-white shadow-sm scale-102 border-2 border-indigo-600 cursor-pointer"
+                                  : isOptInStock
+                                  ? "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer"
+                                  : "bg-slate-50/80 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60"
                               }`}
+                              title={!isOptInStock ? "Tükendi - Bu seçenek seçilemez" : undefined}
                             >
-                              <span>{opt}</span>
+                              <span className="relative z-10">{opt}</span>
+
+                              {/* Diagonal Out-of-Stock Line (Trendyol Style) */}
+                              {!isOptInStock && (
+                                <svg
+                                  className="absolute inset-0 w-full h-full pointer-events-none rounded-xl overflow-hidden"
+                                  style={{ width: "100%", height: "100%" }}
+                                >
+                                  <line
+                                    x1="0%"
+                                    y1="100%"
+                                    x2="100%"
+                                    y2="0%"
+                                    stroke="currentColor"
+                                    strokeWidth="1.2"
+                                    className="text-slate-300"
+                                  />
+                                </svg>
+                              )}
+
+                              {/* Top-Right Notification Bell Icon (Trendyol Style) */}
+                              {!isOptInStock && (
+                                <span
+                                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow-xs z-20 bg-slate-100 text-slate-500 border border-slate-200"
+                                  title="Tükendi"
+                                >
+                                  <Bell className="w-2.5 h-2.5" />
+                                </span>
+                              )}
+
                               {delta !== undefined && delta !== 0 && (
                                 <span
-                                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded-lg transition-colors ${
+                                  className={`relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-lg transition-colors ${
                                     isSelected
                                       ? "bg-indigo-700/80 text-white border border-indigo-500/50"
                                       : delta > 0
@@ -241,6 +320,14 @@ export default function AttributePromptModal({
             })}
           </div>
 
+          {/* Out of Stock Warning if any */}
+          {hasAnyOutOfStock && (
+            <div className="mb-4 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-rose-500 flex-shrink-0" />
+              <span>Seçilen seçeneklerden bazıları tükenmiştir. Lütfen mevcut bir varyant belirleyin.</span>
+            </div>
+          )}
+
           {/* Modal Footer - Single Arrow Icon as Requested */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <button
@@ -252,9 +339,14 @@ export default function AttributePromptModal({
             </button>
             <button
               type="submit"
-              className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all cursor-pointer"
+              disabled={hasAnyOutOfStock}
+              className={`group inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
+                hasAnyOutOfStock
+                  ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
+                  : "bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white shadow-indigo-500/25 cursor-pointer"
+              }`}
             >
-              <span>Seçimleri Onayla ve Siparişi Tamamla</span>
+              <span>{hasAnyOutOfStock ? "Tükenen Seçim Bulunuyor" : "Seçimleri Onayla ve Siparişi Tamamla"}</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>

@@ -117,7 +117,11 @@ export default function EditVariantModal({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
-                <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate pr-1">
+                <h4
+                  className={`text-xs sm:text-sm font-bold truncate pr-1 ${
+                    !isSelectedVariantInStock ? "line-through text-slate-400" : "text-slate-900"
+                  }`}
+                >
                   {product.title}
                 </h4>
                 {/* Fixed Top-Right Stock Badge */}
@@ -136,7 +140,11 @@ export default function EditVariantModal({
 
               {/* Price Row */}
               <div className="mt-2 flex items-baseline gap-2 flex-wrap">
-                <span className="text-sm sm:text-base font-black text-slate-900">
+                <span
+                  className={`text-sm sm:text-base font-black ${
+                    !isSelectedVariantInStock ? "line-through text-slate-400" : "text-slate-900"
+                  }`}
+                >
                   ${currentUnitPrice.toFixed(2)}
                 </span>
                 {originalUnitPrice && originalUnitPrice > currentUnitPrice && (
@@ -190,16 +198,21 @@ export default function EditVariantModal({
                       <button
                         key={opt}
                         type="button"
-                        onClick={() => handleSelect(attr.name, opt)}
-                        className={`relative px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                        disabled={!isOptInStock}
+                        onClick={() => {
+                          if (!isOptInStock) return;
+                          handleSelect(attr.name, opt);
+                        }}
+                        className={`relative px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                           opt.length <= 3 ? "min-w-[42px]" : ""
                         } ${
                           isSelected
-                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
+                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600 cursor-pointer"
                             : isOptInStock
-                            ? "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
-                            : "bg-slate-50/80 text-slate-400 border border-slate-200 hover:border-slate-300 hover:bg-slate-100/60"
+                            ? "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer"
+                            : "bg-slate-50/80 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60"
                         }`}
+                        title={!isOptInStock ? "Tükendi - Bu seçenek seçilemez" : undefined}
                       >
                         <span className="relative z-10">{opt}</span>
 

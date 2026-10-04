@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 import { useCartSync, calculateCartTotals, saveStoredCart, broadcastCart } from "@repo/cart-sync";
 import type { CartTotals, CartItem, SelectedAttributes } from "@repo/shared-types";
-import { calculateProductPrice } from "@repo/shared-types";
+import { calculateProductPrice, isVariantInStock } from "@repo/shared-types";
 import CartItemCard from "@/components/CartItemCard";
 import OrderSummary from "@/components/OrderSummary";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -29,28 +29,36 @@ export default function CartPage() {
   const [completedOrderItems, setCompletedOrderItems] = useState<CartItem[]>([]);
 
   const proceedWithCheckout = (finalItems: CartItem[]) => {
-    const selectedFinal = finalItems.filter((i) => i.selected !== false);
+    // Only in-stock and selected items can be purchased
+    const selectedFinal = finalItems.filter(
+      (i) => i.selected !== false && isVariantInStock(i.product, i.selectedAttributes)
+    );
     if (selectedFinal.length === 0) return;
 
-    const unselectedItems = finalItems.filter((i) => i.selected === false);
+    // Remaining items that stay in cart (unselected or out of stock)
+    const remainingItems = finalItems.filter(
+      (i) => i.selected === false || !isVariantInStock(i.product, i.selectedAttributes)
+    );
     const freshTotals = calculateCartTotals(selectedFinal);
     setCompletedOrderTotals(freshTotals);
     setCompletedOrderItems([...selectedFinal]);
     setIsCheckoutOpen(true);
 
-    if (unselectedItems.length > 0) {
-      saveStoredCart(unselectedItems);
-      broadcastCart(unselectedItems, "cart", "SYNC");
+    if (remainingItems.length > 0) {
+      saveStoredCart(remainingItems);
+      broadcastCart(remainingItems, "cart", "SYNC");
     } else {
       clearCart();
     }
   };
 
   const handleInitiateCheckout = () => {
-    const selectedItems = items.filter((i) => i.selected !== false);
-    if (selectedItems.length === 0) return;
+    const selectedInStockItems = items.filter(
+      (i) => i.selected !== false && isVariantInStock(i.product, i.selectedAttributes)
+    );
+    if (selectedInStockItems.length === 0) return;
 
-    const unconfirmed = selectedItems.filter((i) => i.needsAttributeConfirmation);
+    const unconfirmed = selectedInStockItems.filter((i) => i.needsAttributeConfirmation);
     if (unconfirmed.length > 0) {
       setIsAttributePromptOpen(true);
       return;

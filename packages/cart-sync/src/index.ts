@@ -15,6 +15,7 @@ import {
   getCartItemId,
   toLeanCartItem,
   hydrateCartItem,
+  isVariantInStock,
 } from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
@@ -100,10 +101,12 @@ export function normalizeCartItems(items: CartItem[]): CartItem[] {
   return items.map((item) => {
     const canonical = CANONICAL_PRODUCT_TITLES[item.product.id] || item.product.title;
     const cartItemId = item.cartItemId || getCartItemId(item.product.id, item.selectedAttributes);
+    const inStock = isVariantInStock(item.product, item.selectedAttributes);
     return {
       ...item,
       cartItemId,
-      selected: item.selected !== false,
+      // If item variant is out of stock, it cannot be selected for order
+      selected: inStock ? item.selected !== false : false,
       product: {
         ...item.product,
         title: canonical,
@@ -181,7 +184,10 @@ export function saveStoredCart(items: CartItem[]): void {
 }
 
 export function calculateCartTotals(items: CartItem[]): CartTotals {
-  const activeItems = items.filter((i) => i.selected !== false);
+  // Only items that are selected AND in stock are active for checkout & calculation
+  const activeItems = items.filter(
+    (i) => i.selected !== false && isVariantInStock(i.product, i.selectedAttributes)
+  );
   const subtotal = activeItems.reduce(
     (acc, item) => acc + (item.unitPrice ?? item.product.price) * item.quantity,
     0
@@ -371,6 +377,10 @@ export function useCartSync(source: "home" | "cart" = "home") {
 
     const next = current.map((i) => {
       if (isTarget(i)) {
+        // Out of stock items can never be selected for purchase
+        if (!isVariantInStock(i.product, i.selectedAttributes)) {
+          return { ...i, selected: false };
+        }
         const nextVal = selected !== undefined ? selected : i.selected === false ? true : false;
         return { ...i, selected: nextVal };
       }
@@ -383,7 +393,10 @@ export function useCartSync(source: "home" | "cart" = "home") {
 
   const toggleAllSelection = useCallback((selectAll: boolean) => {
     const current = getStoredCart();
-    const next = current.map((i) => ({ ...i, selected: selectAll }));
+    const next = current.map((i) => {
+      const inStock = isVariantInStock(i.product, i.selectedAttributes);
+      return { ...i, selected: inStock ? selectAll : false };
+    });
     setItems(next);
     broadcastCart(next, source, "TOGGLE_ALL_SELECTION" as CartActionType);
   }, [source]);
