@@ -175,20 +175,21 @@ export default function AttributePromptModal({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <h4
-                          className={`text-xs font-bold truncate pr-1 ${
+                          className={`text-xs font-bold truncate min-w-0 flex-1 pr-1 ${
                             !inStock ? "line-through text-slate-400" : "text-slate-900"
                           }`}
+                          title={item.product.title}
                         >
                           {item.product.title}
                         </h4>
                         {/* Stock Badge - Fixed on Top Right */}
                         {inStock ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex-shrink-0">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex-shrink-0 whitespace-nowrap">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             Stokta Mevcut
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60 flex-shrink-0">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60 flex-shrink-0 whitespace-nowrap">
                             <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                             Tükendi
                           </span>
@@ -232,11 +233,14 @@ export default function AttributePromptModal({
                   {/* Attributes Selection */}
                   {attrs.map((attr) => (
                     <div key={attr.name} className="pt-2 border-t border-slate-200/60">
-                      <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="font-semibold text-slate-700">
+                      <div className="flex items-center justify-between gap-3 text-xs mb-2">
+                        <span className="font-semibold text-slate-700 flex-shrink-0">
                           {attr.name} Seçiniz:
                         </span>
-                        <span className="font-extrabold text-indigo-600 text-xs">
+                        <span
+                          className="font-extrabold text-indigo-600 text-xs text-right truncate min-w-0"
+                          title={currentAttrs[attr.name] || attr.defaultValue}
+                        >
                           {currentAttrs[attr.name] || attr.defaultValue}
                         </span>
                       </div>
@@ -334,19 +338,19 @@ export default function AttributePromptModal({
             </div>
           )}
 
-          {/* Modal Footer - Single Arrow Icon as Requested */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+          {/* Modal Footer - Responsive Mobile & Desktop Layout */}
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-3.5 sm:pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-3 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 sm:py-3 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
             >
               Vazgeç
             </button>
             <button
               type="submit"
               disabled={hasAnyOutOfStock}
-              className={`group inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
+              className={`group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-3.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
                 hasAnyOutOfStock
                   ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
                   : "bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white shadow-indigo-500/25 cursor-pointer"

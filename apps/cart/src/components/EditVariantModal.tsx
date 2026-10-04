@@ -173,11 +173,14 @@ export default function EditVariantModal({
           <div className="max-h-[50vh] overflow-y-auto space-y-4 pr-1">
             {attributes.map((attr) => (
               <div key={attr.name} className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700">
+                <div className="flex items-center justify-between gap-3 text-xs mb-1.5">
+                  <span className="font-semibold text-slate-700 flex-shrink-0">
                     {attr.name}:
                   </span>
-                  <span className="font-extrabold text-indigo-600">
+                  <span
+                    className="font-extrabold text-indigo-600 truncate min-w-0 text-right"
+                    title={tempAttributes[attr.name] || attr.defaultValue}
+                  >
                     {tempAttributes[attr.name] || attr.defaultValue}
                   </span>
                 </div>
@@ -275,18 +278,19 @@ export default function EditVariantModal({
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+          {/* Modal Footer - Responsive Mobile & Desktop Layout */}
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-3.5 sm:pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-3 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 sm:py-3 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
             >
               Vazgeç
             </button>
             <button
               type="submit"
               disabled={!isSelectedVariantInStock}
-              className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
+              className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-3.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
                 isSelectedVariantInStock
                   ? "bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white shadow-indigo-500/25 cursor-pointer"
                   : "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"

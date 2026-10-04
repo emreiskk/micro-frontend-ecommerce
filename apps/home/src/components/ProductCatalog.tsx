@@ -190,7 +190,7 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
         </div>
 
         {/* Category Pills */}
-        <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1.5">
+        <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pb-1">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mr-1 sm:mr-2 flex-shrink-0">
             <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
             <span className="hidden xs:inline">Kategoriler:</span>

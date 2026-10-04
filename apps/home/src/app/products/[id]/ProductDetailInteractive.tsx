@@ -209,16 +209,19 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             <div className="mt-4 sm:mt-6 p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
               {attributes.map((attr) => (
                 <div key={attr.name} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-slate-700">
-                      <span className="font-bold uppercase tracking-wider text-slate-400">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex-shrink-0">
                         {attr.name}:
                       </span>
-                      <span className="text-indigo-600 font-extrabold ml-1.5 normal-case">
+                      <span
+                        className="text-xs text-indigo-600 font-extrabold truncate"
+                        title={selectedAttributes[attr.name] || attr.defaultValue}
+                      >
                         {selectedAttributes[attr.name] || attr.defaultValue}
                       </span>
-                    </span>
-                    <span className="text-[11px] font-semibold text-slate-400">
+                    </div>
+                    <span className="text-[11px] font-semibold text-slate-400 flex-shrink-0 whitespace-nowrap">
                       {attr.options.length} Seçenek
                     </span>
                   </div>

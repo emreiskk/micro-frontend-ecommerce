@@ -65,10 +65,10 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
                     .join(", ")
                 : null;
               return (
-                <div key={i.product.id} className="flex justify-between items-center text-slate-700 pb-1.5 border-b border-slate-200/50 last:border-b-0 last:pb-0">
-                  <div className="truncate pr-2">
-                    <span className="font-semibold text-slate-900 block truncate">{i.product.title}</span>
-                    {attrStr && <span className="text-[11px] text-indigo-600 font-semibold">{attrStr}</span>}
+                <div key={i.product.id} className="flex justify-between items-center text-slate-700 pb-1.5 border-b border-slate-200/50 last:border-b-0 last:pb-0 gap-3">
+                  <div className="truncate min-w-0 flex-1 pr-2">
+                    <span className="font-semibold text-slate-900 block truncate" title={i.product.title}>{i.product.title}</span>
+                    {attrStr && <span className="text-[11px] text-indigo-600 font-semibold block truncate" title={attrStr}>{attrStr}</span>}
                   </div>
                   <div className="text-right flex-shrink-0">
                     <span className="font-bold block text-slate-800">{i.quantity} Adet</span>
