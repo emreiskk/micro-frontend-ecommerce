@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   Search,
   SlidersHorizontal,
@@ -46,8 +47,13 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
   const [sortBy, setSortBy] = useState<"featured" | "price-asc" | "price-desc" | "rating">("featured");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [toastProduct, setToastProduct] = useState<Product | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -60,6 +66,16 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (isSortOpen && typeof window !== "undefined" && window.innerWidth < 640) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }
+  }, [isSortOpen]);
 
   const activeSort = SORT_OPTIONS.find((s) => s.id === sortBy) || SORT_OPTIONS[0];
 
@@ -152,10 +168,10 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
                 )}
               </button>
 
-              {/* Custom Dropdown Menu */}
+              {/* Custom Dropdown Menu for Desktop */}
               {isSortOpen && (
                 <div
-                  className="absolute left-0 right-0 top-full mt-2 w-full bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/10 p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150"
+                  className="hidden sm:block absolute left-0 right-0 top-full mt-2 w-full bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/10 p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150"
                   role="listbox"
                 >
                   {SORT_OPTIONS.map((opt) => {
@@ -189,8 +205,82 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
           </div>
         </div>
 
-        {/* Category Pills */}
-        <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pb-1">
+        {/* Mobile Sort Bottom-Sheet Modal */}
+        {isSortOpen && mounted && createPortal(
+          <div className="sm:hidden fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
+            {/* Backdrop Dismiss */}
+            <div
+              className="fixed inset-0"
+              onClick={() => setIsSortOpen(false)}
+              aria-hidden="true"
+            />
+
+            <div className="relative w-full max-w-lg bg-white rounded-t-3xl border-t border-slate-200/80 shadow-2xl p-5 pb-8 z-10 animate-in slide-in-from-bottom duration-200">
+              {/* Handle Bar */}
+              <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4" />
+
+              {/* Header */}
+              <div className="flex items-center justify-between pb-3.5 mb-2.5 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                    <ArrowUpDown className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">Sıralama Seçenekleri</h3>
+                    <p className="text-[11px] text-slate-400">Ürünleri istediğiniz kritere göre sıralayın</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsSortOpen(false)}
+                  className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                  aria-label="Kapat"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Options List */}
+              <div className="space-y-2 pt-1" role="listbox">
+                {SORT_OPTIONS.map((opt) => {
+                  const isSelected = sortBy === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setSortBy(opt.id);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-3.5 rounded-2xl text-xs font-semibold transition-all cursor-pointer text-left ${
+                        isSelected
+                          ? "bg-indigo-50 text-indigo-700 border-2 border-indigo-600 shadow-xs"
+                          : "bg-slate-50/80 hover:bg-slate-100 text-slate-700 border border-slate-200/80"
+                      }`}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      <span>{opt.label}</span>
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all ${
+                          isSelected
+                            ? "bg-indigo-600 border-indigo-600 text-white"
+                            : "border-slate-300 bg-white"
+                        }`}
+                      >
+                        {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+        {/* Category Pills with Custom Slim Scrollbar */}
+        <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto category-scrollbar pb-2">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mr-1 sm:mr-2 flex-shrink-0">
             <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
             <span className="hidden xs:inline">Kategoriler:</span>
