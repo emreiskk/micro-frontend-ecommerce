@@ -39,13 +39,6 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
 
   return (
     <div className="group bg-white rounded-3xl border border-slate-200/80 hover:border-indigo-300 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 flex flex-col overflow-hidden relative">
-      {/* Category Pill */}
-      <div className="absolute top-4 left-4 z-10">
-        <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold tracking-wide uppercase bg-white/90 backdrop-blur-md text-slate-700 shadow-sm border border-slate-100">
-          {getCategoryDisplayName(product.category)}
-        </span>
-      </div>
-
       {/* Product Image Container */}
       <Link
         href={`/products/${product.id}`}
@@ -70,11 +63,16 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
       {/* Content */}
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
-          {/* Rating */}
-          <div className="flex items-center gap-1.5 text-amber-500 mb-2">
-            <Star className="w-4 h-4 fill-amber-400 stroke-amber-400" />
-            <span className="text-xs font-bold text-slate-800">{product.rating?.rate ?? 4.5}</span>
-            <span className="text-xs text-slate-400">({product.rating?.count ?? 120})</span>
+          {/* Category & Rating Row */}
+          <div className="flex items-center justify-between gap-2 mb-2.5">
+            <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-slate-100/90 text-slate-600 border border-slate-200/60">
+              {getCategoryDisplayName(product.category)}
+            </span>
+            <div className="flex items-center gap-1.5 text-amber-500">
+              <Star className="w-3.5 h-3.5 fill-amber-400 stroke-amber-400" />
+              <span className="text-xs font-bold text-slate-800">{product.rating?.rate ?? 4.5}</span>
+              <span className="text-xs text-slate-400">({product.rating?.count ?? 120})</span>
+            </div>
           </div>
 
           {/* Title */}
