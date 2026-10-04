@@ -153,24 +153,25 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           </div>
 
           {/* Dynamic Price Display & Stock Badge */}
-          <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-wrap items-center justify-between gap-4">
             <div>
-              {currentOriginalPrice && (
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-semibold text-slate-400 line-through">
-                    ${currentOriginalPrice.toFixed(2)}
-                  </span>
-                  {product.discountRate && (
-                    <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200/70 px-2 py-0.5 rounded-full">
-                      (-%{product.discountRate})
-                    </span>
-                  )}
-                </div>
-              )}
-              <div className="flex items-center gap-2.5">
+              <span className="text-xs text-slate-400 block font-medium mb-1">Fiyat</span>
+              <div className="flex items-baseline gap-2.5 flex-wrap">
                 <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
                   ${currentUnitPrice.toFixed(2)}
                 </span>
+                {currentOriginalPrice && (
+                  <>
+                    <span className="text-base font-medium text-slate-400 line-through">
+                      ${currentOriginalPrice.toFixed(2)}
+                    </span>
+                    {product.discountRate && (
+                      <span className="text-base font-medium text-slate-400">
+                        (-%{product.discountRate})
+                      </span>
+                    )}
+                  </>
+                )}
                 {priceDelta !== 0 && (
                   <span
                     className={`text-xs font-bold px-2.5 py-1 rounded-full ${
@@ -185,12 +186,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               </div>
             </div>
             {inStock ? (
-              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Stokta Mevcut
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-bold bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 shadow-xs">
+              <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-bold bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 shadow-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                 Tükendi / Stokta Yok
               </span>
