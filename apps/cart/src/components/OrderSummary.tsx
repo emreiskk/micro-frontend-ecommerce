@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, Truck, ArrowRight, Trash2 } from "lucide-react";
+import { ShieldCheck, Truck, ArrowRight, Trash2, Check } from "lucide-react";
 import type { CartTotals } from "@repo/shared-types";
 
 interface OrderSummaryProps {
@@ -22,31 +22,45 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
         Sipariş Özeti
       </h3>
 
-      {/* Free Shipping Progress */}
-      <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 mb-6">
-        <div className="flex items-center justify-between text-xs font-semibold mb-2">
-          <span className="flex items-center gap-1.5 text-indigo-900">
-            <Truck className="w-4 h-4 text-indigo-600" />
-            {totals.shipping === 0 ? "Tebrikler! Kargo Bedava" : "Ücretsiz Kargo"}
-          </span>
-          <span className="text-indigo-700">
-            {totals.remainingForFreeShipping > 0
-              ? `$${totals.remainingForFreeShipping.toFixed(2)} kaldı`
-              : "Aktif"}
-          </span>
+      {/* Free Shipping Progress & Status */}
+      {totals.shipping === 0 ? (
+        <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/60 flex items-center gap-3 text-xs mb-6 animate-in fade-in duration-200">
+          <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+            <Check className="w-4 h-4" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-bold text-emerald-950 leading-tight">
+              Tebrikler! Kargo Ücretsiz
+            </p>
+            <p className="text-[11px] text-emerald-700 mt-0.5 leading-snug">
+              ${totals.freeShippingThreshold} barajını aştınız, bu siparişinizde kargo bedava.
+            </p>
+          </div>
         </div>
-        <div className="w-full h-2 bg-indigo-200/60 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${freeShippingProgress}%` }}
-          />
-        </div>
-        {totals.remainingForFreeShipping > 0 && (
-          <p className="text-[11px] text-slate-500 mt-2">
-            ${totals.freeShippingThreshold} ve üzeri siparişlerde kargo tamamen ücretsizdir.
+      ) : (
+        <div className="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 mb-6">
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="flex items-center gap-1.5 font-bold text-slate-800">
+              <Truck className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Ücretsiz Kargo</span>
+            </span>
+            <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+              ${totals.remainingForFreeShipping.toFixed(2)} kaldı
+            </span>
+          </div>
+
+          <div className="w-full h-1.5 bg-slate-200/80 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${freeShippingProgress}%` }}
+            />
+          </div>
+
+          <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+            Sepetinize <strong className="text-slate-800 font-semibold">${totals.remainingForFreeShipping.toFixed(2)}</strong> değerinde ürün daha ekleyin, kargo bedava olsun!
           </p>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Line Items */}
       <div className="space-y-3 text-xs text-slate-600 pb-5 border-b border-slate-100">
