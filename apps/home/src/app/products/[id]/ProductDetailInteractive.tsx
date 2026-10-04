@@ -262,7 +262,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                                 y2="0%"
                                 stroke="currentColor"
                                 strokeWidth={isSelected ? "1.5" : "1.2"}
-                                className={isSelected ? "text-white/40" : "text-slate-300"}
+                                className={isSelected ? "text-indigo-200" : "text-slate-300"}
                               />
                             </svg>
                           )}
@@ -284,9 +284,9 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                           {/* Price Delta Badge */}
                           {delta !== undefined && delta !== 0 && (
                             <span
-                              className={`relative z-10 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
+                              className={`relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-lg transition-colors ${
                                 isSelected
-                                  ? "bg-white/20 text-white border border-white/20"
+                                  ? "bg-indigo-700/80 text-white border border-indigo-500/50"
                                   : delta > 0
                                   ? "bg-indigo-50 text-indigo-600 border border-indigo-100"
                                   : "bg-emerald-50 text-emerald-600 border border-emerald-100"

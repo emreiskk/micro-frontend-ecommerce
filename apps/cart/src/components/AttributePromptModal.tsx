@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
-import { AlertCircle, Check, ArrowRight, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
-import { getProductAttributes, calculateProductPrice } from "@repo/shared-types";
+import { getProductAttributes, calculateProductPrice, isVariantInStock } from "@repo/shared-types";
 
 interface AttributePromptModalProps {
   isOpen: boolean;
@@ -19,6 +20,22 @@ export default function AttributePromptModal({
   onConfirm,
   onClose,
 }: AttributePromptModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when modal is open to avoid background shifts & hairline artifacts
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
   // Temporary state for the choices in the modal
   const [selections, setSelections] = useState<Record<number, SelectedAttributes>>(() => {
     const initial: Record<number, SelectedAttributes> = {};
@@ -33,7 +50,25 @@ export default function AttributePromptModal({
     return initial;
   });
 
-  if (!isOpen || unconfirmedItems.length === 0) return null;
+  // Keep selections synced if unconfirmedItems change
+  useEffect(() => {
+    setSelections((prev) => {
+      const next = { ...prev };
+      unconfirmedItems.forEach((item) => {
+        if (!next[item.product.id]) {
+          const attrs = item.product.attributes || getProductAttributes(item.product);
+          const itemMap: SelectedAttributes = {};
+          attrs.forEach((attr) => {
+            itemMap[attr.name] = item.selectedAttributes?.[attr.name] || attr.defaultValue || attr.options[0];
+          });
+          next[item.product.id] = itemMap;
+        }
+      });
+      return next;
+    });
+  }, [unconfirmedItems]);
+
+  if (!isOpen || !mounted || unconfirmedItems.length === 0) return null;
 
   const handleSelect = (productId: number, attrName: string, value: string) => {
     setSelections((prev) => ({
@@ -54,26 +89,23 @@ export default function AttributePromptModal({
     onConfirm(result);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+  const modalContent = (
+    <div className="fixed -inset-4 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform animate-in zoom-in-95 duration-200">
+        {/* Header - Icon removed as requested */}
         <div className="flex items-start justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <AlertCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                Sipariş Öncesi Seçim Onayı
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Siparişinizi doğru hazırlayabilmemiz için lütfen ürün beden/boyut tercihinizi belirleyin.
-              </p>
-            </div>
+          <div>
+            <h3 className="text-xl font-black text-slate-900 tracking-tight">
+              Sipariş Öncesi Seçim Onayı
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Siparişinizi doğru hazırlayabilmemiz için lütfen ürün beden/boyut tercihinizi belirleyin.
+            </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -84,13 +116,21 @@ export default function AttributePromptModal({
             {unconfirmedItems.map((item) => {
               const attrs = item.product.attributes || getProductAttributes(item.product);
               const currentAttrs = selections[item.product.id] || {};
+              const unitPrice = calculateProductPrice(item.product, currentAttrs);
+              const originalUnitPrice = item.product.originalPrice
+                ? calculateProductPrice({ ...item.product, price: item.product.originalPrice }, currentAttrs)
+                : undefined;
+              const priceDelta = Number((unitPrice - item.product.price).toFixed(2));
+              const itemSubtotal = (unitPrice * item.quantity).toFixed(2);
+              const inStock = isVariantInStock(item.product, currentAttrs);
 
               return (
                 <div
                   key={item.product.id}
                   className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-3"
                 >
-                  <div className="flex items-center gap-3">
+                  {/* Product Card Top: Image + Title + Fixed Top-Right Stock Badge */}
+                  <div className="flex items-start gap-3">
                     <div className="relative w-12 h-12 bg-white rounded-xl p-1.5 border border-slate-200/80 flex-shrink-0 flex items-center justify-center">
                       <Image
                         src={item.product.image}
@@ -101,21 +141,55 @@ export default function AttributePromptModal({
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-bold text-slate-900 truncate">
-                        {item.product.title}
-                      </h4>
-                      {(() => {
-                        const unitPrice = calculateProductPrice(item.product, currentAttrs);
-                        const itemSubtotal = (unitPrice * item.quantity).toFixed(2);
-                        return (
-                          <span className="text-[11px] text-slate-500 font-medium">
-                            Adet: {item.quantity} • Birim: <strong className="text-slate-800">${unitPrice.toFixed(2)}</strong> • Toplam: <strong className="text-indigo-600">${itemSubtotal}</strong>
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="text-xs font-bold text-slate-900 truncate">
+                          {item.product.title}
+                        </h4>
+                        {/* Stock Badge - Fixed on Top Right */}
+                        {inStock ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex-shrink-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Stokta Mevcut
                           </span>
-                        );
-                      })()}
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60 flex-shrink-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                            Tükendi
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Price Row: Current Price, Original Strikethrough, Discount % (-%30), Option Delta Badge */}
+                      <div className="mt-1.5 flex items-baseline gap-2 flex-wrap">
+                        <span className="text-sm font-black text-slate-900">
+                          ${unitPrice.toFixed(2)}
+                        </span>
+                        {originalUnitPrice && originalUnitPrice > unitPrice && (
+                          <>
+                            <span className="text-xs text-slate-400 line-through font-normal">
+                              ${originalUnitPrice.toFixed(2)}
+                            </span>
+                            {item.product.discountRate && (
+                              <span className="text-xs text-slate-400 font-medium">
+                                (-%{item.product.discountRate})
+                              </span>
+                            )}
+                          </>
+                        )}
+                        {priceDelta !== 0 && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+                            <span>{priceDelta > 0 ? `+$${priceDelta.toFixed(2)}` : `-$${Math.abs(priceDelta).toFixed(2)}`}</span>
+                            <span className="text-[9px] font-medium text-indigo-500/80">opsiyon</span>
+                          </span>
+                        )}
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          (Adet: {item.quantity} • Toplam: <strong className="text-slate-700 font-bold">${itemSubtotal}</strong>)
+                        </span>
+                      </div>
                     </div>
                   </div>
 
+                  {/* Attributes Selection */}
                   {attrs.map((attr) => (
                     <div key={attr.name} className="pt-2 border-t border-slate-200/60">
                       <div className="flex items-center justify-between text-xs mb-2">
@@ -126,7 +200,7 @@ export default function AttributePromptModal({
                           {currentAttrs[attr.name] || attr.defaultValue}
                         </span>
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-2">
                         {attr.options.map((opt) => {
                           const isSelected = (currentAttrs[attr.name] || attr.defaultValue) === opt;
                           const detail = attr.optionDetails?.find((d) => d.label === opt);
@@ -136,17 +210,21 @@ export default function AttributePromptModal({
                               key={opt}
                               type="button"
                               onClick={() => handleSelect(item.product.id, attr.name, opt)}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                                 isSelected
-                                  ? "bg-indigo-600 text-white shadow-sm scale-105 border-2 border-indigo-600"
+                                  ? "bg-indigo-600 text-white shadow-sm scale-102 border-2 border-indigo-600"
                                   : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
                               }`}
                             >
                               <span>{opt}</span>
                               {delta !== undefined && delta !== 0 && (
                                 <span
-                                  className={`text-[10px] ${
-                                    isSelected ? "text-indigo-100" : "text-slate-500 font-semibold"
+                                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded-lg transition-colors ${
+                                    isSelected
+                                      ? "bg-indigo-700/80 text-white border border-indigo-500/50"
+                                      : delta > 0
+                                      ? "bg-indigo-50 text-indigo-600 border border-indigo-100"
+                                      : "bg-emerald-50 text-emerald-600 border border-emerald-100"
                                   }`}
                                 >
                                   {delta > 0 ? `+$${delta}` : `-$${Math.abs(delta)}`}
@@ -163,25 +241,28 @@ export default function AttributePromptModal({
             })}
           </div>
 
+          {/* Modal Footer - Single Arrow Icon as Requested */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-3 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+              className="px-5 py-3 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
             >
               Vazgeç
             </button>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all cursor-pointer"
+              className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all cursor-pointer"
             >
-              <Check className="w-4 h-4" />
               <span>Seçimleri Onayla ve Siparişi Tamamla</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
         </form>
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
+

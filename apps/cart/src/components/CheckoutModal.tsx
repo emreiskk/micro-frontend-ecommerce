@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
-import { CheckCircle2, ShoppingBag, ArrowRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 import type { CartTotals, CartItem } from "@repo/shared-types";
 
 interface CheckoutModalProps {
@@ -12,12 +13,28 @@ interface CheckoutModalProps {
 }
 
 export default function CheckoutModal({ isOpen, totals, items, onClose }: CheckoutModalProps) {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when modal is open to avoid background shifts & hairline artifacts
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
 
   const orderNumber = Math.floor(100000 + Math.random() * 900000);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+  const modalContent = (
+    <div className="fixed -inset-4 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 text-center transform animate-in zoom-in-95 duration-200">
         <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/10 mb-4">
           <CheckCircle2 className="w-9 h-9" />
@@ -107,14 +124,16 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
                 }
               }
             }}
-            className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all cursor-pointer"
+            className="group w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all cursor-pointer"
           >
-            <ShoppingBag className="w-4 h-4" />
             <span>Alışverişe Devam Et</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
+

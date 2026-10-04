@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
-import { SlidersHorizontal, Check, X, Tag, AlertCircle, Bell } from "lucide-react";
+import { SlidersHorizontal, Check, X, AlertCircle, Bell } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
 import {
   getProductAttributes,
@@ -24,6 +25,22 @@ export default function EditVariantModal({
   onSave,
   onClose,
 }: EditVariantModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when modal is open to avoid background shifts & hairline artifacts
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
   const { product } = item;
   const attributes = product.attributes || getProductAttributes(product);
 
@@ -35,10 +52,13 @@ export default function EditVariantModal({
     return map;
   });
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const isSelectedVariantInStock = isVariantInStock(product, tempAttributes);
   const currentUnitPrice = calculateProductPrice(product, tempAttributes);
+  const originalUnitPrice = product.originalPrice
+    ? calculateProductPrice({ ...product, price: product.originalPrice }, tempAttributes)
+    : undefined;
   const currentTotal = (currentUnitPrice * item.quantity).toFixed(2);
   const priceDelta = Number((currentUnitPrice - product.price).toFixed(2));
 
@@ -56,8 +76,8 @@ export default function EditVariantModal({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+  const modalContent = (
+    <div className="fixed -inset-4 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
@@ -75,6 +95,7 @@ export default function EditVariantModal({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
           >
@@ -82,26 +103,54 @@ export default function EditVariantModal({
           </button>
         </div>
 
-        {/* Product Preview & Dynamic Price */}
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3 mb-6">
-          <div className="relative w-14 h-14 bg-white rounded-xl p-1.5 border border-slate-200/80 flex-shrink-0 flex items-center justify-center">
-            <Image
-              src={product.image}
-              alt={product.title}
-              fill
-              unoptimized
-              className="object-contain p-1"
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="text-xs font-bold text-slate-900 truncate">
-              {product.title}
-            </h4>
-            <div className="mt-1 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-slate-900">
+        {/* Product Card: Fixed Top-Right Stock Badge + Price Row with Original Strikethrough & Non-Pink Discount */}
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="relative w-14 h-14 bg-white rounded-xl p-1.5 border border-slate-200/80 flex-shrink-0 flex items-center justify-center">
+              <Image
+                src={product.image}
+                alt={product.title}
+                fill
+                unoptimized
+                className="object-contain p-1"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate pr-1">
+                  {product.title}
+                </h4>
+                {/* Fixed Top-Right Stock Badge */}
+                {isSelectedVariantInStock ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex-shrink-0 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Stokta Mevcut
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60 flex-shrink-0 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    Tükendi
+                  </span>
+                )}
+              </div>
+
+              {/* Price Row */}
+              <div className="mt-2 flex items-baseline gap-2 flex-wrap">
+                <span className="text-sm sm:text-base font-black text-slate-900">
                   ${currentUnitPrice.toFixed(2)}
                 </span>
+                {originalUnitPrice && originalUnitPrice > currentUnitPrice && (
+                  <>
+                    <span className="text-xs text-slate-400 line-through font-normal">
+                      ${originalUnitPrice.toFixed(2)}
+                    </span>
+                    {product.discountRate && (
+                      <span className="text-xs text-slate-400 font-medium">
+                        (-%{product.discountRate})
+                      </span>
+                    )}
+                  </>
+                )}
                 {priceDelta !== 0 && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
                     <span>{priceDelta > 0 ? `+$${priceDelta.toFixed(2)}` : `-$${Math.abs(priceDelta).toFixed(2)}`}</span>
@@ -112,17 +161,6 @@ export default function EditVariantModal({
                   ({item.quantity} adet: ${currentTotal})
                 </span>
               </div>
-              {isSelectedVariantInStock ? (
-                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-medium bg-emerald-50/70 px-2 py-0.5 rounded-lg border border-emerald-200/60 flex-shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Stokta
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-rose-700 font-medium bg-rose-50/70 px-2 py-0.5 rounded-lg border border-rose-200/60 flex-shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  Tükendi
-                </span>
-              )}
             </div>
           </div>
         </div>
@@ -178,7 +216,7 @@ export default function EditVariantModal({
                               y2="0%"
                               stroke="currentColor"
                               strokeWidth={isSelected ? "1.5" : "1.2"}
-                              className={isSelected ? "text-white/40" : "text-slate-300"}
+                              className={isSelected ? "text-indigo-200" : "text-slate-300"}
                             />
                           </svg>
                         )}
@@ -200,9 +238,9 @@ export default function EditVariantModal({
                         {/* Price Delta Badge */}
                         {delta !== undefined && delta !== 0 && (
                           <span
-                            className={`relative z-10 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
+                            className={`relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-lg transition-colors ${
                               isSelected
-                                ? "bg-white/20 text-white border border-white/20"
+                                ? "bg-indigo-700/80 text-white border border-indigo-500/50"
                                 : delta > 0
                                 ? "bg-indigo-50 text-indigo-600 border border-indigo-100"
                                 : "bg-emerald-50 text-emerald-600 border border-emerald-100"
@@ -254,4 +292,7 @@ export default function EditVariantModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
+
