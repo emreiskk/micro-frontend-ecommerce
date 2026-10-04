@@ -124,7 +124,7 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
 
       {/* Safe badge */}
       <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-400">
-        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+        <ShieldCheck className="w-4 h-4 text-slate-400" />
         <span>256-Bit SSL Güvenli Ödeme Altyapısı</span>
       </div>
     </div>

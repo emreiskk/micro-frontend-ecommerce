@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { SlidersHorizontal, Check, X, AlertCircle, Bell } from "lucide-react";
+import { Check, X, AlertCircle, Bell } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
 import {
   getProductAttributes,
@@ -81,18 +81,13 @@ export default function EditVariantModal({
       <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <SlidersHorizontal className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                Varyantı Düzenle
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Sepetinizdeki ürün tercihlerini güncelleyin
-              </p>
-            </div>
+          <div>
+            <h3 className="text-xl font-black text-slate-900 tracking-tight">
+              Ürünü Düzenle
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Sepetinizdeki ürün tercihlerini güncelleyin
+            </p>
           </div>
           <button
             type="button"
