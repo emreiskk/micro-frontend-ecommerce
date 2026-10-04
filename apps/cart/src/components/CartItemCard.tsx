@@ -131,11 +131,11 @@ export default function CartItemCard({
           </a>
 
           {/* Clean Selected Attributes Badge & Dedicated Edit Button */}
-          <div className="mt-2.5 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+          <div className="mt-2.5 flex items-center justify-center sm:justify-start gap-2 flex-wrap">
             {selectedAttrsSummary && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100/90 border border-slate-200 px-3 py-1 rounded-xl">
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 bg-slate-100/90 border border-slate-200/80 px-2.5 py-1 rounded-lg">
                 <Tag className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
-                <span className="truncate max-w-xs">{selectedAttrsSummary}</span>
+                <span className="truncate max-w-[190px] sm:max-w-xs md:max-w-sm">{selectedAttrsSummary}</span>
               </span>
             )}
 
@@ -143,7 +143,7 @@ export default function CartItemCard({
               <button
                 type="button"
                 onClick={() => setIsEditOpen(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/60 px-3 py-1 rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100/80 border border-indigo-200/60 px-2.5 py-1 rounded-lg transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0"
                 title="Ürün varyantını düzenle"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -182,10 +182,10 @@ export default function CartItemCard({
         {/* Quantity & Controls */}
         <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4">
           {/* Quantity Stepper */}
-          <div className="flex items-center border border-slate-200 rounded-2xl bg-slate-50 p-1">
+          <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
             <button
               onClick={() => onUpdateQuantity(itemKey, quantity - 1)}
-              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors cursor-pointer"
+              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer"
               aria-label="Azalt"
             >
               <Minus className="w-3.5 h-3.5" />
@@ -195,7 +195,7 @@ export default function CartItemCard({
             </span>
             <button
               onClick={() => onUpdateQuantity(itemKey, quantity + 1)}
-              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors cursor-pointer"
+              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer"
               aria-label="Artır"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -204,12 +204,19 @@ export default function CartItemCard({
 
           {/* Line Item Total & Trash */}
           <div className="flex items-center gap-3">
-            <span className="text-base font-black text-slate-900 tracking-tight">
-              ${itemTotal}
-            </span>
+            <div className="flex flex-col items-end leading-none">
+              {item.originalUnitPrice && item.originalUnitPrice > unitPrice && (
+                <span className="text-xs text-slate-400 line-through font-medium mb-1">
+                  ${(item.originalUnitPrice * quantity).toFixed(2)}
+                </span>
+              )}
+              <span className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                ${itemTotal}
+              </span>
+            </div>
             <button
               onClick={() => onRemove(itemKey)}
-              className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+              className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
               title="Ürünü sepetten kaldır"
             >
               <Trash2 className="w-4 h-4" />

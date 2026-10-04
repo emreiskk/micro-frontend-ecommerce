@@ -23,7 +23,7 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
           <CheckCircle2 className="w-9 h-9" />
         </div>
 
-        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block mb-2">
+        <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block mb-2">
           Sipariş No: #{orderNumber}
         </span>
 

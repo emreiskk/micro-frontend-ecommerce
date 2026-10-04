@@ -67,13 +67,15 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
             <span className="font-bold">-${totals.totalSavings.toFixed(2)}</span>
           </div>
         )}
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <span>Kargo:</span>
           <span className="font-semibold">
             {totals.selectedCount === 0 ? (
               <span className="text-slate-400 font-medium">$0.00</span>
             ) : totals.shipping === 0 ? (
-              <span className="text-emerald-600 font-bold uppercase text-[11px]">Ücretsiz</span>
+              <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 font-semibold uppercase text-[10px] px-2 py-0.5 rounded-lg">
+                Ücretsiz
+              </span>
             ) : (
               `$${totals.shipping.toFixed(2)}`
             )}
@@ -113,7 +115,7 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
 
         <button
           onClick={onClearCart}
-          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-slate-400 hover:text-rose-600 text-xs font-semibold transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-slate-400 hover:text-rose-600 text-xs font-semibold transition-colors cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" />
           <span>Sepeti Boşalt</span>
