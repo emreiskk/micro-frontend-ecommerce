@@ -46,15 +46,6 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
         </span>
       </div>
 
-      {/* Discount Badge */}
-      {product.discountRate && (
-        <div className="absolute top-4 right-4 z-10">
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-rose-50/95 backdrop-blur-md text-rose-700 border border-rose-200/80 shadow-2xs">
-            %{product.discountRate} İndirim
-          </span>
-        </div>
-      )}
-
       {/* Product Image Container */}
       <Link
         href={`/products/${product.id}`}
@@ -95,39 +86,33 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
         </div>
 
         {/* Price & Action */}
-        <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            {product.originalPrice ? (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 leading-none mb-1">
+        <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-3">
+          <div>
+            <span className="text-xs text-slate-400 block font-medium mb-1">Fiyat</span>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-xl font-black text-slate-900 tracking-tight">
+                ${product.price.toFixed(2)}
+              </span>
+              {product.originalPrice && (
+                <>
                   <span className="text-xs text-slate-400 line-through font-medium">
                     ${product.originalPrice.toFixed(2)}
                   </span>
-                  <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200/80 px-1.5 py-0.5 rounded leading-none">
+                  <span className="text-xs text-slate-400 font-medium">
                     (-%{product.discountRate})
                   </span>
-                </div>
-                <span className="text-lg font-black text-slate-900 tracking-tight leading-none">
-                  ${product.price.toFixed(2)}
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <span className="text-xs text-slate-400 block font-medium leading-none mb-1">Fiyat</span>
-                <span className="text-lg font-black text-slate-900 tracking-tight leading-none">
-                  ${product.price.toFixed(2)}
-                </span>
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </div>
 
           <button
             onClick={handleAddToCart}
             disabled={isAdding}
-            className={`flex-shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm cursor-pointer ${
+            className={`w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm cursor-pointer ${
               isAdding
-                ? "bg-emerald-600 text-white"
-                : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-95"
+                ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-[0.98]"
             }`}
           >
             {isAdding ? (
