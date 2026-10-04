@@ -129,7 +129,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
         {/* Right Column: Title, Category, Rating, Price, Variants, Actions, Guarantees */}
         <div className="flex flex-col justify-start">
           {/* Category Pill */}
-          <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block w-fit mb-3">
+          <span className="px-3 py-1 rounded-lg text-xs font-semibold tracking-wide uppercase bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block w-fit mb-3">
             {getCategoryDisplayName(product.category)}
           </span>
 
@@ -158,12 +158,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-slate-400 font-medium">Fiyat</span>
               {inStock ? (
-                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-medium bg-emerald-50/70 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-medium bg-emerald-50/70 px-2.5 py-0.5 rounded-lg border border-emerald-200/60">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Stokta Mevcut
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 text-xs text-rose-700 font-medium bg-rose-50/70 px-2.5 py-0.5 rounded-full border border-rose-200/60">
+                <span className="inline-flex items-center gap-1.5 text-xs text-rose-700 font-medium bg-rose-50/70 px-2.5 py-0.5 rounded-lg border border-rose-200/60">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                   Tükendi / Stokta Yok
                 </span>

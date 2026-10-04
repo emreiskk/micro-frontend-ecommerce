@@ -103,7 +103,7 @@ export default function EditVariantModal({
                   ${currentUnitPrice.toFixed(2)}
                 </span>
                 {priceDelta !== 0 && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
                     <span>{priceDelta > 0 ? `+$${priceDelta.toFixed(2)}` : `-$${Math.abs(priceDelta).toFixed(2)}`}</span>
                     <span className="text-[9px] font-medium text-indigo-500/80">opsiyon</span>
                   </span>
@@ -113,12 +113,12 @@ export default function EditVariantModal({
                 </span>
               </div>
               {isSelectedVariantInStock ? (
-                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-medium bg-emerald-50/70 px-2 py-0.5 rounded-full border border-emerald-200/60 flex-shrink-0">
+                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-medium bg-emerald-50/70 px-2 py-0.5 rounded-lg border border-emerald-200/60 flex-shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Stokta
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-rose-700 font-medium bg-rose-50/70 px-2 py-0.5 rounded-full border border-rose-200/60 flex-shrink-0">
+                <span className="inline-flex items-center gap-1 text-[11px] text-rose-700 font-medium bg-rose-50/70 px-2 py-0.5 rounded-lg border border-rose-200/60 flex-shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                   Tükendi
                 </span>

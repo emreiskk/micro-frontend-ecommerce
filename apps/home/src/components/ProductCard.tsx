@@ -41,7 +41,7 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
     <div className="group bg-white rounded-3xl border border-slate-200/80 hover:border-indigo-300 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 flex flex-col overflow-hidden relative">
       {/* Category Pill */}
       <div className="absolute top-4 left-4 z-10">
-        <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-white/90 backdrop-blur-md text-slate-700 shadow-sm border border-slate-100">
+        <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold tracking-wide uppercase bg-white/90 backdrop-blur-md text-slate-700 shadow-sm border border-slate-100">
           {getCategoryDisplayName(product.category)}
         </span>
       </div>

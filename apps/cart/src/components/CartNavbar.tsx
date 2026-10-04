@@ -34,7 +34,7 @@ export default function CartNavbar() {
               <span className="text-xl font-black tracking-tight text-slate-900">
                 TrendSphere
               </span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                 Cart MFE
               </span>
             </div>
@@ -46,7 +46,7 @@ export default function CartNavbar() {
 
         {/* Back Link & Info */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200">
             <Layers className="w-3.5 h-3.5 text-emerald-600" />
             <span>Senkronizasyon: Real-Time Broadcast</span>
           </div>

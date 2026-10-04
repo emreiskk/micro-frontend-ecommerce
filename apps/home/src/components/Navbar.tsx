@@ -27,7 +27,7 @@ export default function Navbar() {
           <div>
             <span className="text-xl font-black tracking-tight text-slate-900 flex items-center gap-1.5">
               TrendSphere
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200/50">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-200/50">
                 Home MFE
               </span>
             </span>
@@ -39,7 +39,7 @@ export default function Navbar() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200">
             <Layers className="w-3.5 h-3.5 text-indigo-600" />
             <span>Multi-Zone: Next.js App Router</span>
           </div>

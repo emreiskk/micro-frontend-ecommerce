@@ -104,16 +104,16 @@ export default function CartItemCard({
         {/* Info */}
         <div className="flex-1 min-w-0 text-center sm:text-left">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg inline-block">
               {getCategoryDisplayName(product.category)}
             </span>
             {!isSelected && (
-              <span className="text-[10px] font-bold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded-full inline-block">
+              <span className="text-[10px] font-bold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded-lg inline-block">
                 Siparişe Dahil Değil
               </span>
             )}
             {item.needsAttributeConfirmation && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full animate-pulse">
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-lg">
                 <AlertCircle className="w-3 h-3 text-amber-600" />
                 Lütfen Seçim Yapınız
               </span>
@@ -171,7 +171,7 @@ export default function CartItemCard({
               )}
             </div>
             {item.unitPrice && Math.abs(item.unitPrice - product.price) > 0.001 && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
                 <span>{item.unitPrice > product.price ? `+$${(item.unitPrice - product.price).toFixed(2)}` : `-$${(product.price - item.unitPrice).toFixed(2)}`}</span>
                 <span className="text-[10px] font-medium text-indigo-500/80">opsiyon</span>
               </span>
