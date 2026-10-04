@@ -94,12 +94,12 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
   }, [initialProducts, selectedCategory, searchQuery, sortBy]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
       <Toast product={toastProduct} onClose={() => setToastProduct(null)} />
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-sm mb-10">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-3.5 sm:p-6 border border-slate-200/80 shadow-sm mb-6 sm:mb-10">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-4">
           {/* Search Input */}
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -109,7 +109,7 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
               value={searchQuery}
               maxLength={50}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 pl-11 pr-10 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+              className="w-full h-11 sm:h-12 pl-11 pr-10 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
             />
             {searchQuery && (
               <button
@@ -124,17 +124,17 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
           </div>
 
           {/* Custom Sort Selection */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 flex-shrink-0">
               <ArrowUpDown className="w-3.5 h-3.5 text-slate-500" />
-              <span>Sırala:</span>
+              <span className="hidden xs:inline">Sırala:</span>
             </div>
 
-            <div className="relative w-full sm:w-56 md:w-60 flex-shrink-0" ref={sortRef}>
+            <div className="relative flex-1 sm:flex-initial sm:w-56 md:w-60" ref={sortRef}>
               <button
                 type="button"
                 onClick={() => setIsSortOpen((prev) => !prev)}
-                className={`w-full h-12 px-4 rounded-2xl border text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
+                className={`w-full h-11 sm:h-12 px-3.5 sm:px-4 rounded-2xl border text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
                   isSortOpen
                     ? "bg-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-md text-slate-900"
                     : "bg-slate-50 hover:bg-slate-100/80 border-slate-200 text-slate-800 shadow-xs"
@@ -146,9 +146,9 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
                   {activeSort.label}
                 </span>
                 {isSortOpen ? (
-                  <ChevronUp className="w-4 h-4 text-indigo-600 transition-colors flex-shrink-0 ml-2 animate-in zoom-in-75 duration-150" />
+                  <ChevronUp className="w-4 h-4 text-indigo-600 transition-colors flex-shrink-0 ml-1.5 sm:ml-2 animate-in zoom-in-75 duration-150" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-slate-400 transition-colors flex-shrink-0 ml-2 animate-in zoom-in-75 duration-150" />
+                  <ChevronDown className="w-4 h-4 text-slate-400 transition-colors flex-shrink-0 ml-1.5 sm:ml-2 animate-in zoom-in-75 duration-150" />
                 )}
               </button>
 
@@ -190,16 +190,16 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
         </div>
 
         {/* Category Pills */}
-        <div className="mt-5 pt-5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mr-2 flex-shrink-0">
+        <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mr-1 sm:mr-2 flex-shrink-0">
             <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
-            <span>Kategoriler:</span>
+            <span className="hidden xs:inline">Kategoriler:</span>
           </div>
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedCategory === cat
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
                   : "bg-slate-100 hover:bg-slate-200/80 text-slate-600"
@@ -212,12 +212,12 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight flex-shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4 mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex-shrink-0">
           Katalog ({filteredProducts.length} Ürün)
         </h2>
         {searchQuery.trim() && (
-          <span className="text-xs text-slate-500 truncate max-w-[200px] sm:max-w-md text-right">
+          <span className="text-xs text-slate-500 truncate max-w-full sm:max-w-md sm:text-right">
             &ldquo;<span className="font-semibold text-slate-700">{truncatedSearchQuery}</span>&rdquo; için arama sonuçları
           </span>
         )}
@@ -225,7 +225,7 @@ export default function ProductCatalog({ initialProducts }: ProductCatalogProps)
 
       {/* Product Grid */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}

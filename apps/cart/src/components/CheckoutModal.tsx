@@ -34,10 +34,10 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
   const orderNumber = Math.floor(100000 + Math.random() * 900000);
 
   const modalContent = (
-    <div className="fixed -inset-4 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 text-center transform animate-in zoom-in-95 duration-200">
-        <div className="w-16 h-16 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/15 mb-4">
-          <CheckCircle2 className="w-9 h-9" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-in fade-in">
+      <div className="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full p-5 sm:p-8 shadow-2xl border border-slate-100 text-center max-h-[92vh] overflow-y-auto transform animate-in zoom-in-95 duration-200">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-2xl sm:rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/15 mb-3 sm:mb-4">
+          <CheckCircle2 className="w-8 h-8 sm:w-9 sm:h-9" />
         </div>
 
         <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-200/50 inline-block mb-2">

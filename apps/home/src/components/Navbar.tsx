@@ -12,20 +12,20 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 transition-all">
       {/* Main Nav */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-200">
-            <ShoppingBag className="w-6 h-6" />
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-200">
+            <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <span className="text-xl font-black tracking-tight text-slate-900 flex items-center gap-1.5">
+            <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 flex items-center gap-1.5">
               TrendSphere
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-200/50">
+              <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-200/50">
                 Home MFE
               </span>
             </span>
-            <span className="text-[11px] font-medium text-slate-500 block">
+            <span className="text-[11px] font-medium text-slate-500 hidden sm:block">
               Mikro Frontend Ana Servisi (Port: 3000)
             </span>
           </div>

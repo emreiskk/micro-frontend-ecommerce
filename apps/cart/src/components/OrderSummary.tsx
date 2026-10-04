@@ -17,7 +17,7 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
   );
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm sticky top-28">
+    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-slate-200/80 shadow-sm sticky top-28">
       <h3 className="text-lg font-black text-slate-900 tracking-tight mb-4">
         Sipariş Özeti
       </h3>

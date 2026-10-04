@@ -112,9 +112,9 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
       <Toast product={toastVisible ? product : null} onClose={() => setToastVisible(false)} />
 
       {/* Top 2-Column Section: Left Image, Right Product Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-14 items-start">
         {/* Left Column: Product Image (Top-aligned, zero empty top gap, sticky on large screens) */}
-        <div className="relative aspect-square w-full max-h-[500px] bg-slate-50/50 rounded-3xl p-8 flex items-center justify-center border border-slate-100 overflow-hidden lg:sticky lg:top-24">
+        <div className="relative aspect-square w-full max-h-[360px] sm:max-h-[500px] bg-slate-50/50 rounded-2xl sm:rounded-3xl p-4 sm:p-8 flex items-center justify-center border border-slate-100 overflow-hidden lg:sticky lg:top-24">
           <Image
             src={product.image}
             alt={product.title}
@@ -122,38 +122,38 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             unoptimized
             sizes="(max-width: 1024px) 100vw, 50vw"
             priority
-            className="object-contain p-6 hover:scale-105 transition-transform duration-300 ease-out"
+            className="object-contain p-3 sm:p-6 hover:scale-105 transition-transform duration-300 ease-out"
           />
         </div>
 
         {/* Right Column: Title, Category, Rating, Price, Variants, Actions, Guarantees */}
         <div className="flex flex-col justify-start">
           {/* Category Pill */}
-          <span className="px-3 py-1 rounded-lg text-xs font-bold tracking-wider uppercase bg-indigo-50 text-indigo-700 border border-indigo-200/60 inline-block w-fit mb-3">
+          <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-bold tracking-wider uppercase bg-indigo-50 text-indigo-700 border border-indigo-200/60 inline-block w-fit mb-2 sm:mb-3">
             {getCategoryDisplayName(product.category)}
           </span>
 
           {/* Product Title */}
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-snug">
             {product.title}
           </h1>
 
           {/* Rating */}
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-2.5 sm:mt-3 flex items-center gap-2">
             <div className="flex items-center text-amber-500">
-              <Star className="w-4 h-4 fill-amber-400 stroke-amber-400" />
-              <span className="ml-1 text-sm font-bold text-slate-800">
+              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 stroke-amber-400" />
+              <span className="ml-1 text-xs sm:text-sm font-bold text-slate-800">
                 {product.rating?.rate ?? 4.5}
               </span>
             </div>
             <span className="text-slate-300">•</span>
-            <span className="text-xs text-slate-500 font-medium">
-              {product.rating?.count ?? 120} kullanıcı değerlendirmesi
+            <span className="text-[11px] sm:text-xs text-slate-500 font-medium">
+              {product.rating?.count ?? 120} değerlendirme
             </span>
           </div>
 
           {/* Dynamic Price Display & Stock Badge */}
-          <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col gap-2">
+          <div className="mt-4 sm:mt-6 p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col gap-2">
             {/* Header: Fiyat Title & Stock Status */}
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-slate-400 font-medium">Fiyat</span>
@@ -171,17 +171,17 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             </div>
 
             {/* Price Values Row */}
-            <div className="flex items-baseline gap-2.5 flex-wrap">
-              <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
+            <div className="flex items-baseline gap-2 sm:gap-2.5 flex-wrap">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight transition-all">
                 ${currentUnitPrice.toFixed(2)}
               </span>
               {currentOriginalPrice && (
                 <>
-                  <span className="text-base font-medium text-slate-400 line-through">
+                  <span className="text-sm sm:text-base font-medium text-slate-400 line-through">
                     ${currentOriginalPrice.toFixed(2)}
                   </span>
                   {product.discountRate && (
-                    <span className="text-base font-medium text-slate-400">
+                    <span className="text-sm sm:text-base font-medium text-slate-400">
                       (-%{product.discountRate})
                     </span>
                   )}
@@ -197,16 +197,16 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           </div>
 
           {/* Product Description */}
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Ürün Açıklaması</h3>
-            <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
               {product.description}
             </p>
           </div>
 
           {/* Variant Selector (Beden, Ekran Boyutu, Depolama vs.) */}
           {attributes && attributes.length > 0 && (
-            <div className="mt-6 p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
+            <div className="mt-4 sm:mt-6 p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
               {attributes.map((attr) => (
                 <div key={attr.name} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -222,7 +222,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                       {attr.options.length} Seçenek
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-2.5 pt-1.5">
+                  <div className="flex flex-wrap gap-2 sm:gap-2.5 pt-1 sm:pt-1.5">
                     {attr.options.map((opt) => {
                       const isSelected = (selectedAttributes[attr.name] || attr.defaultValue) === opt;
                       const detail = attr.optionDetails?.find((d) => d.label === opt);
@@ -237,8 +237,8 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                           onClick={() =>
                             setSelectedAttributes((prev) => ({ ...prev, [attr.name]: opt }))
                           }
-                          className={`relative px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                            opt.length <= 3 ? "min-w-[42px]" : ""
+                          className={`relative px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                            opt.length <= 3 ? "min-w-[38px] sm:min-w-[42px]" : ""
                           } ${
                             isSelected
                               ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600"
@@ -305,31 +305,31 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           )}
 
           {/* Add to Cart Actions */}
-          <div className="mt-6 flex items-center gap-4">
+          <div className="mt-6 flex items-center gap-3 sm:gap-4">
             {/* Quantity selector */}
             <div
-              className={`flex items-center h-[52px] border border-slate-200 rounded-2xl bg-slate-50 p-1.5 transition-opacity ${
+              className={`flex items-center h-[48px] sm:h-[52px] border border-slate-200 rounded-2xl bg-slate-50 p-1 sm:p-1.5 transition-opacity ${
                 !inStock ? "opacity-40 cursor-not-allowed" : ""
               }`}
             >
               <button
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 disabled={!inStock}
-                className="w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
+                className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
                 aria-label="Azalt"
               >
-                <Minus className="w-4 h-4" />
+                <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
-              <span className="w-10 text-center font-bold text-sm text-slate-800">
+              <span className="w-8 sm:w-10 text-center font-bold text-xs sm:text-sm text-slate-800">
                 {quantity}
               </span>
               <button
                 onClick={() => setQuantity((q) => q + 1)}
                 disabled={!inStock}
-                className="w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
+                className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
                 aria-label="Artır"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
 
@@ -338,7 +338,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               <button
                 onClick={handleAdd}
                 disabled={isAdding}
-                className={`flex-1 h-[52px] inline-flex items-center justify-center gap-2.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
+                className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
                   isAdding
                     ? "bg-emerald-600 text-white shadow-emerald-500/20"
                     : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
@@ -346,12 +346,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               >
                 {isAdding ? (
                   <>
-                    <Check className="w-5 h-5 animate-in zoom-in" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
                     <span>Sepete Eklendi!</span>
                   </>
                 ) : (
                   <>
-                    <ShoppingCart className="w-5 h-5" />
+                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>Sepete Ekle (${(currentUnitPrice * quantity).toFixed(2)})</span>
                   </>
                 )}
@@ -361,7 +361,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                 type="button"
                 onClick={handleNotify}
                 disabled={isNotified}
-                className={`flex-1 h-[52px] inline-flex items-center justify-center gap-2.5 px-6 rounded-2xl font-bold text-sm shadow-lg transition-all ${
+                className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
                   isNotified
                     ? "bg-emerald-600 text-white shadow-emerald-500/20"
                     : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
@@ -369,12 +369,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               >
                 {isNotified ? (
                   <>
-                    <Check className="w-5 h-5 animate-in zoom-in" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
                     <span>Talebiniz Alındı!</span>
                   </>
                 ) : (
                   <>
-                    <Bell className="w-5 h-5" />
+                    <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>Gelince Haber Ver</span>
                   </>
                 )}
@@ -383,17 +383,17 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           </div>
 
           {/* Guarantees */}
-          <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-3 gap-3 text-xs text-slate-600">
-            <div className="flex items-center justify-center sm:justify-start gap-2">
-              <Truck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+          <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-slate-100 grid grid-cols-3 gap-2 sm:gap-3 text-[11px] sm:text-xs text-slate-600">
+            <div className="flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
+              <Truck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 flex-shrink-0" />
               <span className="font-medium">Hızlı Kargo</span>
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 flex-shrink-0" />
               <span className="font-medium">Orijinal Ürün</span>
             </div>
-            <div className="flex items-center justify-center sm:justify-end gap-2">
-              <RotateCcw className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+            <div className="flex items-center justify-center sm:justify-end gap-1.5 sm:gap-2">
+              <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 flex-shrink-0" />
               <span className="font-medium">30 Gün İade</span>
             </div>
           </div>
@@ -402,9 +402,9 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
 
       {/* Bottom Full-Width Horizontal Section: Technical Specifications */}
       {dynamicSpecs && dynamicSpecs.length > 0 && (
-        <div className="mt-14 pt-10 border-t border-slate-100">
-          <div className="mb-6">
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+        <div className="mt-8 sm:mt-14 pt-6 sm:pt-10 border-t border-slate-100">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
               Ürün Özellikleri & Teknik Detaylar
             </h2>
             <p className="text-xs text-slate-500 mt-1">
@@ -412,13 +412,13 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {dynamicSpecs.map((spec) => (
               <div
                 key={spec.label}
-                className="p-4 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-indigo-200 transition-colors"
+                className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-indigo-200 transition-colors"
               >
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5 sm:mb-1">
                   {spec.label}
                 </span>
                 <span className="text-xs font-bold text-slate-800 leading-snug">
@@ -429,6 +429,65 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           </div>
         </div>
       )}
+
+      {/* Mobile Sticky Bottom CTA Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white/95 backdrop-blur-md border-t border-slate-200/90 p-3 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] flex items-center justify-between gap-3">
+        <div className="flex flex-col">
+          <span className="text-[10px] text-slate-400 font-medium">Toplam</span>
+          <span className="text-lg font-black text-slate-900 leading-tight">
+            ${(currentUnitPrice * quantity).toFixed(2)}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {inStock ? (
+            <button
+              onClick={handleAdd}
+              disabled={isAdding}
+              className={`h-11 px-5 rounded-xl font-bold text-xs text-white shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer ${
+                isAdding
+                  ? "bg-emerald-600 shadow-emerald-500/20"
+                  : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
+              }`}
+            >
+              {isAdding ? (
+                <>
+                  <Check className="w-4 h-4 animate-in zoom-in" />
+                  <span>Eklendi</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Sepete Ekle</span>
+                </>
+              )}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleNotify}
+              disabled={isNotified}
+              className={`h-11 px-5 rounded-xl font-bold text-xs text-white shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer ${
+                isNotified
+                  ? "bg-emerald-600 shadow-emerald-500/20"
+                  : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/25"
+              }`}
+            >
+              {isNotified ? (
+                <>
+                  <Check className="w-4 h-4 animate-in zoom-in" />
+                  <span>Alındı</span>
+                </>
+              ) : (
+                <>
+                  <Bell className="w-4 h-4" />
+                  <span>Haber Ver</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Out of Stock Toast Notification */}
       <StockNotifyToast

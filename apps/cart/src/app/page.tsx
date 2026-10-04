@@ -109,7 +109,7 @@ export default function CartPage() {
   const unconfirmedItems = items.filter((i) => i.needsAttributeConfirmation && i.selected !== false);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-28 lg:pb-10">
       <CheckoutModal
         isOpen={isCheckoutOpen}
         totals={completedOrderTotals || totals}
@@ -124,11 +124,11 @@ export default function CartPage() {
         onClose={() => setIsAttributePromptOpen(false)}
       />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-950 tracking-tight">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
           Alışveriş Sepetim
           {items.length > 0 && (
-            <span className="ml-2 font-bold text-slate-500 text-2xl">
+            <span className="ml-2 font-bold text-slate-500 text-xl sm:text-2xl">
               ({totals.selectedCount} ürün)
             </span>
           )}
@@ -141,30 +141,53 @@ export default function CartPage() {
       </div>
 
       {items.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
-          {/* Cart Items List */}
-          <div className="lg:col-span-2 space-y-4">
-            {items.map((item) => (
-              <CartItemCard
-                key={item.cartItemId || `${item.product.id}-${JSON.stringify(item.selectedAttributes)}`}
-                item={item}
-                onUpdateQuantity={updateQuantity}
-                onUpdateAttributes={updateItemAttributes}
-                onToggleSelect={toggleItemSelection}
-                onRemove={removeItem}
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10 items-start">
+            {/* Cart Items List */}
+            <div className="lg:col-span-2 space-y-3.5 sm:space-y-4">
+              {items.map((item) => (
+                <CartItemCard
+                  key={item.cartItemId || `${item.product.id}-${JSON.stringify(item.selectedAttributes)}`}
+                  item={item}
+                  onUpdateQuantity={updateQuantity}
+                  onUpdateAttributes={updateItemAttributes}
+                  onToggleSelect={toggleItemSelection}
+                  onRemove={removeItem}
+                />
+              ))}
+            </div>
+
+            {/* Sticky Summary */}
+            <div className="lg:col-span-1">
+              <OrderSummary
+                totals={totals}
+                onCheckout={handleInitiateCheckout}
+                onClearCart={clearCart}
               />
-            ))}
+            </div>
           </div>
 
-          {/* Sticky Summary */}
-          <div className="lg:col-span-1">
-            <OrderSummary
-              totals={totals}
-              onCheckout={handleInitiateCheckout}
-              onClearCart={clearCart}
-            />
+          {/* Mobile Sticky Checkout Action Bar */}
+          <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white/95 backdrop-blur-md border-t border-slate-200/90 p-3 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] flex items-center justify-between gap-3">
+            <div className="flex flex-col">
+              <span className="text-[10px] text-slate-400 font-medium">
+                Ödenecek Tutar ({totals.selectedCount} ürün)
+              </span>
+              <span className="text-lg font-black text-slate-900 leading-tight">
+                ${totals.total.toFixed(2)}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleInitiateCheckout}
+              disabled={totals.selectedCount === 0}
+              className="h-11 px-5 rounded-xl font-bold text-xs text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-500/25 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <span>Siparişi Tamamla</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
-        </div>
+        </>
       ) : (
         /* Frameless Natural Empty State */
         <div className="py-14 sm:py-20 text-center max-w-md mx-auto">

@@ -118,10 +118,10 @@ export default function AttributePromptModal({
   };
 
   const modalContent = (
-    <div className="fixed -inset-4 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-in fade-in">
+      <div className="bg-white rounded-2xl sm:rounded-3xl max-w-xl w-full p-4 sm:p-8 shadow-2xl border border-slate-100 max-h-[92vh] flex flex-col transform animate-in zoom-in-95 duration-200">
         {/* Header - Clean with no icon as requested */}
-        <div className="flex items-start justify-between mb-5">
+        <div className="flex items-start justify-between mb-4 sm:mb-5">
           <div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">
               Sipariş Öncesi Seçim Onayı

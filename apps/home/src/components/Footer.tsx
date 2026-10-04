@@ -37,9 +37,9 @@ export default function Footer() {
             </p>
           </div>
         </div>
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center sm:text-left">
           <p>© 2026 TrendSphere — Frontend Developer Task Projesi.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center sm:justify-end items-center gap-2 sm:gap-4">
             <span className="px-2.5 py-1 rounded-md bg-slate-800/80 text-slate-300 font-mono text-[11px]">
               Next.js 14 App Router
             </span>

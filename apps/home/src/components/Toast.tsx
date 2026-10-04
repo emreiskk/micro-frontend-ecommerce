@@ -22,7 +22,7 @@ export default function Toast({ product, onClose }: ToastProps) {
   if (!product) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-md w-full bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 transition-all duration-300 transform translate-y-0 animate-in fade-in slide-in-from-bottom-5">
+    <div className="fixed bottom-20 lg:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:w-auto sm:max-w-md z-50 bg-white rounded-2xl shadow-2xl border border-slate-100 p-3.5 sm:p-4 transition-all duration-300 transform translate-y-0 animate-in fade-in slide-in-from-bottom-5">
       <div className="flex items-start gap-3">
         <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl flex-shrink-0">
           <CheckCircle2 className="w-5 h-5" />
