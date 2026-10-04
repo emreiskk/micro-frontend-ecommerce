@@ -107,6 +107,8 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
           <button
             onClick={handleAddToCart}
             disabled={isAdding}
+            aria-label={`Sepete Ekle - ${product.title}`}
+            data-testid="add-to-cart-button"
             className={`w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl sm:rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm cursor-pointer ${
               isAdding
                 ? "bg-emerald-600 text-white shadow-emerald-500/20"

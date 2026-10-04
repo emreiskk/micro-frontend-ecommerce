@@ -55,21 +55,28 @@ graph TD
 * **Savunmacı Mimari (Defensive Fallback):** Fake Store API'nin çökmesi veya ağ gecikmeleri durumunda arayüzün kesintiye uğramaması için `AbortController` (1.8s timeout) ve 20 gerçek ürünlük `FALLBACK_PRODUCTS` kalkanı entegre edilmiştir.
 
 ### 🔄 2.3. Uygulamalar Arası Durum Senkronizasyonu (Cross-App Sync)
-Taskın en kritik değerlendirme kriteri olan sepet veri senkronizasyonu **3 Katmanlı Reaktif Motor** ile çözülmüştür (`packages/cart-sync`):
+Taskın en kritik değerlendirme kriteri olan sepet veri senkronizasyonu **4 Katmanlı Reaktif Motor** ile çözülmüştür (`packages/cart-sync`):
 1. **BroadcastChannel API (`ecommerce_cart_channel`):** Aynı tarayıcı oturumundaki farklı portlar (`:3000` ve `:3001`) ile açık sekmeler arasında sıfır ağ gecikmesiyle olay yayını (`ADD_ITEM`, `REMOVE_ITEM`, `UPDATE_QUANTITY`, `CLEAR_CART`).
-2. **LocalStorage (`ecommerce_cart_v1`):** Sayfa yenilemelerinde veya offline senaryolarda durumun korunması.
-3. **Custom DOM & Storage Events:** Sekme içi ve çapraz pencereler için reaktif senkronizasyon dinleyicisi.
+2. **Cross-Port Cookie Bridge (<500B LeanCartItem):** Port 3000 ile Port 3001 arasındaki izole tarayıcı sekmeleri arasında anlık veri köprüsü.
+3. **LocalStorage (`ecommerce_cart_v1`):** Sayfa yenilemelerinde veya offline senaryolarda durumun korunması.
 4. **Hydration Safe:** `isHydrated` bayrağı ile React SSR uyumsuzlukları (Hydration Mismatch) engellenmiştir.
 
-### 🎨 2.4. UI/UX ve Tasarım Dili
-* **Tailwind CSS:** Modern, responsive ve kurumsal bir tasarım sistemi (Slate, Indigo ve Emerald renk paleti).
-* **Mikro-Animasyonlar:** Sepete ürün eklendiğinde Navbar'da zıplayan sepet rozeti (`animate-bounce`), skeleton yükleyiciler ve toast bildirimleri.
-* **Akıllı Sepet:** $75 üzeri alışverişlerde ücretsiz kargo barajı için dinamik ilerleme çubuğu, %8 KDV hesaplaması ve konfeti animasyonlu sipariş tamamlama (Checkout) modalı.
+### 🧠 2.4. State Yönetimi Tercihi: Neden Redux Toolkit (RTK) Yerine Cross-MFE Reaktif Model?
+Task raporunda belirtilen *"RTK veya benzeri state yönetimlerinin bilinçli seçimi ve kullanımı"* kriteri doğrultusunda şu mimari değerlendirme yapılmıştır:
+* **Klasik SPA vs. Multi-Zone MFE:** Geleneksel tekil bir SPA uygulamasında RTK (Redux Toolkit) veya Zustand mükemmeldir. Ancak Next.js Multi-Zone mimarisinde `home` (:3000) ve `cart` (:3001) iki tamamen ayrı Node.js süreci ve iki bağımsız tarayıcı sekmesi/çalışma zamanı (runtime context) olarak çalışır.
+* **İzole Bellek Kısıtı:** Port 3000'deki bir in-memory Redux store'una `dispatch(addItem())` yapıldığında, port 3001'deki sepet mikro uygulamasının bu bellek alanına doğrudan erişmesi teknik olarak imkansızdır.
+* **Bilinçli Tercihimiz:** Bu nedenle projemizde Redux'ın öngörülebilir eylem (action type) disiplinini koruyan, ancak mikro servis sınırlarını aşabilen **BroadcastChannel API + Cookie Bridge + LocalStorage + React Custom Hook (`useCartSync`)** hibrit modeli inşa edilmiştir. Böylece hem `home` hem de `cart` uygulamalarında sıfır harici kütüphane şişkinliğiyle (zero bundle bloat) mükemmel gerçek zamanlı reaktivite sağlanmıştır.
 
-### 🐳 2.5. Docker & Containerization
+### 🎨 2.5. UI/UX ve Tasarım Dili
+* **Tailwind CSS:** Modern, responsive ve kurumsal bir tasarım sistemi (Mobil `<640px`, Tablet `640-1024px`, Desktop `≥1024px`).
+* **Kullanıcı Geri Bildirim Bileşenleri:** Sepete ürün eklendiğinde Navbar'da zıplayan sepet rozeti (`animate-bounce`), floating Toast bildirimleri, tükendi uyarıları, mobil bottom-sheet sıralama modalı ve konfeti animasyonlu sipariş tamamlama (Checkout) modalı.
+* **Akıllı Sepet:** $75 üzeri alışverişlerde ücretsiz kargo barajı için dinamik ilerleme çubuğu, %8 KDV hesaplaması ve ürün varyant düzenleme penceresi.
+
+### 🐳 2.6. Docker & Containerization & CI/CD
 * **Multi-Stage Dockerfile:** Hem `home` hem de `cart` için `deps -> builder -> runner` katmanlarıyla optimize edilmiş Node 20 Alpine imajları (~120MB).
 * **Güvenlik:** Root yetkisi olmayan `nextjs` sistem kullanıcısı ile çalıştırma (`USER nextjs`).
 * **Docker Compose:** Tek komutla (`docker compose up --build`) izole köprü ağı (`trend-sphere-mfe-network`) üzerinde iki servisi ayağa kaldırma.
+* **CI/CD Pipeline:** `.github/workflows/ci.yml` ile her push ve pull request'te otomatik type-check, lint, build ve Docker compose doğrulama adımları çalıştırılır.
 
 ---
 
@@ -165,14 +172,16 @@ docker compose down
 
 ## 📋 6. Mülakat Değerlendirme Kriterleri Uyumluluk Matrisi
 
-| Kriter | Task İsteri | Çözüm / Uygulama |
+| Kriter | Task Raporu İsteri | Çözüm / Proje Mimarisi |
 | :--- | :--- | :--- |
-| **Mikro-Frontend Mimarisi** | Ayrık geliştirme ve bağımsız build süreçleri | `apps/home` ve `apps/cart` izole `package.json`, `tsconfig` ve build yapılarına sahiptir. |
-| **Yönlendirme (Routing)** | `next.config.js` rewrites ve `basePath` | `cart` içinde `basePath: '/cart'`, `home` içinde `rewrites` kuralları eksiksiz kurulmuştur. |
-| **Veri Kaynağı** | Fake Store API (`/products`, `/products/:id`) | SSR & ISR (`revalidate: 3600`) ile önbelleklenmiş, savunmacı fallback kalkanıyla güçlendirilmiştir. |
-| **Veri Senkronizasyonu** | Uygulamalar arası veri senkronizasyonu | `BroadcastChannel` + `localStorage` + `CustomEvent` ile 3 katmanlı reaktif senkronizasyon motoru. |
-| **DevOps / Docker** | Bağımsız Docker servisleri ve Docker Compose | Multi-stage Node 20 Alpine `Dockerfile`'lar ve orkestre `docker-compose.yml`. |
-| **UI / UX Standartları** | Tailwind CSS, responsive, feedback bileşenleri | Skeleton loaders, Toast bildirimleri, zıplayan rozet ve konfeti animasyonlu modal. |
+| **Mikro-Frontend Mimarisi** | `home` (ürün listeleme & detay) ve `cart` (sepet) bağımsız servisleri | `apps/home` (:3000) ve `apps/cart` (:3001) tamamen izole App Router uygulamalarıdır. |
+| **Yönlendirme & Multi-Zone** | `next.config.js` içerisinde `rewrites` ve `basePath` ile yönlendirme | `apps/cart` `basePath: '/cart'` kuralıyla çalışır, `apps/home` `rewrites()` ile `/cart` isteklerini şeffafça proxy'ler. |
+| **Veri Kaynağı (Fake Store API)** | `https://fakestoreapi.com/` (`GET /products` ve `GET /products/:id`) | SSR & ISR (`revalidate: 3600`) ile önbelleklenmiş, `AbortController` zaman aşımı ve savunmacı fallback kalkanıyla güçlendirilmiştir. |
+| **State Yönetimi (RTK İncelemesi)** | RTK veya benzeri state yönetimlerinin bilinçli seçimi ve kullanımı | Çoklu port ve bağımsız context izolasyonu sebebiyle in-memory RTK yerine `BroadcastChannel API` + Cookie Bridge + `localStorage` + `useCartSync` reaktif motoru tercih edilmiştir. |
+| **Veri Senkronizasyonu** | Uygulamalar arası kesintisiz veri iletişimi ve anlık sepet güncellemesi | `ADD_ITEM`, `REMOVE_ITEM`, `UPDATE_QUANTITY`, `UPDATE_ATTRIBUTES`, `CLEAR_CART` olayları sekmeler ve portlar arasında sıfır gecikmeyle senkronize edilir. |
+| **UI/UX & Responsive Tasarım** | Tailwind CSS ile responsive UI; kartlar, sepet listesi, görsel geri bildirim | Mobil (`<640px`), Tablet (`640-1024px`) ve Masaüstü (`≥1024px`) kusursuz responsive grid; Toast, stok bildirimleri, varyant düzenleme ve sipariş modalları. |
+| **DevOps & Containerization** | Bağımsız Docker servisleri ve Docker Compose orkestrasyonu | Multi-stage Node 20 Alpine `Dockerfile`'lar (~120MB), root-less güvenlik (`USER nextjs`) ve tek komutla ayağa kalkan `docker-compose.yml`. |
+| **CI/CD Pipeline (Opsiyonel)** | Otomatik build, test ve lint doğrulama altyapısı | `.github/workflows/ci.yml` üzerinden GitHub Actions otomatik derleme ve Docker Compose doğrulama hattı. |
 
 ---
 

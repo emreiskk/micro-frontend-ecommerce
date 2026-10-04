@@ -341,6 +341,8 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               <button
                 onClick={handleAdd}
                 disabled={isAdding}
+                aria-label={`Sepete Ekle - ${product.title}`}
+                data-testid="add-to-cart-button"
                 className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
                   isAdding
                     ? "bg-emerald-600 text-white shadow-emerald-500/20"
@@ -447,6 +449,8 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             <button
               onClick={handleAdd}
               disabled={isAdding}
+              aria-label={`Sepete Ekle - ${product.title}`}
+              data-testid="add-to-cart-sticky-button"
               className={`h-11 px-5 rounded-xl font-bold text-xs text-white shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer ${
                 isAdding
                   ? "bg-emerald-600 shadow-emerald-500/20"
