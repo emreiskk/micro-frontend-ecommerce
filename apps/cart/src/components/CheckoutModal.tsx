@@ -79,7 +79,7 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
             </span>
           </div>
           <div className="flex justify-between">
-            <span>Tahmini Vergi (%8):</span>
+            <span>Vergi (%8):</span>
             <span className="font-semibold text-slate-900">${totals.tax.toFixed(2)}</span>
           </div>
           <div className="flex justify-between pt-2 border-t border-slate-200">

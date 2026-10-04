@@ -55,7 +55,7 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
           <span className="font-semibold text-slate-900">${totals.subtotal.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
-          <span>Tahmini Kargo:</span>
+          <span>Kargo:</span>
           <span className="font-semibold">
             {totals.shipping === 0 ? (
               <span className="text-emerald-600 font-bold uppercase text-[11px]">Ücretsiz</span>
@@ -65,7 +65,7 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
           </span>
         </div>
         <div className="flex justify-between">
-          <span>Tahmini Vergi (%8 KDV):</span>
+          <span>Vergi (%8 KDV):</span>
           <span className="font-semibold text-slate-900">${totals.tax.toFixed(2)}</span>
         </div>
       </div>
