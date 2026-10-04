@@ -183,12 +183,12 @@ export default function AttributePromptModal({
                         </h4>
                         {/* Stock Badge - Fixed on Top Right */}
                         {inStock ? (
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex-shrink-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex-shrink-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             Stokta Mevcut
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60 flex-shrink-0">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60 flex-shrink-0">
                             <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                             Tükendi
                           </span>
@@ -206,7 +206,7 @@ export default function AttributePromptModal({
                         </span>
                         {originalUnitPrice && originalUnitPrice > unitPrice && (
                           <>
-                            <span className="text-xs text-slate-400 line-through font-normal">
+                            <span className="text-xs text-slate-400 line-through font-medium">
                               ${originalUnitPrice.toFixed(2)}
                             </span>
                             {item.product.discountRate && (
@@ -240,7 +240,7 @@ export default function AttributePromptModal({
                           {currentAttrs[attr.name] || attr.defaultValue}
                         </span>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2.5">
                         {attr.options.map((opt) => {
                           const isSelected = (currentAttrs[attr.name] || attr.defaultValue) === opt;
                           const detail = attr.optionDetails?.find((d) => d.label === opt);
@@ -257,9 +257,11 @@ export default function AttributePromptModal({
                                 if (!isOptInStock) return;
                                 handleSelect(item.product.id, attr.name, opt);
                               }}
-                              className={`relative px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                              className={`relative px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                                opt.length <= 3 ? "min-w-[42px]" : ""
+                              } ${
                                 isSelected
-                                  ? "bg-indigo-600 text-white shadow-sm scale-102 border-2 border-indigo-600 cursor-pointer"
+                                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-102 border-2 border-indigo-600 cursor-pointer"
                                   : isOptInStock
                                   ? "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer"
                                   : "bg-slate-50/80 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60"
@@ -280,8 +282,8 @@ export default function AttributePromptModal({
                                     x2="100%"
                                     y2="0%"
                                     stroke="currentColor"
-                                    strokeWidth="1.2"
-                                    className="text-slate-300"
+                                    strokeWidth={isSelected ? "1.5" : "1.2"}
+                                    className={isSelected ? "text-indigo-200" : "text-slate-300"}
                                   />
                                 </svg>
                               )}
@@ -289,7 +291,11 @@ export default function AttributePromptModal({
                               {/* Top-Right Notification Bell Icon (Trendyol Style) */}
                               {!isOptInStock && (
                                 <span
-                                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow-xs z-20 bg-slate-100 text-slate-500 border border-slate-200"
+                                  className={`absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center shadow-xs transition-transform z-20 ${
+                                    isSelected
+                                      ? "bg-indigo-600 text-white ring-2 ring-white scale-110"
+                                      : "bg-slate-100 text-slate-500 border border-slate-200"
+                                  }`}
                                   title="Tükendi"
                                 >
                                   <Bell className="w-2.5 h-2.5" />

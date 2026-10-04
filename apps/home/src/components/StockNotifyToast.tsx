@@ -48,7 +48,7 @@ export default function StockNotifyToast({
           <div className="mt-3 flex items-center gap-3">
             <button
               onClick={onClose}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
               Anladım

@@ -132,7 +132,7 @@ export default function CartItemCard({
             />
             {!isInStock && (
               <div className="absolute inset-0 bg-slate-900/40 rounded-2xl flex items-center justify-center backdrop-blur-[0.5px]">
-                <span className="px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
+                <span className="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
                   Tükendi
                 </span>
               </div>
@@ -205,7 +205,7 @@ export default function CartItemCard({
           <div className="mt-2.5 text-xs text-slate-500 font-medium flex flex-wrap items-center justify-center sm:justify-start gap-2">
             <div className="flex items-baseline gap-1.5">
               <span>Birim Fiyat:</span>
-              <strong className={!isInStock ? "line-through text-slate-400 font-semibold" : "text-slate-900 font-bold"}>
+              <strong className={!isInStock ? "line-through text-slate-400 font-semibold" : "text-slate-900 font-black"}>
                 ${unitPrice.toFixed(2)}
               </strong>
               {item.originalUnitPrice && item.originalUnitPrice > unitPrice && (
@@ -222,9 +222,9 @@ export default function CartItemCard({
               )}
             </div>
             {item.unitPrice && Math.abs(item.unitPrice - product.price) > 0.001 && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
                 <span>{item.unitPrice > product.price ? `+$${(item.unitPrice - product.price).toFixed(2)}` : `-$${(product.price - item.unitPrice).toFixed(2)}`}</span>
-                <span className="text-[10px] font-medium text-indigo-500/80">opsiyon</span>
+                <span className="text-[9px] font-medium text-indigo-500/80">opsiyon</span>
               </span>
             )}
           </div>

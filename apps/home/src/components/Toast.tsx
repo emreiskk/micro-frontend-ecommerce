@@ -33,14 +33,14 @@ export default function Toast({ product, onClose }: ToastProps) {
           <div className="mt-3 flex items-center gap-3">
             <Link
               href="/cart"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               Sepete Git
             </Link>
             <button
               onClick={onClose}
-              className="text-xs text-slate-500 hover:text-slate-700 font-medium"
+              className="text-xs text-slate-500 hover:text-slate-700 font-medium cursor-pointer"
             >
               Alışverişe Devam Et
             </button>
@@ -48,7 +48,7 @@ export default function Toast({ product, onClose }: ToastProps) {
         </div>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+          className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors cursor-pointer"
           aria-label="Kapat"
         >
           <X className="w-4 h-4" />

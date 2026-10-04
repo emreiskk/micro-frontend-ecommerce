@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ShoppingBag, ArrowLeft, Layers, ShieldCheck } from "lucide-react";
+import { ShoppingBag, ArrowLeft, Layers, ShieldCheck, Sparkles } from "lucide-react";
 import { useCartSync } from "@repo/cart-sync";
 
 export default function CartNavbar() {
@@ -10,7 +10,13 @@ export default function CartNavbar() {
   const count = isHydrated ? totals.totalCount : 0;
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 transition-all">
+      {/* Top Banner (Height & Style Matched with Home MFE to avoid layout shift) */}
+      <div className="bg-gradient-to-r from-indigo-900 via-indigo-700 to-indigo-900 text-white text-xs py-2 px-4 text-center font-medium tracking-wide flex items-center justify-center gap-2">
+        <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+        <span>Tüm siparişlerde $75 üzeri <strong>Ücretsiz Kargo</strong> & Anında Çapraz Senkronizasyon</span>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         {/* Brand */}
         <div className="flex items-center gap-3">

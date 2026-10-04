@@ -158,14 +158,14 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-slate-400 font-medium">Fiyat</span>
               {inStock ? (
-                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-medium bg-emerald-50/70 px-2.5 py-0.5 rounded-lg border border-emerald-200/60">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Stokta Mevcut
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 text-xs text-rose-700 font-medium bg-rose-50/70 px-2.5 py-0.5 rounded-lg border border-rose-200/60">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  Tükendi / Stokta Yok
+                  Tükendi
                 </span>
               )}
             </div>
@@ -188,9 +188,9 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                 </>
               )}
               {priceDelta !== 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
                   <span>{priceDelta > 0 ? `+$${priceDelta.toFixed(2)}` : `-$${Math.abs(priceDelta).toFixed(2)}`}</span>
-                  <span className="text-[11px] font-medium text-indigo-500/80">opsiyon</span>
+                  <span className="text-[9px] font-medium text-indigo-500/80">opsiyon</span>
                 </span>
               )}
             </div>
