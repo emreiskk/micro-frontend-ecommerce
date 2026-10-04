@@ -171,16 +171,9 @@ export default function CartItemCard({
               )}
             </div>
             {item.unitPrice && Math.abs(item.unitPrice - product.price) > 0.001 && (
-              <span
-                className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                  item.unitPrice > product.price
-                    ? "text-indigo-700 bg-indigo-50 border border-indigo-200"
-                    : "text-emerald-700 bg-emerald-50 border border-emerald-200"
-                }`}
-              >
-                {item.unitPrice > product.price
-                  ? `+$${(item.unitPrice - product.price).toFixed(2)} opsiyon`
-                  : `-$${(product.price - item.unitPrice).toFixed(2)} indirim`}
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+                <span>{item.unitPrice > product.price ? `+$${(item.unitPrice - product.price).toFixed(2)}` : `-$${(product.price - item.unitPrice).toFixed(2)}`}</span>
+                <span className="text-[10px] font-medium text-indigo-500/80">opsiyon</span>
               </span>
             )}
           </div>

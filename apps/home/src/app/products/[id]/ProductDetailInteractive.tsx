@@ -153,49 +153,47 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           </div>
 
           {/* Dynamic Price Display & Stock Badge */}
-          <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <span className="text-xs text-slate-400 block font-medium mb-1">Fiyat</span>
-              <div className="flex items-baseline gap-2.5 flex-wrap">
-                <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
-                  ${currentUnitPrice.toFixed(2)}
+          <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col gap-2">
+            {/* Header: Fiyat Title & Stock Status */}
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs text-slate-400 font-medium">Fiyat</span>
+              {inStock ? (
+                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Stokta Mevcut
                 </span>
-                {currentOriginalPrice && (
-                  <>
-                    <span className="text-base font-medium text-slate-400 line-through">
-                      ${currentOriginalPrice.toFixed(2)}
-                    </span>
-                    {product.discountRate && (
-                      <span className="text-base font-medium text-slate-400">
-                        (-%{product.discountRate})
-                      </span>
-                    )}
-                  </>
-                )}
-                {priceDelta !== 0 && (
-                  <span
-                    className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                      priceDelta > 0
-                        ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
-                        : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                    }`}
-                  >
-                    {priceDelta > 0 ? `+ $${priceDelta.toFixed(2)} opsiyon farkı` : `- $${Math.abs(priceDelta).toFixed(2)} indirimli`}
-                  </span>
-                )}
-              </div>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-bold bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 shadow-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  Tükendi / Stokta Yok
+                </span>
+              )}
             </div>
-            {inStock ? (
-              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Stokta Mevcut
+
+            {/* Price Values Row */}
+            <div className="flex items-baseline gap-2.5 flex-wrap">
+              <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
+                ${currentUnitPrice.toFixed(2)}
               </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-bold bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 shadow-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                Tükendi / Stokta Yok
-              </span>
-            )}
+              {currentOriginalPrice && (
+                <>
+                  <span className="text-base font-medium text-slate-400 line-through">
+                    ${currentOriginalPrice.toFixed(2)}
+                  </span>
+                  {product.discountRate && (
+                    <span className="text-base font-medium text-slate-400">
+                      (-%{product.discountRate})
+                    </span>
+                  )}
+                </>
+              )}
+              {priceDelta !== 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-indigo-50/80 text-indigo-600 border border-indigo-200/70">
+                  <span>{priceDelta > 0 ? `+$${priceDelta.toFixed(2)}` : `-$${Math.abs(priceDelta).toFixed(2)}`}</span>
+                  <span className="text-[11px] font-medium text-indigo-500/80">opsiyon</span>
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Product Description */}
