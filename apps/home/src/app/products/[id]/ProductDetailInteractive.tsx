@@ -16,6 +16,7 @@ import {
 import type { Product, SelectedAttributes } from "@repo/shared-types";
 import {
   calculateProductPrice,
+  calculateProductOriginalPrice,
   calculateDynamicSpecifications,
   getProductAttributes,
   isVariantInStock,
@@ -64,6 +65,10 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
   // Dynamically computed price and specifications based on selected variant
   const currentUnitPrice = useMemo(() => {
     return calculateProductPrice(product, selectedAttributes);
+  }, [product, selectedAttributes]);
+
+  const currentOriginalPrice = useMemo(() => {
+    return calculateProductOriginalPrice(product, selectedAttributes);
   }, [product, selectedAttributes]);
 
   const dynamicSpecs = useMemo(() => {
@@ -149,21 +154,35 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
 
           {/* Dynamic Price Display & Stock Badge */}
           <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
-                ${currentUnitPrice.toFixed(2)}
-              </span>
-              {priceDelta !== 0 && (
-                <span
-                  className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                    priceDelta > 0
-                      ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
-                      : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  }`}
-                >
-                  {priceDelta > 0 ? `+ $${priceDelta.toFixed(2)} opsiyon farkı` : `- $${Math.abs(priceDelta).toFixed(2)} indirimli`}
-                </span>
+            <div>
+              {currentOriginalPrice && (
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-semibold text-slate-400 line-through">
+                    ${currentOriginalPrice.toFixed(2)}
+                  </span>
+                  {product.discountRate && (
+                    <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200/70 px-2 py-0.5 rounded-full">
+                      (-%{product.discountRate})
+                    </span>
+                  )}
+                </div>
               )}
+              <div className="flex items-center gap-2.5">
+                <span className="text-3xl font-black text-slate-900 tracking-tight transition-all">
+                  ${currentUnitPrice.toFixed(2)}
+                </span>
+                {priceDelta !== 0 && (
+                  <span
+                    className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                      priceDelta > 0
+                        ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                        : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    }`}
+                  >
+                    {priceDelta > 0 ? `+ $${priceDelta.toFixed(2)} opsiyon farkı` : `- $${Math.abs(priceDelta).toFixed(2)} indirimli`}
+                  </span>
+                )}
+              </div>
             </div>
             {inStock ? (
               <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">

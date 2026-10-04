@@ -61,6 +61,12 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
           <span>Ara Toplam ({totals.selectedCount} ürün):</span>
           <span className="font-semibold text-slate-900">${totals.subtotal.toFixed(2)}</span>
         </div>
+        {totals.totalSavings > 0 && (
+          <div className="flex justify-between text-emerald-600 font-medium">
+            <span>Kampanya Tasarrufu:</span>
+            <span className="font-bold">-${totals.totalSavings.toFixed(2)}</span>
+          </div>
+        )}
         <div className="flex justify-between">
           <span>Kargo:</span>
           <span className="font-semibold">

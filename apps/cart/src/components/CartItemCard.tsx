@@ -153,10 +153,21 @@ export default function CartItemCard({
           </div>
 
           {/* Unit Price */}
-          <div className="mt-2.5 text-xs text-slate-500 font-medium flex items-center justify-center sm:justify-start gap-2">
-            <span>
-              Birim Fiyat: <strong className="text-slate-800 font-bold">${unitPrice.toFixed(2)}</strong>
+          <div className="mt-2.5 text-xs text-slate-500 font-medium flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <span className="flex items-center gap-1.5">
+              <span>Birim Fiyat:</span>
+              {item.originalUnitPrice && item.originalUnitPrice > unitPrice && (
+                <span className="line-through text-slate-400 font-medium">
+                  ${item.originalUnitPrice.toFixed(2)}
+                </span>
+              )}
+              <strong className="text-slate-800 font-bold">${unitPrice.toFixed(2)}</strong>
             </span>
+            {item.originalUnitPrice && item.originalUnitPrice > unitPrice && product.discountRate && (
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200/70 px-1.5 py-0.5 rounded-md leading-none">
+                (-%{product.discountRate})
+              </span>
+            )}
             {item.unitPrice && Math.abs(item.unitPrice - product.price) > 0.001 && (
               <span
                 className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${

@@ -31,6 +31,8 @@ export interface Product {
   id: number;
   title: string;
   price: number;
+  originalPrice?: number;
+  discountRate?: number;
   description: string;
   category: string;
   image: string;
@@ -46,6 +48,7 @@ export interface LeanCartItem {
   selected?: boolean;
   selectedAttributes?: SelectedAttributes;
   unitPrice?: number;
+  originalUnitPrice?: number;
   needsAttributeConfirmation?: boolean;
 }
 
@@ -56,6 +59,7 @@ export interface CartItem {
   selected?: boolean;
   selectedAttributes?: SelectedAttributes;
   unitPrice?: number;
+  originalUnitPrice?: number;
   needsAttributeConfirmation?: boolean;
 }
 
@@ -75,6 +79,8 @@ export function getCartItemId(
 
 export interface CartTotals {
   subtotal: number;
+  originalSubtotal: number;
+  totalSavings: number;
   tax: number;
   shipping: number;
   total: number;
@@ -1180,6 +1186,25 @@ export function calculateProductPrice(product: Product, selectedAttributes?: Sel
   return Number(Math.max(1, price).toFixed(2));
 }
 
+export function calculateProductOriginalPrice(product: Product, selectedAttributes?: SelectedAttributes): number | undefined {
+  if (!product.originalPrice) return undefined;
+  let price = product.originalPrice;
+  if (!selectedAttributes) return Number(price.toFixed(2));
+
+  const attrs = product.attributes || getProductAttributes(product);
+  attrs.forEach((attr) => {
+    const selectedVal = selectedAttributes[attr.name];
+    if (selectedVal && attr.optionDetails) {
+      const detail = attr.optionDetails.find((d) => d.label === selectedVal);
+      if (detail && typeof detail.priceDelta === "number") {
+        price += detail.priceDelta;
+      }
+    }
+  });
+
+  return Number(Math.max(1, price).toFixed(2));
+}
+
 export function calculateDynamicSpecifications(product: Product, selectedAttributes?: SelectedAttributes): ProductSpecification[] {
   const baseSpecs = product.specifications || getProductSpecifications(product);
   if (!selectedAttributes) return baseSpecs;
@@ -1275,13 +1300,39 @@ export const CANONICAL_PRODUCT_DESCRIPTIONS: Record<number, string> = {
   20: "Nefes alabilen pamuklu dokuma, rahat V yaka ve esnek kalıp. Günlük kullanımda kot pantolon veya eteklerle kolayca kombinlenebilir.",
 };
 
+export const DISCOUNTED_PRODUCT_IDS: Record<number, number> = {
+  1: 30,  // Fjallraven Sırt Çantası ($109.95 -> $76.97)
+  3: 30,  // Erkek Pamuklu Ceket ($55.99 -> $39.19)
+  5: 30,  // John Hardy Ejderha Gümüş Bileklik ($695.00 -> $486.50)
+  14: 30, // Samsung CHG90 Kavisli QLED Monitör ($999.99 -> $699.99)
+  16: 30, // Lock and Love Kadın Deri Ceket ($29.95 -> $20.97)
+  20: 30, // DANVOUY Kadın Günlük Tişört ($12.99 -> $9.09)
+};
+
 export function enrichProductWithSpecs(product: Product): Product {
   const canonicalTitle = CANONICAL_PRODUCT_TITLES[product.id] || product.title;
   const canonicalDescription = CANONICAL_PRODUCT_DESCRIPTIONS[product.id] || product.description;
+
+  let price = product.price;
+  let originalPrice = product.originalPrice;
+  let discountRate = product.discountRate;
+
+  const campaignRate = DISCOUNTED_PRODUCT_IDS[product.id];
+  if (campaignRate) {
+    discountRate = campaignRate;
+    if (!originalPrice) {
+      originalPrice = product.price;
+      price = Number((originalPrice * (1 - campaignRate / 100)).toFixed(2));
+    }
+  }
+
   return {
     ...product,
     title: canonicalTitle,
     description: canonicalDescription,
+    price,
+    originalPrice,
+    discountRate,
     attributes: getProductAttributes(product),
     specifications: getProductSpecifications(product),
   };
@@ -1520,6 +1571,7 @@ export function toLeanCartItem(item: CartItem | any): LeanCartItem {
     selected: item.selected !== false,
     selectedAttributes,
     unitPrice: item.unitPrice,
+    originalUnitPrice: item.originalUnitPrice ?? item.product?.originalPrice,
     needsAttributeConfirmation: item.needsAttributeConfirmation,
   };
 }
@@ -1544,6 +1596,8 @@ export function hydrateCartItem(item: any): CartItem {
     id: productId,
     title: CANONICAL_PRODUCT_TITLES[productId] || item.product?.title || catalogProduct.title,
     price: catalogProduct.price,
+    originalPrice: catalogProduct.originalPrice,
+    discountRate: catalogProduct.discountRate,
     description: catalogProduct.description,
     category: catalogProduct.category,
     image: PRODUCT_IMAGE_MAP[productId] || item.product?.image || catalogProduct.image,
@@ -1557,6 +1611,11 @@ export function hydrateCartItem(item: any): CartItem {
       ? item.unitPrice
       : calculateProductPrice(product, selectedAttributes);
 
+  const originalUnitPrice =
+    typeof item.originalUnitPrice === "number"
+      ? item.originalUnitPrice
+      : calculateProductOriginalPrice(product, selectedAttributes);
+
   return {
     cartItemId,
     product,
@@ -1564,6 +1623,7 @@ export function hydrateCartItem(item: any): CartItem {
     selected: item.selected !== false,
     selectedAttributes,
     unitPrice,
+    originalUnitPrice,
     needsAttributeConfirmation: Boolean(item.needsAttributeConfirmation),
   };
 }

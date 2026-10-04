@@ -72,6 +72,12 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
             <span>Ara Toplam:</span>
             <span className="font-semibold text-slate-900">${totals.subtotal.toFixed(2)}</span>
           </div>
+          {totals.totalSavings > 0 && (
+            <div className="flex justify-between text-emerald-600 font-semibold">
+              <span>Toplam Kampanya Tasarrufu:</span>
+              <span>-${totals.totalSavings.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span>Kargo Durumu:</span>
             <span className={`font-semibold ${totals.shipping === 0 ? "text-emerald-600" : "text-slate-900"}`}>

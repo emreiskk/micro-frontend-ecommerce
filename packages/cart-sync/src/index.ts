@@ -10,6 +10,7 @@ import {
   type Product,
   type SelectedAttributes,
   calculateProductPrice,
+  calculateProductOriginalPrice,
   CANONICAL_PRODUCT_TITLES,
   getCartItemId,
   toLeanCartItem,
@@ -185,6 +186,19 @@ export function calculateCartTotals(items: CartItem[]): CartTotals {
     (acc, item) => acc + (item.unitPrice ?? item.product.price) * item.quantity,
     0
   );
+
+  const originalSubtotal = activeItems.reduce((acc, item) => {
+    const orig =
+      item.originalUnitPrice ??
+      item.product.originalPrice ??
+      item.unitPrice ??
+      item.product.price;
+    return acc + orig * item.quantity;
+  }, 0);
+
+  const rawSavings = originalSubtotal - subtotal;
+  const totalSavings = rawSavings > 0.01 ? Number(rawSavings.toFixed(2)) : 0;
+
   const totalCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const selectedCount = activeItems.reduce((acc, item) => acc + item.quantity, 0);
   const tax = Number((subtotal * TAX_RATE).toFixed(2));
@@ -194,6 +208,8 @@ export function calculateCartTotals(items: CartItem[]): CartTotals {
 
   return {
     subtotal: Number(subtotal.toFixed(2)),
+    originalSubtotal: Number(originalSubtotal.toFixed(2)),
+    totalSavings,
     tax,
     shipping,
     total,
@@ -300,6 +316,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
   ) => {
     const current = getStoredCart();
     const unitPrice = calculateProductPrice(product, selectedAttributes);
+    const originalUnitPrice = calculateProductOriginalPrice(product, selectedAttributes);
     const targetKey = getCartItemId(product.id, selectedAttributes);
 
     const existingIndex = current.findIndex(
@@ -314,6 +331,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
             ...item,
             quantity: item.quantity + quantity,
             unitPrice,
+            originalUnitPrice: originalUnitPrice ?? item.originalUnitPrice,
             needsAttributeConfirmation:
               needsAttributeConfirmation !== undefined
                 ? needsAttributeConfirmation
@@ -332,6 +350,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
           selected: true,
           selectedAttributes,
           unitPrice,
+          originalUnitPrice,
           needsAttributeConfirmation,
         },
       ];
@@ -388,6 +407,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
     const nextAttrs = { ...oldItem.selectedAttributes, ...selectedAttributes };
     const newCartItemId = getCartItemId(oldItem.product.id, nextAttrs);
     const unitPrice = calculateProductPrice(oldItem.product, nextAttrs);
+    const originalUnitPrice = calculateProductOriginalPrice(oldItem.product, nextAttrs);
 
     // Smart Merge: If an item already exists with this newCartItemId, merge quantities
     const mergeIndex = current.findIndex(
@@ -405,6 +425,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
               ...item,
               quantity: item.quantity + oldItem.quantity,
               unitPrice,
+              originalUnitPrice,
               needsAttributeConfirmation,
             };
           }
@@ -419,6 +440,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
             cartItemId: newCartItemId,
             selectedAttributes: nextAttrs,
             unitPrice,
+            originalUnitPrice,
             needsAttributeConfirmation,
           };
         }

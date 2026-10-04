@@ -46,6 +46,15 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
         </span>
       </div>
 
+      {/* Discount Badge */}
+      {product.discountRate && (
+        <div className="absolute top-4 right-4 z-10">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-rose-50/95 backdrop-blur-md text-rose-700 border border-rose-200/80 shadow-2xs">
+            %{product.discountRate} İndirim
+          </span>
+        </div>
+      )}
+
       {/* Product Image Container */}
       <Link
         href={`/products/${product.id}`}
@@ -89,9 +98,25 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
         <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
           <div>
             <span className="text-xs text-slate-400 block font-medium">Fiyat</span>
-            <span className="text-lg font-black text-slate-900 tracking-tight">
-              ${product.price.toFixed(2)}
-            </span>
+            {product.originalPrice ? (
+              <div className="flex flex-col">
+                <span className="text-xs text-slate-400 line-through font-medium leading-none">
+                  ${product.originalPrice.toFixed(2)}
+                </span>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-lg font-black text-slate-900 tracking-tight leading-none">
+                    ${product.price.toFixed(2)}
+                  </span>
+                  <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200/60 px-1.5 py-0.5 rounded-md leading-none">
+                    (-%{product.discountRate})
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <span className="text-lg font-black text-slate-900 tracking-tight">
+                ${product.price.toFixed(2)}
+              </span>
+            )}
           </div>
 
           <button
