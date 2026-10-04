@@ -193,7 +193,7 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
         },
       ];
 
-    // 4. Erkek Gömlek
+    // 4. Erkek V Yaka Sweatshirt
     case 4:
       return [
         {
@@ -209,8 +209,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
         },
         {
           name: "Renk",
-          options: ["Oxford Açık Mavi", "Klasik Beyaz", "Koyu Lacivert", "Açık Gri"],
-          defaultValue: "Oxford Açık Mavi",
+          options: ["İndigo Melanj Mavi", "Antrasit Gri", "Siyah", "Kırık Beyaz"],
+          defaultValue: "İndigo Melanj Mavi",
         },
       ];
 
@@ -477,34 +477,34 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
           optionDetails: [
             {
               label: "256 GB",
-              priceDelta: -40,
+              priceDelta: 0,
               specsOverrides: {
                 "Depolama Kapasitesi": "256 GB Katı Hal Depolama",
               },
             },
             {
               label: "512 GB",
-              priceDelta: -20,
+              priceDelta: 20,
               specsOverrides: {
                 "Depolama Kapasitesi": "512 GB Katı Hal Depolama",
               },
             },
             {
               label: "1 TB",
-              priceDelta: 0,
+              priceDelta: 40,
               specsOverrides: {
                 "Depolama Kapasitesi": "1 TB (1000 GB) Katı Hal Depolama",
               },
             },
             {
               label: "2 TB",
-              priceDelta: 75,
+              priceDelta: 95,
               specsOverrides: {
                 "Depolama Kapasitesi": "2 TB (2000 GB) Katı Hal Depolama",
               },
             },
           ],
-          defaultValue: "1 TB",
+          defaultValue: "256 GB",
         },
       ];
 
@@ -687,12 +687,12 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
         },
         {
           name: "Renk",
-          options: ["Klasik Sarı", "Lacivert Denizci", "Toz Pembe", "Haki Doğa"],
-          defaultValue: "Klasik Sarı",
+          options: ["Lacivert Denizci", "Klasik Sarı", "Toz Pembe", "Haki Doğa"],
+          defaultValue: "Lacivert Denizci",
         },
       ];
 
-    // 18. MBJ Kadın V Yaka Tişört
+    // 18. MBJ Kadın V Yaka Tişört (Kırmızı)
     case 18:
       return [
         {
@@ -710,12 +710,12 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
         },
         {
           name: "Renk",
-          options: ["Bordo Melanj", "Siyah", "Kırık Beyaz", "Mürdüm", "Lacivert"],
-          defaultValue: "Bordo Melanj",
+          options: ["Vişne Kırmızısı", "Siyah", "Kırık Beyaz", "Mürdüm", "Lacivert"],
+          defaultValue: "Vişne Kırmızısı",
         },
       ];
 
-    // 19. Opna Kadın Spor Tişört
+    // 19. Opna Kadın Dökümlü Tişört (Beyaz)
     case 19:
       return [
         {
@@ -732,8 +732,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
         },
         {
           name: "Renk",
-          options: ["Elektrik Pembesi", "Turkuaz Canlı", "Siyah", "Koyu Mor", "Gümüş Gri"],
-          defaultValue: "Elektrik Pembesi",
+          options: ["Klasik Beyaz", "Elektrik Pembesi", "Turkuaz Canlı", "Siyah", "Koyu Mor"],
+          defaultValue: "Klasik Beyaz",
         },
       ];
 
@@ -753,8 +753,8 @@ export function getProductAttributes(product: Product): ProductAttribute[] {
         },
         {
           name: "Renk",
-          options: ["Zeytin Yeşili (Outdoor)", "Bebek Sarısı", "Pudra Pembesi", "Antrasit Gri"],
-          defaultValue: "Zeytin Yeşili (Outdoor)",
+          options: ["Vintage Mürdüm Moru", "Zeytin Yeşili (Outdoor)", "Pudra Pembesi", "Antrasit Gri", "Bebek Sarısı"],
+          defaultValue: "Vintage Mürdüm Moru",
         },
       ];
 
@@ -925,15 +925,15 @@ export function getProductSpecifications(product: Product): ProductSpecification
         { label: "Yıkama & Bakım", value: "Kuru Temizleme veya 30°C Hassas Program" },
       ];
 
-    // 4. Erkek Gömlek
+    // 4. Erkek V Yaka Sweatshirt
     case 4:
       return [
-        { label: "Kumaş Dokusu", value: "%100 Saf Pamuk Premium Oxford Dokuma (Kolay Ütülenebilir)" },
-        { label: "Kalıp (Fit)", value: "Şık ve Modern Slim Fit Kesim" },
-        { label: "Yaka Tipi", value: "Düğmeli Gizli Yaka (Button-Down Collar)" },
-        { label: "Manşet Detayı", value: "Çift Düğmeli Ayarlanabilir İtalyan Manşet" },
-        { label: "Dikiş Kalitesi", value: "Çift İğne Takviyeli Dayanıklı Yan Dikişler" },
-        { label: "Menşei", value: "Türkiye (TrendSphere Özel Terzilik Koleksiyonu)" },
+        { label: "Kumaş Dokusu", value: "%100 Pamuklu Viskon Karışımlı Yumuşak İnce Sweat Dokuma" },
+        { label: "Kalıp (Fit)", value: "Vücudu Saran Modern Slim Fit Kesim" },
+        { label: "Yaka Tipi", value: "Zarif Modern V Yaka (Ribana Örgü Bitiş)" },
+        { label: "Kol & Manşet", value: "Uzun Kol, Esnek ve Formunu Koruyan Ribana Manşet" },
+        { label: "Kullanım Alanı", value: "Mevsim Geçişleri, Günlük Sokak Stili ve Casual Kombinler" },
+        { label: "Menşei", value: "Türkiye (TrendSphere Günlük Koleksiyonu)" },
       ];
 
     // 5. John Hardy Ejderha Zincir Bileklik
@@ -1094,34 +1094,34 @@ export function getProductSpecifications(product: Product): ProductSpecification
         { label: "Yıkama & Bakım", value: "30°C Hassas Yıkama veya Elde Ilık Suyla Temizleme" },
       ];
 
-    // 18. MBJ Kadın V Yaka Tişört
+    // 18. MBJ Kadın V Yaka Tişört (Kırmızı)
     case 18:
       return [
-        { label: "Kumaş Karışımı", value: "%95 Doğal Viskon (Rayon), %5 Esnek Likra (Spandex)" },
-        { label: "Kumaş Dokusu", value: "İpeksi Yumuşaklıkta, Dökümlü ve Nefes Alan Lüks Viskon Kumaş" },
-        { label: "Yaka Stili", value: "Derin Olmayan Zarif ve Şık V Yaka Kesim" },
+        { label: "Kumaş Karışımı", value: "%95 Doğal Penye Pamuk, %5 Esnek Likra (Spandex)" },
+        { label: "Kumaş Dokusu", value: "Nefes Alan Yumuşak Dokulu Hafif Penye Kumaş" },
+        { label: "Yaka Stili", value: "Zarif ve Modern V Yaka Kesim" },
         { label: "Esneklik", value: "4 Yöne Esneyen Gün Boyu Konforlu Formunu Koruyan Kumaş" },
-        { label: "Kalıp (Fit)", value: "Vücudu Sıkmayan Dökümlü Regular Fit" },
+        { label: "Kalıp (Fit)", value: "Vücudu Saran Rahat Slim / Regular Fit" },
         { label: "Sertifikasyon", value: "OEKO-TEX® Standard 100 Ekolojik Tekstil Sertifikalı" },
       ];
 
-    // 19. Opna Kadın Spor Tişört
+    // 19. Opna Kadın Dökümlü Tişört (Beyaz)
     case 19:
       return [
-        { label: "Kumaş Teknolojisi", value: "%100 Nem Emici Cationic Interlock Polyester (Dry-Fit)" },
-        { label: "Ter Tutmazlık", value: "Hızlı Kuruyan ve Nemi Dışarı Atan Mikro Gözenekli Yapı" },
-        { label: "Dikiş Tipi", value: "Sürtünmeyi ve Tahrişi Önleyen 4 İğneli Düz Reçme Dikişler" },
-        { label: "Koku Önleme", value: "Bakteri ve Koku Oluşumunu Engelleyen Antimikrobiyal Dokuma" },
-        { label: "Kullanım Alanı", value: "Fitness, Koşu, Yoga, Pilates ve Günlük Aktif Spor Giyim" },
-        { label: "Bakım Kolaylığı", value: "Makinede Hızlı Yıkama & Çabuk Kuruma (Ütü Gerektirmez)" },
+        { label: "Kumaş Teknolojisi", value: "%95 İpeksi Viskon (Rayon), %5 Elastan (Dökümlü ve Nefes Alabilir)" },
+        { label: "Tasarım Detayı", value: "Yan Büzgülü Dökümlü Duruş ve Geniş Kayık / Oval Yaka" },
+        { label: "Dikiş Tipi", value: "Sürtünmeyi ve Tahrişi Önleyen İpeksi Gizli Dikişler" },
+        { label: "Kalıp (Fit)", value: "Vücudu Sıkmayan Dökümlü Rahat Regular Fit" },
+        { label: "Kullanım Alanı", value: "Günlük Giyim, Ofis-Casual ve Şık Kombinler" },
+        { label: "Bakım Kolaylığı", value: "Makinede 30°C Hassas Yıkama (Ütü Gerektirmez)" },
       ];
 
     // 20. DANVOUY Kadın Günlük Tişört
     case 20:
       return [
         { label: "Kumaş Materyali", value: "%95 Organik Penye Pamuk, %5 Elastan" },
-        { label: "Yaka & Kol", value: "Klasik Bisiklet Yaka (Crew Neck) ve Duble Katlamalı Kısa Kol" },
-        { label: "Ön Baskı", value: "Çatlama ve Solma Yapmayan Su Bazlı Ekolojik Doğa Temalı Tipografik Baskı" },
+        { label: "Yaka & Kol", value: "Modern V Yaka ve Duble Katlamalı Kısa Kol" },
+        { label: "Ön Baskı", value: "Çatlama ve Solma Yapmayan Su Bazlı Ekolojik 'Be Kind' Tipografik Yazı Baskısı" },
         { label: "Kalıp (Fit)", value: "Rahat ve Dökümlü Günlük Casual Kesim" },
         { label: "Yıkama Dayanımı", value: "50+ Yıkamada Rengini ve Formunu Koruyan Sanforize Edilmiş Kumaş" },
         { label: "Menşei", value: "Türkiye (TrendSphere Günlük Koleksiyonu)" },
@@ -1258,7 +1258,7 @@ export const CANONICAL_PRODUCT_TITLES: Record<number, string> = {
   1: "Fjallraven - Foldsack No. 1 Sırt Çantası",
   2: "Erkek Casual Premium Slim Fit Tişört",
   3: "Erkek Pamuklu Mevsimlik Ceket",
-  4: "Erkek Casual Slim Fit Uzun Kollu Gömlek",
+  4: "Erkek Casual Slim Fit V Yaka Sweatshirt",
   5: "John Hardy Legends Naga Ejderha Zincir Bileklik",
   6: "Petite Micropave Zarafet Yüzüğü",
   7: "Prenses Kesim Tektaş Solitaire Yüzük",
@@ -1273,7 +1273,7 @@ export const CANONICAL_PRODUCT_TITLES: Record<number, string> = {
   16: "Lock and Love Kadın Kapüşonlu Deri Motorcu Ceketi",
   17: "Kadın Çizgili Rüzgarlık & Su Geçirmez Yağmurluk",
   18: "MBJ Kadın Kısa Kollu V Yaka Tişört",
-  19: "Opna Kadın Spor Nefes Alabilir Tişört",
+  19: "Opna Kadın Dökümlü Nefes Alabilir Tişört",
   20: "DANVOUY Kadın Pamuklu Günlük Tişört",
 };
 
@@ -1281,7 +1281,7 @@ export const CANONICAL_PRODUCT_DESCRIPTIONS: Record<number, string> = {
   1: "Günlük şehir kullanımı ve doğa yürüyüşleri için mükemmel bir sırt çantası. Dayanıklı G-1000 kumaşı ve 15 inç destekli laptop bölmesi ile fonksiyonel taşıma sağlar.",
   2: "Modern slim fit kalıp, kontrast raglan uzun kollar ve 3 düğmeli henley pat detayı. Nefes alabilir, terletmeyen yumuşak pamuklu kumaşı ile gün boyu konfor sunar.",
   3: "İlkbahar, sonbahar ve ılık kış günleri için ideal pamuklu kanvas ceket. Doğa yürüyüşü, kamp ve günlük şehir stili için fonksiyonel cepler ve rüzgar koruması.",
-  4: "Rahat kesim, dayanıklı dokuma ve nefes alabilir pamuk kumaş. Hem iş hayatında hem de günlük kullanımda şıklığı ve hareket özgürlüğünü bir arada sunar.",
+  4: "Mevsim geçişleri ve serin günler için ideal, yumuşak dokulu ve nefes alabilir pamuklu ince sweat kumaşı. Modern V yaka kesimi, formunu koruyan ribana manşetleri ve slim fit kalıbıyla günlük giyimde ve casual kombinlerde üstün konfor sunar.",
   5: "Bali'nin efsanevi su ejderhasından ilham alan el yapımı tasarım. 925 ayar masif gümüş, mavi safir taşlı gözler ve güvenli entegre kilit mekanizması.",
   6: "İnce ve zarif mikro pavé taş dizimi. 14K altın kaplama ve parlak taş detayları ile tek başına veya tektaş yüzüklerle kombinlemek için ideal zarafet.",
   7: "Özel anlar, söz ve nişan için tasarlanmış prenses kesim klasik tektaş yüzük. 925 ayar gümüş üzerine parlak platin kaplama işçiliği.",
@@ -1295,9 +1295,9 @@ export const CANONICAL_PRODUCT_DESCRIPTIONS: Record<number, string> = {
   15: "Su ve rüzgar geçirmez dış kabuk, çıkarılabilir polar iç astar. Zorlu kış şartlarında, kayak pistlerinde ve outdoor maceralarında maksimum sıcaklık ve koruma.",
   16: "Çıkarılabilir kapüşonlu, yumuşak dokulu suni deri motorcu ceketi. Cepli tasarımı ve vücuda oturan modern kesimi ile dört mevsim şık sokak stili.",
   17: "Hafif ve suya dayanıklı nefes alabilir kumaş. İpli ayarlanabilir bel detayı, çizgili iç astar ve fermuarlı cepleriyle yağmurlu günlerde mükemmel koruma.",
-  18: "Yüksek esneklik ve yumuşaklık sunan dökümlü kumaş. Ribana yaka detayı ve rahat kesimi ile her kombine uyum sağlayan zamansız bir temel parça.",
-  19: "Nem tutmayan ve hızlı kuruyan interlok kumaş teknolojisi. Fitness, koşu ve yoga antrenmanlarında hafif ve ferah hareket özgürlüğü sağlar.",
-  20: "Nefes alabilen pamuklu dokuma, rahat V yaka ve esnek kalıp. Günlük kullanımda kot pantolon veya eteklerle kolayca kombinlenebilir.",
+  18: "Yüksek nefes alabilirlik ve yumuşaklık sunan esnek kumaş. Şık V yaka detayı, vücuda oturan formu ve canlı kırmızı rengi ile hem sporda hem günlük kullanımda konforlu bir temel parça.",
+  19: "Yanlardan büzgü detaylı dökümlü kesim ve nefes alabilen ipeksi dokuma. Günlük kullanımda ferah, dökümlü ve şık bir stil sunan zarif kadın tişörtü.",
+  20: "Nefes alabilen yumuşak pamuklu dokuma, rahat V yaka kesimi ve ikonik 'Be Kind' tipografik baskı detayı. Günlük kullanımda kot pantolon veya eteklerle kolayca kombinlenebilen şık mor tişört.",
 };
 
 export const DISCOUNTED_PRODUCT_IDS: Record<number, number> = {
@@ -1339,26 +1339,26 @@ export function enrichProductWithSpecs(product: Product): Product {
 }
 
 export const PRODUCT_IMAGE_MAP: Record<number, string> = {
-  1: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&h=800&q=80",
-  2: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&h=800&q=80",
-  3: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&h=800&q=80",
-  4: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=800&h=800&q=80",
-  5: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&h=800&q=80",
-  6: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&h=800&q=80",
-  7: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=800&h=800&q=80",
-  8: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&h=800&q=80",
-  9: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=800&h=800&q=80",
-  10: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=800&h=800&q=80",
-  11: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&h=800&q=80",
-  12: "https://images.unsplash.com/photo-1544652478-6653e09f18a2?auto=format&fit=crop&w=800&h=800&q=80",
-  13: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=800&h=800&q=80",
-  14: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=800&h=800&q=80",
-  15: "https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=800&h=800&q=80",
-  16: "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=800&h=800&q=80",
-  17: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&h=800&q=80",
-  18: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&h=800&q=80",
-  19: "https://images.unsplash.com/photo-1503342394128-c104d54dba01?auto=format&fit=crop&w=800&h=800&q=80",
-  20: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&h=800&q=80",
+  1: "https://m.media-amazon.com/images/I/81fPKd-2AYL._AC_SL1500_.jpg",
+  2: "https://m.media-amazon.com/images/I/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg",
+  3: "https://m.media-amazon.com/images/I/71li-ujtlUL._AC_UX679_.jpg",
+  4: "https://m.media-amazon.com/images/I/71YXzeOuslL._AC_UY879_.jpg",
+  5: "https://m.media-amazon.com/images/I/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg",
+  6: "https://m.media-amazon.com/images/I/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg",
+  7: "https://m.media-amazon.com/images/I/71YAIFU48IL._AC_UL640_QL65_ML3_.jpg",
+  8: "https://m.media-amazon.com/images/I/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg",
+  9: "https://m.media-amazon.com/images/I/61IBBVJvSDL._AC_SY879_.jpg",
+  10: "https://m.media-amazon.com/images/I/61U7T1koQqL._AC_SX679_.jpg",
+  11: "https://m.media-amazon.com/images/I/71kWymZ+c+L._AC_SX679_.jpg",
+  12: "https://m.media-amazon.com/images/I/61mtL65D4cL._AC_SX679_.jpg",
+  13: "https://m.media-amazon.com/images/I/81QpkIctqPL._AC_SX679_.jpg",
+  14: "https://m.media-amazon.com/images/I/81Zt42ioCgL._AC_SX679_.jpg",
+  15: "https://m.media-amazon.com/images/I/51Y5NI-I5jL._AC_UX679_.jpg",
+  16: "https://m.media-amazon.com/images/I/81XH0e8fefL._AC_UY879_.jpg",
+  17: "https://m.media-amazon.com/images/I/71HblAHs5xL._AC_UY879_-2.jpg",
+  18: "https://m.media-amazon.com/images/I/51eg55uWmdL._AC_UX679_.jpg",
+  19: "https://m.media-amazon.com/images/I/71z3kpMAYsL._AC_UY879_.jpg",
+  20: "https://m.media-amazon.com/images/I/61pHAEJ4NML._AC_UX679_.jpg",
 };
 
 export const FALLBACK_PRODUCTS: Product[] = [
