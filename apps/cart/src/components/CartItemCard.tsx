@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Trash2, Plus, Minus, AlertCircle, Tag, SlidersHorizontal } from "lucide-react";
+import { Trash2, Plus, Minus, AlertCircle, Tag, SlidersHorizontal, Check } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
 import { getProductAttributes, getCartItemId, getCategoryDisplayName } from "@repo/shared-types";
 import EditVariantModal from "./EditVariantModal";
@@ -12,10 +12,18 @@ interface CartItemCardProps {
   onUpdateQuantity: (cartItemId: string, quantity: number) => void;
   onRemove: (cartItemId: string) => void;
   onUpdateAttributes?: (cartItemId: string, selectedAttributes: SelectedAttributes, needsConfirmation?: boolean) => void;
+  onToggleSelect?: (cartItemId: string) => void;
 }
 
-export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdateAttributes }: CartItemCardProps) {
+export default function CartItemCard({
+  item,
+  onUpdateQuantity,
+  onRemove,
+  onUpdateAttributes,
+  onToggleSelect,
+}: CartItemCardProps) {
   const { product, quantity } = item;
+  const isSelected = item.selected !== false;
   const unitPrice = item.unitPrice ?? product.price;
   const itemTotal = (unitPrice * quantity).toFixed(2);
   const [imgSrc, setImgSrc] = useState(product.image);
@@ -52,7 +60,27 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
         />
       )}
 
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center gap-5 transition-all hover:shadow-md">
+      <div
+        className={`relative rounded-3xl p-5 sm:p-6 pt-12 sm:pt-6 sm:pl-16 border transition-all duration-300 flex flex-col sm:flex-row items-center gap-5 ${
+          isSelected
+            ? "bg-white border-slate-200/80 shadow-sm hover:shadow-md"
+            : "bg-slate-50/70 border-slate-200/60 opacity-60 grayscale-[0.45] hover:opacity-85 shadow-none"
+        }`}
+      >
+        {/* Top-Left Selection Checkbox */}
+        <button
+          type="button"
+          onClick={() => onToggleSelect?.(itemKey)}
+          className={`absolute top-4 left-4 z-20 w-6 h-6 rounded-lg flex items-center justify-center transition-all cursor-pointer border ${
+            isSelected
+              ? "bg-indigo-600 border-indigo-600 text-white shadow-xs hover:bg-indigo-700"
+              : "bg-white border-slate-300 hover:border-indigo-400 text-transparent hover:bg-slate-50"
+          }`}
+          aria-label={isSelected ? "Ürünü siparişten çıkar" : "Ürünü siparişe dahil et"}
+          title={isSelected ? "Siparişten çıkar (sepette kalır)" : "Siparişe dahil et"}
+        >
+          <Check className={`w-3.5 h-3.5 stroke-[3] transition-transform ${isSelected ? "scale-100" : "scale-0"}`} />
+        </button>
         {/* Product Image */}
         <a
           href={`/products/${product.id}`}
@@ -77,6 +105,11 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onUpdat
             <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block">
               {getCategoryDisplayName(product.category)}
             </span>
+            {!isSelected && (
+              <span className="text-[10px] font-bold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded-full inline-block">
+                Siparişe Dahil Değil
+              </span>
+            )}
             {item.needsAttributeConfirmation && (
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full animate-pulse">
                 <AlertCircle className="w-3 h-3 text-amber-600" />

@@ -102,6 +102,7 @@ export function normalizeCartItems(items: CartItem[]): CartItem[] {
     return {
       ...item,
       cartItemId,
+      selected: item.selected !== false,
       product: {
         ...item.product,
         title: canonical,
@@ -179,13 +180,15 @@ export function saveStoredCart(items: CartItem[]): void {
 }
 
 export function calculateCartTotals(items: CartItem[]): CartTotals {
-  const subtotal = items.reduce(
+  const activeItems = items.filter((i) => i.selected !== false);
+  const subtotal = activeItems.reduce(
     (acc, item) => acc + (item.unitPrice ?? item.product.price) * item.quantity,
     0
   );
   const totalCount = items.reduce((acc, item) => acc + item.quantity, 0);
+  const selectedCount = activeItems.reduce((acc, item) => acc + item.quantity, 0);
   const tax = Number((subtotal * TAX_RATE).toFixed(2));
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || items.length === 0 ? 0 : 9.99;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || activeItems.length === 0 ? 0 : 9.99;
   const total = Number((subtotal + tax + shipping).toFixed(2));
   const remainingForFreeShipping = Math.max(0, Number((FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)));
 
@@ -195,6 +198,7 @@ export function calculateCartTotals(items: CartItem[]): CartTotals {
     shipping,
     total,
     totalCount,
+    selectedCount,
     freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
     remainingForFreeShipping,
   };
@@ -325,6 +329,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
           cartItemId: targetKey,
           product,
           quantity,
+          selected: true,
           selectedAttributes,
           unitPrice,
           needsAttributeConfirmation,
@@ -333,6 +338,35 @@ export function useCartSync(source: "home" | "cart" = "home") {
     }
     setItems(next);
     broadcastCart(next, source, "ADD_ITEM");
+  }, [source]);
+
+  const toggleItemSelection = useCallback((
+    cartItemIdOrProductId: string | number,
+    selected?: boolean
+  ) => {
+    const current = getStoredCart();
+    const key = String(cartItemIdOrProductId);
+    const isTarget = (i: CartItem) =>
+      (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) === key ||
+      String(i.product.id) === key;
+
+    const next = current.map((i) => {
+      if (isTarget(i)) {
+        const nextVal = selected !== undefined ? selected : i.selected === false ? true : false;
+        return { ...i, selected: nextVal };
+      }
+      return i;
+    });
+
+    setItems(next);
+    broadcastCart(next, source, "TOGGLE_ITEM_SELECTED" as CartActionType);
+  }, [source]);
+
+  const toggleAllSelection = useCallback((selectAll: boolean) => {
+    const current = getStoredCart();
+    const next = current.map((i) => ({ ...i, selected: selectAll }));
+    setItems(next);
+    broadcastCart(next, source, "TOGGLE_ALL_SELECTION" as CartActionType);
   }, [source]);
 
   const updateItemAttributes = useCallback((
@@ -450,6 +484,8 @@ export function useCartSync(source: "home" | "cart" = "home") {
     removeItem,
     updateQuantity,
     updateItemAttributes,
+    toggleItemSelection,
+    toggleAllSelection,
     clearCart,
     isHydrated,
   };

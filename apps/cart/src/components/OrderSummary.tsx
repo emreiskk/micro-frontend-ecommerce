@@ -27,7 +27,9 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
         <div className="flex items-center justify-between text-xs">
           <span className="flex items-center gap-1.5 text-slate-600 font-medium">
             <Truck className="w-3.5 h-3.5 text-slate-400" />
-            {totals.shipping === 0 ? (
+            {totals.selectedCount === 0 ? (
+              <span className="text-slate-500">Siparişe dahil ürün seçilmedi</span>
+            ) : totals.shipping === 0 ? (
               <span className="font-semibold text-emerald-600">Kargonuz ücretsiz!</span>
             ) : (
               <span>
@@ -36,15 +38,19 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
             )}
           </span>
           <span className="text-[11px] font-medium text-slate-400">
-            %{Math.round(freeShippingProgress)}
+            %{totals.selectedCount === 0 ? 0 : Math.round(freeShippingProgress)}
           </span>
         </div>
         <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ease-out ${
-              totals.shipping === 0 ? "bg-emerald-500" : "bg-indigo-600"
+              totals.selectedCount === 0
+                ? "bg-slate-300"
+                : totals.shipping === 0
+                ? "bg-emerald-500"
+                : "bg-indigo-600"
             }`}
-            style={{ width: `${freeShippingProgress}%` }}
+            style={{ width: `${totals.selectedCount === 0 ? 0 : freeShippingProgress}%` }}
           />
         </div>
       </div>
@@ -52,13 +58,15 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
       {/* Line Items */}
       <div className="space-y-3 text-xs text-slate-600 pb-5 border-b border-slate-100">
         <div className="flex justify-between">
-          <span>Ara Toplam ({totals.totalCount} ürün):</span>
+          <span>Ara Toplam ({totals.selectedCount} ürün):</span>
           <span className="font-semibold text-slate-900">${totals.subtotal.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span>Kargo:</span>
           <span className="font-semibold">
-            {totals.shipping === 0 ? (
+            {totals.selectedCount === 0 ? (
+              <span className="text-slate-400 font-medium">$0.00</span>
+            ) : totals.shipping === 0 ? (
               <span className="text-emerald-600 font-bold uppercase text-[11px]">Ücretsiz</span>
             ) : (
               `$${totals.shipping.toFixed(2)}`
@@ -86,9 +94,14 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
       <div className="space-y-3">
         <button
           onClick={onCheckout}
-          className="w-full inline-flex items-center justify-center gap-2 py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all"
+          disabled={totals.selectedCount === 0}
+          className={`w-full inline-flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-bold text-sm transition-all ${
+            totals.selectedCount === 0
+              ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
+              : "bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white shadow-lg shadow-indigo-500/25 cursor-pointer"
+          }`}
         >
-          <span>Siparişi Tamamla</span>
+          <span>{totals.selectedCount === 0 ? "Lütfen Ürün Seçiniz" : "Siparişi Tamamla"}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
 

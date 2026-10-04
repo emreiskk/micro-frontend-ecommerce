@@ -43,6 +43,7 @@ export interface LeanCartItem {
   cartItemId?: string;
   productId: number;
   quantity: number;
+  selected?: boolean;
   selectedAttributes?: SelectedAttributes;
   unitPrice?: number;
   needsAttributeConfirmation?: boolean;
@@ -52,6 +53,7 @@ export interface CartItem {
   cartItemId?: string;
   product: Product;
   quantity: number;
+  selected?: boolean;
   selectedAttributes?: SelectedAttributes;
   unitPrice?: number;
   needsAttributeConfirmation?: boolean;
@@ -77,11 +79,20 @@ export interface CartTotals {
   shipping: number;
   total: number;
   totalCount: number;
+  selectedCount: number;
   freeShippingThreshold: number;
   remainingForFreeShipping: number;
 }
 
-export type CartActionType = 'SYNC' | 'ADD_ITEM' | 'REMOVE_ITEM' | 'UPDATE_QUANTITY' | 'UPDATE_ATTRIBUTES' | 'CLEAR_CART';
+export type CartActionType =
+  | 'SYNC'
+  | 'ADD_ITEM'
+  | 'REMOVE_ITEM'
+  | 'UPDATE_QUANTITY'
+  | 'UPDATE_ATTRIBUTES'
+  | 'TOGGLE_ITEM_SELECTED'
+  | 'TOGGLE_ALL_SELECTION'
+  | 'CLEAR_CART';
 
 export interface CartSyncMessage {
   type: CartActionType;
@@ -1506,6 +1517,7 @@ export function toLeanCartItem(item: CartItem | any): LeanCartItem {
     cartItemId,
     productId,
     quantity: item.quantity ?? 1,
+    selected: item.selected !== false,
     selectedAttributes,
     unitPrice: item.unitPrice,
     needsAttributeConfirmation: item.needsAttributeConfirmation,
@@ -1518,6 +1530,7 @@ export function hydrateCartItem(item: any): CartItem {
       cartItemId: "1",
       product: getCatalogProduct(1),
       quantity: 1,
+      selected: true,
     };
   }
 
@@ -1548,6 +1561,7 @@ export function hydrateCartItem(item: any): CartItem {
     cartItemId,
     product,
     quantity: Math.max(1, Number(item.quantity) || 1),
+    selected: item.selected !== false,
     selectedAttributes,
     unitPrice,
     needsAttributeConfirmation: Boolean(item.needsAttributeConfirmation),

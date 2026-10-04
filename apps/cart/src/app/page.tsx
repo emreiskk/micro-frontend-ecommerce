@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, ArrowRight } from "lucide-react";
-import { useCartSync, calculateCartTotals } from "@repo/cart-sync";
+import { ShoppingBag, ArrowRight, Check } from "lucide-react";
+import { useCartSync, calculateCartTotals, saveStoredCart, broadcastCart } from "@repo/cart-sync";
 import type { CartTotals, CartItem, SelectedAttributes } from "@repo/shared-types";
 import { calculateProductPrice } from "@repo/shared-types";
 import CartItemCard from "@/components/CartItemCard";
@@ -17,6 +17,8 @@ export default function CartPage() {
     totals,
     updateQuantity,
     updateItemAttributes,
+    toggleItemSelection,
+    toggleAllSelection,
     removeItem,
     clearCart,
     isHydrated,
@@ -28,15 +30,28 @@ export default function CartPage() {
   const [completedOrderItems, setCompletedOrderItems] = useState<CartItem[]>([]);
 
   const proceedWithCheckout = (finalItems: CartItem[]) => {
-    const freshTotals = calculateCartTotals(finalItems);
+    const selectedFinal = finalItems.filter((i) => i.selected !== false);
+    if (selectedFinal.length === 0) return;
+
+    const unselectedItems = finalItems.filter((i) => i.selected === false);
+    const freshTotals = calculateCartTotals(selectedFinal);
     setCompletedOrderTotals(freshTotals);
-    setCompletedOrderItems([...finalItems]);
+    setCompletedOrderItems([...selectedFinal]);
     setIsCheckoutOpen(true);
-    clearCart();
+
+    if (unselectedItems.length > 0) {
+      saveStoredCart(unselectedItems);
+      broadcastCart(unselectedItems, "cart", "SYNC");
+    } else {
+      clearCart();
+    }
   };
 
   const handleInitiateCheckout = () => {
-    const unconfirmed = items.filter((i) => i.needsAttributeConfirmation);
+    const selectedItems = items.filter((i) => i.selected !== false);
+    if (selectedItems.length === 0) return;
+
+    const unconfirmed = selectedItems.filter((i) => i.needsAttributeConfirmation);
     if (unconfirmed.length > 0) {
       setIsAttributePromptOpen(true);
       return;
@@ -84,7 +99,7 @@ export default function CartPage() {
     );
   }
 
-  const unconfirmedItems = items.filter((i) => i.needsAttributeConfirmation);
+  const unconfirmedItems = items.filter((i) => i.needsAttributeConfirmation && i.selected !== false);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -102,14 +117,50 @@ export default function CartPage() {
         onClose={() => setIsAttributePromptOpen(false)}
       />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-950 tracking-tight">
-          Alışveriş Sepeti
-        </h1>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-slate-950 tracking-tight">
+            Alışveriş Sepeti
+          </h1>
+          {items.length > 0 && (
+            <p className="text-xs text-slate-500 mt-1">
+              Sepetinizde toplam {totals.totalCount} adet ürün bulunmaktadır.
+              {totals.selectedCount !== totals.totalCount && (
+                <span className="text-indigo-600 font-semibold ml-1.5">
+                  ({totals.selectedCount} ürün seçili)
+                </span>
+              )}
+            </p>
+          )}
+        </div>
+
         {items.length > 0 && (
-          <p className="text-xs text-slate-500 mt-1">
-            Sepetinizde toplam {totals.totalCount} adet ürün bulunmaktadır.
-          </p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => toggleAllSelection(totals.selectedCount !== items.length)}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200/90 hover:border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all cursor-pointer shadow-2xs"
+            >
+              <span
+                className={`w-4 h-4 rounded-md flex items-center justify-center border text-[10px] transition-colors ${
+                  totals.selectedCount === items.length
+                    ? "bg-indigo-600 border-indigo-600 text-white"
+                    : totals.selectedCount > 0
+                    ? "bg-indigo-50 border-indigo-300 text-indigo-600 font-bold"
+                    : "border-slate-300 bg-white"
+                }`}
+              >
+                {totals.selectedCount === items.length ? (
+                  <Check className="w-3 h-3 stroke-[3]" />
+                ) : totals.selectedCount > 0 ? (
+                  "−"
+                ) : null}
+              </span>
+              <span>
+                {totals.selectedCount === items.length ? "Seçimi Kaldır" : "Tümünü Seç"}
+              </span>
+            </button>
+          </div>
         )}
       </div>
 
@@ -123,6 +174,7 @@ export default function CartPage() {
                 item={item}
                 onUpdateQuantity={updateQuantity}
                 onUpdateAttributes={updateItemAttributes}
+                onToggleSelect={toggleItemSelection}
                 onRemove={removeItem}
               />
             ))}
