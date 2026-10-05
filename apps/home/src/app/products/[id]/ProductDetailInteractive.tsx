@@ -478,7 +478,14 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             {inStock && maxStock > 0 && (quantity >= maxStock || isMaxInCart) && (
               <div className="mt-3 sm:mt-3.5 w-full p-2.5 sm:p-3 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-800 flex items-center justify-center gap-2 text-xs font-bold shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200 text-center">
                 <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                <span>Maksimum sipariş adedine ulaşıldı (Maks. {maxStock} adet)</span>
+                <div>
+                  <span>Maksimum sipariş adedine ulaşıldı (Maks. {maxStock} adet)</span>
+                  {product.attributes && product.attributes.length > 0 && (
+                    <span className="font-normal block text-[11px] text-amber-700/90 mt-0.5">
+                      Farklı seçenekler (beden/renk) seçerek sepete eklemeye devam edebilirsiniz.
+                    </span>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -548,8 +555,8 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               aria-label="Bu ürün zaten sepetinizde"
               className="h-11 px-5 rounded-xl font-bold text-xs text-white shadow-md bg-indigo-600 transition-all flex items-center gap-2 cursor-not-allowed"
             >
-              <ShoppingCart className="w-4 h-4 text-white" />
-              <span>Sepetinizde</span>
+              <ShoppingCart className="w-4 h-4 text-white flex-shrink-0" />
+              <span className="truncate">Sepetinizde</span>
             </button>
           ) : inStock ? (
             <button

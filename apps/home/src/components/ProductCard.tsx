@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, ShoppingCart, Check, Eye, BadgeCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Star, ShoppingCart, Check, Eye, BadgeCheck, ArrowRight } from "lucide-react";
 import type { Product } from "@repo/shared-types";
 import { getCategoryDisplayName, getVariantMaxStock, getCartItemId } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
@@ -14,8 +15,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onAddedToCart }: ProductCardProps) {
+  const router = useRouter();
   const { items, addItem } = useCartSync("home");
   const [isAdding, setIsAdding] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [imgSrc, setImgSrc] = useState(product.image);
 
   const hasAttributes = Boolean(product.attributes && product.attributes.length > 0);
@@ -48,7 +51,11 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isDefaultMaxInCart) return;
+    if (isDefaultMaxInCart) {
+      setIsRedirecting(true);
+      router.push(`/products/${product.id}`);
+      return;
+    }
     setIsAdding(true);
     addItem(product, 1, defaultAttrs, hasAttributes);
     if (onAddedToCart) {
@@ -139,23 +146,25 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
 
           <button
             onClick={handleAddToCart}
-            disabled={isAdding || isDefaultMaxInCart}
-            aria-label={`Sepete Ekle - ${product.title}`}
-            data-testid="add-to-cart-button"
-            className={`w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl sm:rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm ${
+            disabled={isAdding || isRedirecting}
+            aria-label={
               isDefaultMaxInCart
-                ? "bg-indigo-600 text-white cursor-not-allowed shadow-sm"
-                : isAdding
-                ? "bg-emerald-600 text-white shadow-emerald-500/20 cursor-pointer"
-                : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-[0.98] cursor-pointer"
+                ? `Diğer Seçenekleri İncele - ${product.title}`
+                : `Sepete Ekle - ${product.title}`
+            }
+            data-testid="add-to-cart-button"
+            className={`w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl sm:rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm cursor-pointer ${
+              isAdding
+                ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-[0.98]"
             }`}
           >
-            {isDefaultMaxInCart ? (
+            {isRedirecting ? (
               <>
-                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white flex-shrink-0" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white flex-shrink-0 animate-pulse" />
                 <span className="truncate">
-                  <span className="sm:hidden">Maks. Sepette</span>
-                  <span className="hidden sm:inline">Sepetinizde (Maks. Adet)</span>
+                  <span className="sm:hidden">İnceleniyor...</span>
+                  <span className="hidden sm:inline">Seçeneklere Gidiliyor...</span>
                 </span>
               </>
             ) : isAdding ? (
