@@ -12,6 +12,7 @@ import {
   RotateCcw,
   Star,
   Bell,
+  BadgeCheck,
 } from "lucide-react";
 import type { Product, SelectedAttributes } from "@repo/shared-types";
 import {
@@ -193,6 +194,37 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                   <span className="text-[9px] font-medium text-indigo-500/80">opsiyon</span>
                 </span>
               )}
+            </div>
+          </div>
+
+          {/* Corporate Seller Trust Box (Trendyol-style) */}
+          <div className="mt-3.5 sm:mt-4 p-3 sm:p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/80 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-xs shadow-xs flex-shrink-0">
+                TS
+              </div>
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-xs font-bold text-slate-900 truncate">
+                    {product.seller?.displayName || "TrendSphere Resmi Mağazası"}
+                  </span>
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                    <BadgeCheck className="w-3 h-3 text-indigo-600" />
+                    Resmi Satıcı
+                  </span>
+                </div>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">
+                  TrendSphere Express ile 24 saatte kargoda
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1 flex-shrink-0 bg-white px-2 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
+              <span className="text-[10px] text-slate-400 font-medium hidden xs:inline">Puan</span>
+              <span className="text-xs font-black text-emerald-700">
+                {product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}
+              </span>
+              <Star className="w-3 h-3 fill-emerald-500 stroke-emerald-500" />
             </div>
           </div>
 

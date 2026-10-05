@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, ShoppingCart, Check, Eye } from "lucide-react";
+import { Star, ShoppingCart, Check, Eye, BadgeCheck } from "lucide-react";
 import type { Product } from "@repo/shared-types";
 import { getCategoryDisplayName } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
@@ -81,6 +81,20 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
               {product.title}
             </h3>
           </Link>
+
+          {/* Corporate Seller Badge */}
+          <div className="mt-1.5 sm:mt-2 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] text-slate-500 font-medium">
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="text-slate-400 text-[10px]">Satıcı:</span>
+              <span className="font-semibold text-slate-700 truncate">
+                {product.seller?.name || "TrendSphere"}
+              </span>
+              <BadgeCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-600 flex-shrink-0" />
+            </div>
+            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 flex-shrink-0">
+              {product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}★
+            </span>
+          </div>
         </div>
 
         {/* Price & Action */}

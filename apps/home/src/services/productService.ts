@@ -3,15 +3,17 @@ import {
   enrichProductWithSpecs,
   PRODUCT_IMAGE_MAP,
   FALLBACK_PRODUCTS,
+  TRENDSPHERE_OFFICIAL_SELLER,
 } from "@repo/shared-types";
 
-export { PRODUCT_IMAGE_MAP, FALLBACK_PRODUCTS };
+export { PRODUCT_IMAGE_MAP, FALLBACK_PRODUCTS, TRENDSPHERE_OFFICIAL_SELLER };
 
 export function sanitizeProduct(p: Product): Product {
   const reliableImage = PRODUCT_IMAGE_MAP[p.id] || p.image || "/images/fallback/placeholder.svg";
   const sanitized = {
     ...p,
     image: reliableImage,
+    seller: p.seller || TRENDSPHERE_OFFICIAL_SELLER,
   };
   return enrichProductWithSpecs(sanitized);
 }

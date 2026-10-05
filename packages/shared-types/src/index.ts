@@ -27,6 +27,24 @@ export interface SelectedAttributes {
   [attributeName: string]: string;
 }
 
+export interface SellerInfo {
+  name: string;
+  displayName: string;
+  isOfficial: boolean;
+  rating: number;
+  badgeText: string;
+  shippingText: string;
+}
+
+export const TRENDSPHERE_OFFICIAL_SELLER: SellerInfo = {
+  name: "TrendSphere",
+  displayName: "TrendSphere Resmi Mağazası",
+  isOfficial: true,
+  rating: 9.8,
+  badgeText: "Resmi Satıcı",
+  shippingText: "24 Saatte Kargoda",
+};
+
 export interface Product {
   id: number;
   title: string;
@@ -39,6 +57,7 @@ export interface Product {
   rating: Rating;
   attributes?: ProductAttribute[];
   specifications?: ProductSpecification[];
+  seller?: SellerInfo;
 }
 
 export interface LeanCartItem {
@@ -1333,6 +1352,7 @@ export function enrichProductWithSpecs(product: Product): Product {
     price,
     originalPrice,
     discountRate,
+    seller: product.seller || TRENDSPHERE_OFFICIAL_SELLER,
     attributes: getProductAttributes(product),
     specifications: getProductSpecifications(product),
   };
