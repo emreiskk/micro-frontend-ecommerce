@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Check, Minus, BadgeCheck, ChevronRight } from "lucide-react";
+import { Check, Minus, BadgeCheck, ChevronRight, Star } from "lucide-react";
 
 interface StoreCartHeaderProps {
   sellerName?: string;
+  sellerRating?: number;
   totalInStockCount: number;
   selectedInStockCount: number;
   allSelected: boolean;
@@ -14,6 +15,7 @@ interface StoreCartHeaderProps {
 
 export default function StoreCartHeader({
   sellerName = "TrendSphere",
+  sellerRating = 9.8,
   totalInStockCount,
   selectedInStockCount,
   allSelected,
@@ -75,6 +77,10 @@ export default function StoreCartHeader({
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200/60 flex-shrink-0">
               <BadgeCheck className="w-3 h-3 text-indigo-600" />
               <span className="hidden xs:inline sm:inline">Resmi Satıcı</span>
+            </span>
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60 flex-shrink-0">
+              <Star className="w-3 h-3 fill-amber-400 stroke-amber-400" />
+              <span>{sellerRating ? sellerRating.toFixed(1) : "9.8"}</span>
             </span>
           </div>
         </div>

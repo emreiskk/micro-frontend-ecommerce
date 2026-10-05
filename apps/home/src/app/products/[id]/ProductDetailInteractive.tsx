@@ -198,32 +198,26 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           </div>
 
           {/* Corporate Seller Trust Box (Trendyol-style Responsive Card) */}
-          <div className="mt-3.5 sm:mt-4 p-2.5 sm:p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/80 flex items-center justify-between gap-2.5 sm:gap-3.5">
-            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs shadow-xs flex-shrink-0">
-                TS
-              </div>
-              <div className="flex flex-col min-w-0 justify-center">
-                <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
-                  <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
-                    {product.seller?.name || "TrendSphere"}
-                  </span>
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200/60 flex-shrink-0">
-                    <BadgeCheck className="w-3 h-3 text-indigo-600" />
-                    <span>Resmi Satıcı</span>
-                  </span>
-                </div>
-                <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                  TrendSphere Express ile 24 saatte kargoda
+          <div className="mt-3.5 sm:mt-4 p-2.5 sm:p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/80 flex items-center gap-2.5 sm:gap-3.5">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs shadow-xs flex-shrink-0">
+              TS
+            </div>
+            <div className="flex flex-col min-w-0 justify-center">
+              <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
+                <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                  {product.seller?.name || "TrendSphere"}
+                </span>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200/60 flex-shrink-0">
+                  <BadgeCheck className="w-3 h-3 text-indigo-600" />
+                  <span>Resmi Satıcı</span>
+                </span>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60 flex-shrink-0">
+                  <Star className="w-3 h-3 fill-amber-400 stroke-amber-400" />
+                  <span>{product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}</span>
                 </span>
               </div>
-            </div>
-
-            {/* Harmonious Seller Score (Identical to product rating style) */}
-            <div className="flex items-center text-amber-500 flex-shrink-0">
-              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 stroke-amber-400" />
-              <span className="ml-1 text-xs sm:text-sm font-bold text-slate-800">
-                {product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}
+              <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                TrendSphere Express ile 24 saatte kargoda
               </span>
             </div>
           </div>

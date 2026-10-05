@@ -120,6 +120,7 @@ export default function CartPage() {
   const allSelected = totalInStockCount > 0 && selectedInStockCount === totalInStockCount;
   const isPartiallySelected = selectedInStockCount > 0 && selectedInStockCount < totalInStockCount;
   const storeName = items[0]?.product?.seller?.name || "TrendSphere";
+  const storeRating = items[0]?.product?.seller?.rating || 9.8;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-28 lg:pb-10">
@@ -155,6 +156,7 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-3.5 sm:space-y-4">
               <StoreCartHeader
                 sellerName={storeName}
+                sellerRating={storeRating}
                 totalInStockCount={totalInStockCount}
                 selectedInStockCount={selectedInStockCount}
                 allSelected={allSelected}
