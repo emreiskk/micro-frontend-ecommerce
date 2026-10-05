@@ -62,43 +62,46 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
 
       {/* Content */}
       <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
-        <div>
-          {/* Category & Rating Row */}
-          <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-2.5">
-            <span className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold tracking-wider uppercase bg-indigo-50 text-indigo-700 border border-indigo-200/60 truncate max-w-[85px] sm:max-w-none">
-              {getCategoryDisplayName(product.category)}
-            </span>
-            <div className="flex items-center gap-1 text-amber-500 flex-shrink-0">
-              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 stroke-amber-400" />
-              <span className="text-[11px] sm:text-xs font-bold text-slate-800">{product.rating?.rate ?? 4.5}</span>
-              <span className="text-[10px] sm:text-xs text-slate-400 hidden xs:inline sm:inline">({product.rating?.count ?? 120})</span>
+        <div className="flex-1 flex flex-col justify-between">
+          <div>
+            {/* Category & Rating Row */}
+            <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-2.5">
+              <span className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold tracking-wider uppercase bg-indigo-50 text-indigo-700 border border-indigo-200/60 truncate max-w-[85px] sm:max-w-none">
+                {getCategoryDisplayName(product.category)}
+              </span>
+              <div className="flex items-center gap-1 text-amber-500 flex-shrink-0">
+                <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 stroke-amber-400" />
+                <span className="text-[11px] sm:text-xs font-bold text-slate-800">{product.rating?.rate ?? 4.5}</span>
+                <span className="text-[10px] sm:text-xs text-slate-400 hidden xs:inline sm:inline">({product.rating?.count ?? 120})</span>
+              </div>
             </div>
+
+            {/* Title */}
+            <Link href={`/products/${product.id}`} className="block">
+              <h3 className="font-semibold text-slate-900 text-xs sm:text-sm line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] leading-snug hover:text-indigo-600 transition-colors">
+                {product.title}
+              </h3>
+            </Link>
           </div>
 
-          {/* Title */}
-          <Link href={`/products/${product.id}`} className="block">
-            <h3 className="font-semibold text-slate-900 text-xs sm:text-sm line-clamp-2 leading-snug hover:text-indigo-600 transition-colors">
-              {product.title}
-            </h3>
-          </Link>
-
-          {/* Corporate Seller Badge */}
-          <div className="mt-1.5 sm:mt-2 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] text-slate-500 font-medium">
+          {/* Corporate Seller Badge (Fixed directly above the price separator line) */}
+          <div className="mt-3 sm:mt-4 pb-2.5 sm:pb-3 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] text-slate-500 font-medium">
             <div className="flex items-center gap-1 min-w-0">
               <span className="text-slate-400 text-[10px]">Satıcı:</span>
               <span className="font-semibold text-slate-700 truncate">
                 {product.seller?.name || "TrendSphere"}
               </span>
-              <BadgeCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-600 flex-shrink-0" />
+              <BadgeCheck className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
             </div>
-            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 flex-shrink-0">
-              {product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}★
-            </span>
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-slate-700 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded-md flex-shrink-0 shadow-2xs">
+              <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 stroke-amber-400" />
+              <span>{product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}</span>
+            </div>
           </div>
         </div>
 
         {/* Price & Action */}
-        <div className="mt-3 sm:mt-5 pt-2.5 sm:pt-4 border-t border-slate-100 flex flex-col gap-2 sm:gap-3">
+        <div className="pt-2.5 sm:pt-3.5 border-t border-slate-100 flex flex-col gap-2 sm:gap-3">
           <div>
             <span className="text-[10px] sm:text-xs text-slate-400 block font-medium mb-0.5 sm:mb-1">Fiyat</span>
             <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">

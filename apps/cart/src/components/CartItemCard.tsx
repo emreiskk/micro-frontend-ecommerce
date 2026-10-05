@@ -186,11 +186,7 @@ export default function CartItemCard({
               <span className="font-semibold text-slate-700">
                 {product.seller?.name || "TrendSphere"}
               </span>
-              <BadgeCheck className="w-3 h-3 text-indigo-600 flex-shrink-0" />
-              <span className="text-slate-300">•</span>
-              <span className="text-[10px] text-emerald-700 font-medium hidden xs:inline">
-                {product.seller?.shippingText || "24 Saatte Kargoda"}
-              </span>
+              <BadgeCheck className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
             </div>
 
             {/* Clean Selected Attributes Badge & Dedicated Edit Button */}
