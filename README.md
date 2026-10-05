@@ -244,10 +244,7 @@ docker compose down
 2. **Multi-Zone Geçişi:** Navbardaki sepet butonuna tıklayın. Sayfanın URL'i `localhost:3000/cart` olarak kalırken arka planda port 3001'deki sepet mikro servisinin render edildiğini doğrulayın.
 3. **Çift Yönlü Canlı Senkronizasyon:** İki ayrı sekme açın (biri `localhost:3000`, diğeri `localhost:3001/cart`). Sepette adedi artırdığınızda veya ürünü sildiğinizde, diğer sekmedeki rozetin ve tutarın milisaniyeler içinde reaktif güncellendiğini gözlemleyin.
 4. **Checkout & Sipariş Onayı:** Sepet sayfasında "Siparişi Tamamla" butonuna basarak zorunlu varyant seçim modalını ve sipariş başarı modalını deneyimleyin.
-5. **İndirim / Kupon Kodu Sistemi:** Sepet sayfasındaki "İndirim Kodu" alanına aşağıdaki test kuponlarını girerek dinamik indirim, vergi matrahı ve sepet toplamı yeniden hesaplamasını test edebilirsiniz:
-   * **`TREND10`** ➔ **%10** Sepet İndirimi
-   * **`TREND20`** ➔ **%20** Sezon Özel İndirimi
-   * **`HOSGELDIN15`** ➔ **%15** Yeni Üye İndirimi
+5. **Canlı Duyuru Bandı & Kupon Entegrasyonu:** Web sitesinin en üstünde yer alan kesintisiz kayan duyuru bandında (Top Announcement Bar) duyurulan resmi **`TREND10`** kuponunu sepet özetindeki alana girerek anında %10 indirim, dinamik vergi matrahı ve sepet toplamı anlık yeniden hesaplamasını test edebilirsiniz.
 6. **Port 3001 Otomatik Yönlendirme:** Tarayıcıya doğrudan `http://localhost:3001` yazın; sistemin otomatik olarak `http://localhost:3001/cart` adresine yönlendiğini doğrulayın.
 
 ---

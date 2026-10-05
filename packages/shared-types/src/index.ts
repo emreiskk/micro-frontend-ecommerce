@@ -104,8 +104,6 @@ export interface AppliedCoupon {
 
 export const AVAILABLE_COUPONS: Record<string, { discountRate: number; description: string }> = {
   TREND10: { discountRate: 10, description: "%10 TrendSphere Özel İndirimi" },
-  TREND20: { discountRate: 20, description: "%20 Sezon Süper İndirimi" },
-  HOSGELDIN15: { discountRate: 15, description: "%15 Yeni Üye İndirimi" },
 };
 
 export interface CartTotals {

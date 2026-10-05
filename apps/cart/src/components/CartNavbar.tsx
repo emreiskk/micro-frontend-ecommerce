@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ShoppingBag, ArrowLeft, Layers, ShieldCheck } from "lucide-react";
 import { useCartSync } from "@repo/cart-sync";
+import TopAnnouncementBar from "./TopAnnouncementBar";
 
 export default function CartNavbar() {
   const { totals, isHydrated } = useCartSync("cart");
@@ -11,6 +12,9 @@ export default function CartNavbar() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 transition-all">
+      {/* Top Announcement Bar */}
+      <TopAnnouncementBar />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-4">
         {/* Brand */}
         <div className="flex items-center gap-2.5 sm:gap-3">
