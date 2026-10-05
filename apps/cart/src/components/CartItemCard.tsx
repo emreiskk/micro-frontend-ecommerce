@@ -9,6 +9,7 @@ import {
   getCartItemId,
   getCategoryDisplayName,
   isVariantInStock,
+  getVariantMaxStock,
 } from "@repo/shared-types";
 import EditVariantModal from "./EditVariantModal";
 
@@ -29,6 +30,8 @@ export default function CartItemCard({
 }: CartItemCardProps) {
   const { product, quantity } = item;
   const isInStock = isVariantInStock(product, item.selectedAttributes);
+  const maxStock = getVariantMaxStock(product, item.selectedAttributes);
+  const isMaxReached = quantity >= maxStock;
   const isSelected = isInStock && item.selected !== false;
   const unitPrice = item.unitPrice ?? product.price;
   const itemTotal = (unitPrice * quantity).toFixed(2);
@@ -236,26 +239,42 @@ export default function CartItemCard({
 
         {/* Quantity & Controls: On mobile separate row with border-t, on desktop column */}
         <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 sm:gap-4 flex-shrink-0 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 sm:min-w-[130px]">
-          {/* Quantity Stepper */}
-          <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
-            <button
-              onClick={() => onUpdateQuantity(itemKey, quantity - 1)}
-              className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer"
-              aria-label="Azalt"
-            >
-              <Minus className="w-3.5 h-3.5" />
-            </button>
-            <span className="w-7 sm:w-8 text-center text-xs font-bold text-slate-800">
-              {quantity}
-            </span>
-            <button
-              onClick={() => onUpdateQuantity(itemKey, quantity + 1)}
-              disabled={!isInStock}
-              className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Artır"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
+          {/* Quantity Stepper & Limit Indicator */}
+          <div className="flex flex-col items-center sm:items-end">
+            <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
+              <button
+                type="button"
+                onClick={() => onUpdateQuantity(itemKey, quantity - 1)}
+                className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer"
+                aria-label="Azalt"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+              <span className="w-7 sm:w-8 text-center text-xs font-bold text-slate-800">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => onUpdateQuantity(itemKey, quantity + 1)}
+                disabled={!isInStock || isMaxReached}
+                className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Artır"
+                title={
+                  !isInStock
+                    ? "Ürün tükendi"
+                    : isMaxReached
+                    ? `Maksimum sipariş limiti (${maxStock} adet)`
+                    : "Artır"
+                }
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            {isInStock && isMaxReached && (
+              <span className="text-[9px] sm:text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200/70 px-1.5 py-0.5 rounded-md mt-1">
+                Maks. {maxStock} adet
+              </span>
+            )}
           </div>
 
           {/* Line Item Total & Trash */}

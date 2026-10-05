@@ -18,6 +18,8 @@ import {
   toLeanCartItem,
   hydrateCartItem,
   isVariantInStock,
+  DEFAULT_MAX_ORDER_QUANTITY,
+  getVariantMaxStock,
 } from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
@@ -128,9 +130,15 @@ export function normalizeCartItems(items: CartItem[]): CartItem[] {
     const canonical = CANONICAL_PRODUCT_TITLES[item.product.id] || item.product.title;
     const cartItemId = item.cartItemId || getCartItemId(item.product.id, item.selectedAttributes);
     const inStock = isVariantInStock(item.product, item.selectedAttributes);
+    const maxStock = getVariantMaxStock(item.product, item.selectedAttributes);
+    const clampedQuantity = inStock
+      ? Math.min(Math.max(1, item.quantity), maxStock > 0 ? maxStock : 1)
+      : Math.max(1, item.quantity);
+
     return {
       ...item,
       cartItemId,
+      quantity: clampedQuantity,
       // If item variant is out of stock, it cannot be selected for order
       selected: inStock ? item.selected !== false : false,
       product: {
@@ -368,6 +376,12 @@ export function useCartSync(source: "home" | "cart" = "home") {
     selectedAttributes?: SelectedAttributes,
     needsAttributeConfirmation?: boolean
   ) => {
+    const inStock = isVariantInStock(product, selectedAttributes);
+    if (!inStock) return;
+
+    const maxStock = getVariantMaxStock(product, selectedAttributes);
+    if (maxStock <= 0) return;
+
     const current = getStoredCart();
     const unitPrice = calculateProductPrice(product, selectedAttributes);
     const originalUnitPrice = calculateProductOriginalPrice(product, selectedAttributes);
@@ -381,9 +395,10 @@ export function useCartSync(source: "home" | "cart" = "home") {
     if (existingIndex > -1) {
       next = current.map((item, idx) => {
         if (idx === existingIndex) {
+          const newQty = Math.min(item.quantity + quantity, maxStock);
           return {
             ...item,
-            quantity: item.quantity + quantity,
+            quantity: newQty,
             unitPrice,
             originalUnitPrice: originalUnitPrice ?? item.originalUnitPrice,
             needsAttributeConfirmation:
@@ -395,12 +410,13 @@ export function useCartSync(source: "home" | "cart" = "home") {
         return item;
       });
     } else {
+      const initialQty = Math.min(Math.max(1, quantity), maxStock);
       next = [
         ...current,
         {
           cartItemId: targetKey,
           product,
-          quantity,
+          quantity: initialQty,
           selected: true,
           selectedAttributes,
           unitPrice,
@@ -469,6 +485,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
     const newCartItemId = getCartItemId(oldItem.product.id, nextAttrs);
     const unitPrice = calculateProductPrice(oldItem.product, nextAttrs);
     const originalUnitPrice = calculateProductOriginalPrice(oldItem.product, nextAttrs);
+    const maxStock = getVariantMaxStock(oldItem.product, nextAttrs);
 
     // Smart Merge: If an item already exists with this newCartItemId, merge quantities
     const mergeIndex = current.findIndex(
@@ -479,12 +496,16 @@ export function useCartSync(source: "home" | "cart" = "home") {
 
     let next: CartItem[];
     if (mergeIndex > -1) {
+      const mergedQty = Math.min(
+        current[mergeIndex].quantity + oldItem.quantity,
+        maxStock > 0 ? maxStock : DEFAULT_MAX_ORDER_QUANTITY
+      );
       next = current
         .map((item, idx) => {
           if (idx === mergeIndex) {
             return {
               ...item,
-              quantity: item.quantity + oldItem.quantity,
+              quantity: mergedQty,
               unitPrice,
               originalUnitPrice,
               needsAttributeConfirmation,
@@ -494,12 +515,17 @@ export function useCartSync(source: "home" | "cart" = "home") {
         })
         .filter((_, idx) => idx !== targetIndex);
     } else {
+      const clampedQty = Math.min(
+        oldItem.quantity,
+        maxStock > 0 ? maxStock : DEFAULT_MAX_ORDER_QUANTITY
+      );
       next = current.map((item, idx) => {
         if (idx === targetIndex) {
           return {
             ...item,
             cartItemId: newCartItemId,
             selectedAttributes: nextAttrs,
+            quantity: clampedQty,
             unitPrice,
             originalUnitPrice,
             needsAttributeConfirmation,
@@ -538,7 +564,16 @@ export function useCartSync(source: "home" | "cart" = "home") {
       broadcastCart(next, source, "REMOVE_ITEM");
       return;
     }
-    const next = current.map((i) => (isTarget(i) ? { ...i, quantity } : i));
+    const next = current.map((i) => {
+      if (isTarget(i)) {
+        const inStock = isVariantInStock(i.product, i.selectedAttributes);
+        if (!inStock) return i;
+        const maxStock = getVariantMaxStock(i.product, i.selectedAttributes);
+        const clampedQty = Math.min(Math.max(1, quantity), maxStock > 0 ? maxStock : 1);
+        return { ...i, quantity: clampedQty };
+      }
+      return i;
+    });
     setItems(next);
     broadcastCart(next, source, "UPDATE_QUANTITY");
   }, [source]);

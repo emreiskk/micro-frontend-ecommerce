@@ -1693,5 +1693,37 @@ export function getOptionStockDetail(
   };
 }
 
+export const DEFAULT_MAX_ORDER_QUANTITY = 50;
+
+export function getVariantMaxStock(
+  product: Product,
+  selectedAttributes?: SelectedAttributes
+): number {
+  if (!isVariantInStock(product, selectedAttributes)) {
+    return 0;
+  }
+  const attrs = product.attributes || getProductAttributes(product);
+  let minOptionStock = DEFAULT_MAX_ORDER_QUANTITY;
+
+  if (selectedAttributes) {
+    for (const attr of attrs) {
+      const selectedVal = selectedAttributes[attr.name];
+      if (selectedVal && attr.optionDetails) {
+        const detail = attr.optionDetails.find((d) => d.label === selectedVal);
+        if (detail) {
+          if (detail.inStock === false) {
+            return 0;
+          }
+          if (typeof detail.stockCount === "number") {
+            minOptionStock = Math.min(minOptionStock, Math.max(0, detail.stockCount));
+          }
+        }
+      }
+    }
+  }
+
+  return Math.min(minOptionStock, DEFAULT_MAX_ORDER_QUANTITY);
+}
+
 
 

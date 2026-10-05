@@ -24,6 +24,8 @@ import {
   isVariantInStock,
   getOptionStockDetail,
   getCategoryDisplayName,
+  getVariantMaxStock,
+  DEFAULT_MAX_ORDER_QUANTITY,
 } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
 import Toast from "@/components/Toast";
@@ -63,6 +65,18 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
   const inStock = useMemo(() => {
     return isVariantInStock(product, selectedAttributes);
   }, [product, selectedAttributes]);
+
+  // Compute maximum allowed order quantity (capped at 50 or variant stock)
+  const maxStock = useMemo(() => {
+    return getVariantMaxStock(product, selectedAttributes);
+  }, [product, selectedAttributes]);
+
+  // Clamp selected quantity if switching to a variant with lower stock limit
+  React.useEffect(() => {
+    if (maxStock > 0 && quantity > maxStock) {
+      setQuantity(maxStock);
+    }
+  }, [maxStock, quantity]);
 
   // Dynamically computed price and specifications based on selected variant
   const currentUnitPrice = useMemo(() => {
@@ -335,33 +349,43 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           )}
 
           {/* Add to Cart Actions */}
-          <div className="mt-6 flex items-center gap-3 sm:gap-4">
-            {/* Quantity selector */}
-            <div
-              className={`flex items-center h-[48px] sm:h-[52px] border border-slate-200 rounded-2xl bg-slate-50 p-1 sm:p-1.5 transition-opacity ${
-                !inStock ? "opacity-40 cursor-not-allowed" : ""
-              }`}
-            >
-              <button
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                disabled={!inStock}
-                className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
-                aria-label="Azalt"
+          <div className="mt-6 flex flex-col gap-2">
+            <div className="flex items-center gap-3 sm:gap-4">
+              {/* Quantity selector */}
+              <div
+                className={`flex items-center h-[48px] sm:h-[52px] border border-slate-200 rounded-2xl bg-slate-50 p-1 sm:p-1.5 transition-opacity ${
+                  !inStock ? "opacity-40 cursor-not-allowed" : ""
+                }`}
               >
-                <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
-              <span className="w-8 sm:w-10 text-center font-bold text-xs sm:text-sm text-slate-800">
-                {quantity}
-              </span>
-              <button
-                onClick={() => setQuantity((q) => q + 1)}
-                disabled={!inStock}
-                className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed"
-                aria-label="Artır"
-              >
-                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={!inStock || quantity <= 1}
+                  className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+                  aria-label="Azalt"
+                >
+                  <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+                <span className="w-8 sm:w-10 text-center font-bold text-xs sm:text-sm text-slate-800">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.min(maxStock, q + 1))}
+                  disabled={!inStock || quantity >= maxStock}
+                  className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+                  aria-label="Artır"
+                  title={
+                    !inStock
+                      ? "Ürün tükendi"
+                      : quantity >= maxStock
+                      ? `Maksimum sipariş limitine ulaşıldı (${maxStock} adet)`
+                      : "Artır"
+                  }
+                >
+                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+              </div>
 
             {/* Action button: Sepete Ekle or Gelince Haber Ver */}
             {inStock ? (
@@ -413,6 +437,21 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               </button>
             )}
           </div>
+
+          {/* Max Order Limit Indicator & Warning */}
+          {inStock && maxStock > 0 && (
+            <div className="flex items-center justify-between text-[11px] px-1 text-slate-500">
+              <span className="text-slate-500">
+                Sipariş Limiti: <strong className="font-semibold text-slate-700">Maks. {maxStock} adet</strong>
+              </span>
+              {quantity >= maxStock && (
+                <span className="font-semibold text-amber-600 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md">
+                  Maksimum sipariş adedine ulaşıldı
+                </span>
+              )}
+            </div>
+          )}
+        </div>
 
           {/* Guarantees */}
           <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-slate-100 grid grid-cols-3 gap-2 sm:gap-3 text-[11px] sm:text-xs text-slate-600">
