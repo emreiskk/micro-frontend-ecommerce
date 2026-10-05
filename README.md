@@ -33,30 +33,46 @@ Proje, iki bağımsız Next.js App Router mikro uygulamasının izole portlarda 
 
 ```mermaid
 graph TD
-    User["Kullanıcı / Tarayıcı"] -->|"İstek: / veya /products/:id"| HomeApp["Home MFE (Port: 3000)"]
-    User -->|"İstek: /cart"| HomeApp
-    User -.->|"Doğrudan Erişim: :3001 veya :3001/cart"| CartApp["Cart MFE (Port: 3001 - basePath: /cart)"]
-    
-    subgraph MultiZoneGateway ["Next.js Multi-Zone Gateway (Port 3000)"]
-        HomeApp -->|"rewrites: /cart/:path* -> :3001/cart"| CartApp
+    User["Kullanıcı / Tarayıcı"]
+
+    subgraph ZoneHome ["Home Micro-Frontend (Port: 3000)"]
+        HomeApp["Katalog ve Ürün Detay (SSR / ISR)"]
+        MultiZoneProxy["Next.js rewrites: /cart/:path* -> :3001/cart"]
     end
-    
+
+    subgraph ZoneCart ["Cart Micro-Frontend (Port: 3001)"]
+        CartApp["Sepet Uygulaması (basePath: /cart)"]
+    end
+
     subgraph ExternalAPI ["Veri Kaynağı"]
-        HomeApp -->|"SSR / ISR: GET /products"| FakeStoreAPI["Fake Store API (Cloudflare Fallback Kalkanlı)"]
-        HomeApp -->|"Dynamic SSR: GET /products/:id"| FakeStoreAPI
+        FakeStoreAPI["Fake Store API (Cloudflare Fallback Kalkanlı)"]
     end
-    
-    subgraph ReactiveSync ["4 Katmanlı Cross-MFE Veri Senkronizasyonu"]
-        HomeApp <-->|"BroadcastChannel API"| CartApp
-        HomeApp <-->|"Cross-Port Cookie Bridge"| CartApp
-        HomeApp <-->|"LocalStorage Senkronizasyonu"| CartApp
-        HomeApp <-->|"useCartSync Reaktif Hook"| CartApp
+
+    subgraph SyncMechanism ["4 Katmanlı Cross-Port Durum Senkronizasyonu"]
+        SyncBus["Reaktif Event Bus (BroadcastChannel + useCartSync)"]
+        SyncStorage["Kalıcı Durum (LocalStorage + Cross-Port Cookie Bridge)"]
     end
 
     subgraph DockerNetwork ["Docker Compose Köprü Ağı (trend-sphere-mfe-network)"]
-        DockerHome["Container: trend-sphere-home (3000:3000)"]
-        DockerCart["Container: trend-sphere-cart (3001:3001)"]
+        DockerHome["Container: trend-sphere-home (Port 3000)"]
+        DockerCart["Container: trend-sphere-cart (Port 3001)"]
     end
+
+    User -->|"İstek: / veya /products/:id"| HomeApp
+    User -->|"İstek: /cart"| MultiZoneProxy
+    User -.->|"Doğrudan Erişim: :3001/cart"| CartApp
+
+    MultiZoneProxy -->|"Proxy Geçişi"| CartApp
+    HomeApp -->|"SSR / ISR Veri Çekme"| FakeStoreAPI
+
+    HomeApp <-->|"Sepete Ekleme & Olay Gönderimi"| SyncBus
+    SyncBus <-->|"Durum Güncelleme & Reaktif Dinleme"| CartApp
+
+    HomeApp <-->|"Kalıcı Sepet Okuma/Yazma"| SyncStorage
+    SyncStorage <-->|"Kalıcı Sepet Okuma/Yazma"| CartApp
+
+    DockerHome -.->|"İzole Konteyner"| HomeApp
+    DockerCart -.->|"İzole Konteyner"| CartApp
 ```
 
 ---
