@@ -13,7 +13,7 @@ export interface AnnouncementItem {
   isCode?: boolean;
 }
 
-const ANNOUNCEMENT_ITEMS: AnnouncementItem[] = [
+const BASE_ANNOUNCEMENT_ITEMS: AnnouncementItem[] = [
   {
     id: "coupon",
     icon: Tag,
@@ -43,24 +43,33 @@ const ANNOUNCEMENT_ITEMS: AnnouncementItem[] = [
   },
 ];
 
+// Replicate 4x in each set so each half is ~4500px wide.
+// This guarantees zero gap/blank space on any viewport width (including 4K / 3840px)
+const REPEATED_ITEMS = [
+  ...BASE_ANNOUNCEMENT_ITEMS,
+  ...BASE_ANNOUNCEMENT_ITEMS,
+  ...BASE_ANNOUNCEMENT_ITEMS,
+  ...BASE_ANNOUNCEMENT_ITEMS,
+];
+
 export default function TopAnnouncementBar() {
   return (
     <div
       role="region"
       aria-label="Öne Çıkan Kampanyalar ve Duyurular"
-      className="relative overflow-hidden bg-slate-950 text-white text-[11px] sm:text-xs py-2 border-b border-slate-800/80 select-none group"
+      className="relative w-full overflow-hidden bg-slate-950 text-white text-[11px] sm:text-xs py-2 border-b border-slate-800/80 select-none group"
     >
       {/* Left Fade Gradient Mask */}
       <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-slate-950 to-transparent z-10" />
 
-      {/* Scrolling Track (2x copies for seamless infinite loop on any screen width) */}
+      {/* Scrolling Track (2x copies of repeated sets for mathematically seamless infinite loop) */}
       <div className="flex animate-marquee cursor-default">
         {/* Set 1 */}
         <div className="flex items-center flex-shrink-0">
-          {ANNOUNCEMENT_ITEMS.map((item) => {
+          {REPEATED_ITEMS.map((item, idx) => {
             const Icon = item.icon;
             return (
-              <div key={`set1-${item.id}`} className="flex items-center px-4 sm:px-6">
+              <div key={`set1-${item.id}-${idx}`} className="flex items-center px-4 sm:px-6">
                 <Icon className={`w-3.5 h-3.5 mr-2 flex-shrink-0 ${item.iconColor}`} />
                 <span className="whitespace-nowrap font-medium text-slate-300">
                   {item.prefix}{" "}
@@ -83,10 +92,10 @@ export default function TopAnnouncementBar() {
 
         {/* Set 2 (Identical mirror for infinite loop) */}
         <div className="flex items-center flex-shrink-0" aria-hidden="true">
-          {ANNOUNCEMENT_ITEMS.map((item) => {
+          {REPEATED_ITEMS.map((item, idx) => {
             const Icon = item.icon;
             return (
-              <div key={`set2-${item.id}`} className="flex items-center px-4 sm:px-6">
+              <div key={`set2-${item.id}-${idx}`} className="flex items-center px-4 sm:px-6">
                 <Icon className={`w-3.5 h-3.5 mr-2 flex-shrink-0 ${item.iconColor}`} />
                 <span className="whitespace-nowrap font-medium text-slate-300">
                   {item.prefix}{" "}
