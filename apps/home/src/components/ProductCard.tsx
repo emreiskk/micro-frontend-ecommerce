@@ -85,18 +85,12 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
           </div>
 
           {/* Corporate Seller Badge (Fixed directly above the price separator line) */}
-          <div className="mt-2 sm:mt-2.5 pb-2 sm:pb-2.5 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] text-slate-500 font-medium">
-            <div className="flex items-center gap-1 min-w-0">
-              <span className="text-slate-400 text-[10px]">Satıcı:</span>
-              <span className="font-semibold text-slate-700 truncate">
-                {product.seller?.name || "TrendSphere"}
-              </span>
-              <BadgeCheck className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
-            </div>
-            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-slate-700 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded-md flex-shrink-0 shadow-2xs">
-              <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 stroke-amber-400" />
-              <span>{product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}</span>
-            </div>
+          <div className="mt-2 sm:mt-2.5 pb-2 sm:pb-2.5 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 font-medium">
+            <span className="text-slate-400 text-[10px]">Satıcı:</span>
+            <span className="font-semibold text-slate-700 truncate">
+              {product.seller?.name || "TrendSphere"}
+            </span>
+            <BadgeCheck className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
           </div>
         </div>
 
