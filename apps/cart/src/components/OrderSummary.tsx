@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldCheck, Truck, ArrowRight, Trash2, Tag } from "lucide-react";
+import { ShieldCheck, Truck, ArrowRight, Trash2, Check, X } from "lucide-react";
 import type { CartTotals, AppliedCoupon } from "@repo/shared-types";
 
 interface OrderSummaryProps {
@@ -135,103 +135,74 @@ export default function OrderSummary({
 
       {/* Coupon Code Section */}
       <div className="py-4 border-b border-slate-100">
-        <label htmlFor="coupon-code-input" className="flex items-center gap-1.5 text-xs font-bold text-slate-800 mb-2">
-          <Tag className="w-3.5 h-3.5 text-indigo-600" />
-          <span>İndirim Kodu</span>
+        <label htmlFor="coupon-code-input" className="block text-xs font-bold text-slate-800 mb-2">
+          İndirim Kodu
         </label>
 
-        {appliedCoupon ? (
-          <div className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 flex items-center justify-between gap-2 transition-all">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
-                %
-              </span>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-xs text-emerald-950 uppercase tracking-wide truncate">
-                    {appliedCoupon.code}
-                  </span>
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100/70 px-1.5 py-0.5 rounded">
-                    -%{appliedCoupon.discountRate}
-                  </span>
-                </div>
-                <span className="text-[10px] text-emerald-600 font-medium block truncate">
-                  {appliedCoupon.description}
-                </span>
-              </div>
-            </div>
+        <form
+          onSubmit={appliedCoupon ? (e) => { e.preventDefault(); handleRemoveCoupon(); } : handleApplyCoupon}
+          className="flex gap-2"
+        >
+          <div className="relative flex-1 min-w-0">
+            <input
+              id="coupon-code-input"
+              type="text"
+              readOnly={!!appliedCoupon}
+              value={appliedCoupon ? appliedCoupon.code : couponInput}
+              onChange={(e) => {
+                if (appliedCoupon) return;
+                setCouponInput(e.target.value);
+                if (couponFeedback) setCouponFeedback(null);
+              }}
+              placeholder="Kupon Kodu"
+              className={`w-full px-3 py-2 text-xs rounded-xl border transition-all uppercase placeholder:normal-case font-medium focus:outline-none ${
+                appliedCoupon
+                  ? "border-emerald-300 bg-emerald-50/40 text-emerald-950 font-bold pr-8"
+                  : couponFeedback?.type === "error"
+                  ? "border-rose-300 bg-rose-50/30 text-rose-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                  : "border-slate-200 bg-slate-50/70 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 text-slate-800"
+              }`}
+            />
+            {appliedCoupon && (
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer p-0.5"
+                title="Kuponu Kaldır"
+                aria-label="Kuponu Kaldır"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {appliedCoupon ? (
             <button
               type="button"
               onClick={handleRemoveCoupon}
-              className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded-lg transition-colors cursor-pointer flex-shrink-0"
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 group/btn"
+              title="Kuponu kaldırmak için tıklayın"
             >
-              Kaldır
+              <Check className="w-3.5 h-3.5 group-hover/btn:hidden text-emerald-600" />
+              <X className="w-3.5 h-3.5 hidden group-hover/btn:inline text-rose-600" />
+              <span className="group-hover/btn:hidden">Uygulandı</span>
+              <span className="hidden group-hover/btn:inline">Kaldır</span>
             </button>
-          </div>
-        ) : (
-          <div>
-            <form onSubmit={handleApplyCoupon} className="flex gap-2">
-              <input
-                id="coupon-code-input"
-                type="text"
-                value={couponInput}
-                onChange={(e) => {
-                  setCouponInput(e.target.value);
-                  if (couponFeedback) setCouponFeedback(null);
-                }}
-                placeholder="Kupon Kodu (Örn: TREND10)"
-                className={`flex-1 min-w-0 px-3 py-2 text-xs rounded-xl border transition-all uppercase placeholder:normal-case font-medium focus:outline-none ${
-                  couponFeedback?.type === "error"
-                    ? "border-rose-300 bg-rose-50/30 text-rose-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
-                    : "border-slate-200 bg-slate-50/70 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 text-slate-800"
-                }`}
-              />
-              <button
-                type="submit"
-                disabled={!couponInput.trim()}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-slate-900 hover:bg-slate-800 text-white cursor-pointer active:scale-95 flex-shrink-0"
-              >
-                Uygula
-              </button>
-            </form>
+          ) : (
+            <button
+              type="submit"
+              disabled={!couponInput.trim()}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-slate-900 hover:bg-slate-800 text-white cursor-pointer active:scale-95 flex-shrink-0"
+            >
+              Uygula
+            </button>
+          )}
+        </form>
 
-            {couponFeedback && (
-              <p
-                className={`mt-1.5 text-[11px] font-medium transition-all ${
-                  couponFeedback.type === "success" ? "text-emerald-600" : "text-rose-600"
-                }`}
-              >
-                {couponFeedback.message}
-              </p>
-            )}
-
-            {/* Quick Coupon Chip Suggestions */}
-            <div className="mt-2.5 flex items-center gap-1.5 flex-wrap text-[10px] text-slate-400">
-              <span className="font-medium text-slate-500">Mevcut Kuponlar:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setCouponInput("TREND10");
-                  if (couponFeedback) setCouponFeedback(null);
-                }}
-                className="px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold border border-indigo-200/60 transition-colors cursor-pointer"
-                title="TrendSphere %10 Kuponu"
-              >
-                TREND10 (%10)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setCouponInput("TREND20");
-                  if (couponFeedback) setCouponFeedback(null);
-                }}
-                className="px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold border border-indigo-200/60 transition-colors cursor-pointer"
-                title="TrendSphere %20 Kuponu"
-              >
-                TREND20 (%20)
-              </button>
-            </div>
-          </div>
+        {couponFeedback?.type === "error" && (
+          <p className="mt-1.5 text-[11px] font-medium text-rose-600 animate-in fade-in">
+            {couponFeedback.message}
+          </p>
         )}
       </div>
 
