@@ -7,6 +7,7 @@ import { useCartSync, calculateCartTotals, saveStoredCart, broadcastCart } from 
 import type { CartTotals, CartItem, SelectedAttributes } from "@repo/shared-types";
 import { calculateProductPrice, isVariantInStock } from "@repo/shared-types";
 import CartItemCard from "@/components/CartItemCard";
+import StoreCartHeader from "@/components/StoreCartHeader";
 import OrderSummary from "@/components/OrderSummary";
 import CheckoutModal from "@/components/CheckoutModal";
 import AttributePromptModal from "@/components/AttributePromptModal";
@@ -18,6 +19,7 @@ export default function CartPage() {
     updateQuantity,
     updateItemAttributes,
     toggleItemSelection,
+    toggleAllSelection,
     removeItem,
     clearCart,
     isHydrated,
@@ -108,6 +110,14 @@ export default function CartPage() {
 
   const unconfirmedItems = items.filter((i) => i.needsAttributeConfirmation && i.selected !== false);
 
+  const inStockItems = items.filter((i) => isVariantInStock(i.product, i.selectedAttributes));
+  const selectedInStockItems = inStockItems.filter((i) => i.selected !== false);
+  const totalInStockCount = inStockItems.length;
+  const selectedInStockCount = selectedInStockItems.length;
+  const allSelected = totalInStockCount > 0 && selectedInStockCount === totalInStockCount;
+  const isPartiallySelected = selectedInStockCount > 0 && selectedInStockCount < totalInStockCount;
+  const storeName = items[0]?.product?.seller?.name || "TrendSphere";
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-28 lg:pb-10">
       <CheckoutModal
@@ -145,6 +155,15 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10 items-start">
             {/* Cart Items List */}
             <div className="lg:col-span-2 space-y-3.5 sm:space-y-4">
+              <StoreCartHeader
+                sellerName={storeName}
+                totalInStockCount={totalInStockCount}
+                selectedInStockCount={selectedInStockCount}
+                allSelected={allSelected}
+                isPartiallySelected={isPartiallySelected}
+                onToggleAll={toggleAllSelection}
+              />
+
               {items.map((item) => (
                 <CartItemCard
                   key={item.cartItemId || `${item.product.id}-${JSON.stringify(item.selectedAttributes)}`}
