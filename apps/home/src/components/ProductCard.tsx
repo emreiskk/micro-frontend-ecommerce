@@ -152,18 +152,21 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
           >
             {isDefaultMaxInCart ? (
               <>
-                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-                <span>Sepetinizde (Maks. Adet)</span>
+                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white flex-shrink-0" />
+                <span className="truncate">
+                  <span className="sm:hidden">Maks. Sepette</span>
+                  <span className="hidden sm:inline">Sepetinizde (Maks. Adet)</span>
+                </span>
               </>
             ) : isAdding ? (
               <>
-                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-in zoom-in" />
-                <span>Eklendi</span>
+                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-in zoom-in flex-shrink-0" />
+                <span className="truncate">Eklendi</span>
               </>
             ) : (
               <>
-                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span>Sepete Ekle</span>
+                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span className="truncate">Sepete Ekle</span>
               </>
             )}
           </button>

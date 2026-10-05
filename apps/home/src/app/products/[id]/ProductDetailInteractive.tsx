@@ -416,10 +416,13 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                   type="button"
                   disabled
                   aria-label="Bu ürün zaten sepetinizde (Maksimum adede ulaşıldı)"
-                  className="flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg shadow-indigo-500/20 bg-indigo-600 text-white cursor-not-allowed transition-all"
+                  className="flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg shadow-indigo-500/20 bg-indigo-600 text-white cursor-not-allowed transition-all"
                 >
-                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  <span>Bu Ürün Zaten Sepetinizde</span>
+                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white flex-shrink-0" />
+                  <span className="truncate">
+                    <span className="sm:hidden">Zaten Sepetinizde</span>
+                    <span className="hidden sm:inline">Bu Ürün Zaten Sepetinizde</span>
+                  </span>
                 </button>
               ) : inStock ? (
                 <button
@@ -427,7 +430,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                   disabled={isAdding}
                   aria-label={`Sepete Ekle - ${product.title}`}
                   data-testid="add-to-cart-button"
-                  className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
+                  className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
                     isAdding
                       ? "bg-emerald-600 text-white shadow-emerald-500/20"
                       : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
@@ -435,13 +438,13 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                 >
                   {isAdding ? (
                     <>
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
-                      <span>Sepete Eklendi!</span>
+                      <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in flex-shrink-0" />
+                      <span className="truncate">Sepete Eklendi!</span>
                     </>
                   ) : (
                     <>
-                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                      <span>Sepete Ekle (${(currentUnitPrice * quantity).toFixed(2)})</span>
+                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                      <span className="truncate">Sepete Ekle (${(currentUnitPrice * quantity).toFixed(2)})</span>
                     </>
                   )}
                 </button>
@@ -450,7 +453,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                   type="button"
                   onClick={handleNotify}
                   disabled={isNotified}
-                  className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
+                  className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
                     isNotified
                       ? "bg-emerald-600 text-white shadow-emerald-500/20"
                       : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
@@ -458,13 +461,13 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                 >
                   {isNotified ? (
                     <>
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
-                      <span>Talebiniz Alındı!</span>
+                      <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in flex-shrink-0" />
+                      <span className="truncate">Talebiniz Alındı!</span>
                     </>
                   ) : (
                     <>
-                      <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-                      <span>Gelince Haber Ver</span>
+                      <Bell className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                      <span className="truncate">Gelince Haber Ver</span>
                     </>
                   )}
                 </button>

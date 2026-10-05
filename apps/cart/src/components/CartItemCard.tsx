@@ -273,7 +273,7 @@ export default function CartItemCard({
             {isInStock && isMaxReached && (
               <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md mt-2 shadow-2xs animate-in fade-in">
                 <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-600 flex-shrink-0" />
-                <span>Maks. {maxStock} adet</span>
+                <span className="whitespace-nowrap">Maks. {maxStock} adet</span>
               </span>
             )}
           </div>
