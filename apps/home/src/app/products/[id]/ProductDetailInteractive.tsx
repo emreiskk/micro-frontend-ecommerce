@@ -439,25 +439,11 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             )}
           </div>
 
-          {/* Max Order Limit Indicator & Warning with breathing space and responsive alignment */}
-          {inStock && maxStock > 0 && (
-            <div className="mt-3.5 sm:mt-4 pt-1 flex flex-wrap items-center justify-between gap-2 text-xs">
-              <div className="inline-flex items-center gap-1.5 text-slate-500 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
-                <span>
-                  Sipariş Limiti:{" "}
-                  <strong className="font-bold text-slate-800">
-                    Maks. {maxStock} adet
-                  </strong>
-                </span>
-              </div>
-
-              {quantity >= maxStock && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200/80 shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200">
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                  <span>Maksimum sipariş adedine ulaşıldı</span>
-                </span>
-              )}
+          {/* Full-width Centered Max Order Limit Warning Box */}
+          {inStock && maxStock > 0 && quantity >= maxStock && (
+            <div className="mt-3 sm:mt-3.5 w-full p-2.5 sm:p-3 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-800 flex items-center justify-center gap-2 text-xs font-bold shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200 text-center">
+              <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+              <span>Maksimum sipariş adedine ulaşıldı (Maks. {maxStock} adet)</span>
             </div>
           )}
         </div>
