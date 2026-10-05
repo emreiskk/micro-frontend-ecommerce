@@ -16,6 +16,9 @@ export default function CartPage() {
   const {
     items,
     totals,
+    coupon,
+    applyCoupon,
+    removeCoupon,
     updateQuantity,
     updateItemAttributes,
     toggleItemSelection,
@@ -41,7 +44,7 @@ export default function CartPage() {
     const remainingItems = finalItems.filter(
       (i) => i.selected === false || !isVariantInStock(i.product, i.selectedAttributes)
     );
-    const freshTotals = calculateCartTotals(selectedFinal);
+    const freshTotals = calculateCartTotals(selectedFinal, coupon);
     setCompletedOrderTotals(freshTotals);
     setCompletedOrderItems([...selectedFinal]);
     setIsCheckoutOpen(true);
@@ -175,6 +178,9 @@ export default function CartPage() {
             <div className="lg:col-span-1">
               <OrderSummary
                 totals={totals}
+                appliedCoupon={coupon}
+                onApplyCoupon={applyCoupon}
+                onRemoveCoupon={removeCoupon}
                 onCheckout={handleInitiateCheckout}
                 onClearCart={clearCart}
               />

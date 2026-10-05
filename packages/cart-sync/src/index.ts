@@ -9,6 +9,8 @@ import {
   type CartActionType,
   type Product,
   type SelectedAttributes,
+  type AppliedCoupon,
+  AVAILABLE_COUPONS,
   calculateProductPrice,
   calculateProductOriginalPrice,
   CANONICAL_PRODUCT_TITLES,
@@ -19,9 +21,33 @@ import {
 } from "@repo/shared-types";
 
 export const CART_STORAGE_KEY = "ecommerce_cart_v1";
+export const COUPON_STORAGE_KEY = "ecommerce_coupon_v1";
 export const CART_CHANNEL_NAME = "ecommerce_cart_channel";
 export const FREE_SHIPPING_THRESHOLD = 75;
 export const TAX_RATE = 0.08;
+
+export function getStoredCoupon(): AppliedCoupon | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(COUPON_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveStoredCoupon(coupon: AppliedCoupon | null) {
+  if (typeof window === "undefined") return;
+  try {
+    if (coupon) {
+      localStorage.setItem(COUPON_STORAGE_KEY, JSON.stringify(coupon));
+    } else {
+      localStorage.removeItem(COUPON_STORAGE_KEY);
+    }
+  } catch (e) {
+    console.warn("Failed to save coupon to storage", e);
+  }
+}
 
 export interface StoredCartPayload {
   items: LeanCartItem[];
@@ -183,7 +209,10 @@ export function saveStoredCart(items: CartItem[]): void {
   }
 }
 
-export function calculateCartTotals(items: CartItem[]): CartTotals {
+export function calculateCartTotals(
+  items: CartItem[],
+  appliedCoupon?: AppliedCoupon | null
+): CartTotals {
   // Only items that are selected AND in stock are active for checkout & calculation
   const activeItems = items.filter(
     (i) => i.selected !== false && isVariantInStock(i.product, i.selectedAttributes)
@@ -205,11 +234,18 @@ export function calculateCartTotals(items: CartItem[]): CartTotals {
   const rawSavings = originalSubtotal - subtotal;
   const totalSavings = rawSavings > 0.01 ? Number(rawSavings.toFixed(2)) : 0;
 
+  // Coupon discount calculation:
+  let couponDiscount = 0;
+  if (appliedCoupon && subtotal > 0 && appliedCoupon.discountRate > 0) {
+    couponDiscount = Number(((subtotal * appliedCoupon.discountRate) / 100).toFixed(2));
+  }
+  const discountedSubtotal = Math.max(0, Number((subtotal - couponDiscount).toFixed(2)));
+
   const totalCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const selectedCount = activeItems.reduce((acc, item) => acc + item.quantity, 0);
-  const tax = Number((subtotal * TAX_RATE).toFixed(2));
+  const tax = Number((discountedSubtotal * TAX_RATE).toFixed(2));
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || activeItems.length === 0 ? 0 : 9.99;
-  const total = Number((subtotal + tax + shipping).toFixed(2));
+  const total = Number((discountedSubtotal + tax + shipping).toFixed(2));
   const remainingForFreeShipping = Math.max(0, Number((FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)));
 
   return {
@@ -223,6 +259,9 @@ export function calculateCartTotals(items: CartItem[]): CartTotals {
     selectedCount,
     freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
     remainingForFreeShipping,
+    couponCode: appliedCoupon?.code ?? null,
+    couponDiscountRate: appliedCoupon?.discountRate ?? undefined,
+    couponDiscount,
   };
 }
 
@@ -242,6 +281,7 @@ export function broadcastCart(items: CartItem[], source: "home" | "cart", type: 
 
 export function useCartSync(source: "home" | "cart" = "home") {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [coupon, setCoupon] = useState<AppliedCoupon | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -253,9 +293,17 @@ export function useCartSync(source: "home" | "cart" = "home") {
         }
         return prev;
       });
+      const currentCoupon = getStoredCoupon();
+      setCoupon((prev) => {
+        if (JSON.stringify(prev) !== JSON.stringify(currentCoupon)) {
+          return currentCoupon;
+        }
+        return prev;
+      });
     };
 
     setItems(getStoredCart());
+    setCoupon(getStoredCoupon());
     setIsHydrated(true);
 
     // Cross-Tab and Cross-Port listeners
@@ -495,9 +543,38 @@ export function useCartSync(source: "home" | "cart" = "home") {
     broadcastCart(next, source, "UPDATE_QUANTITY");
   }, [source]);
 
+  const applyCoupon = useCallback((code: string): { success: boolean; message: string } => {
+    const normalized = code.trim().toUpperCase();
+    const found = AVAILABLE_COUPONS[normalized];
+    if (!found) {
+      return {
+        success: false,
+        message: "Geçersiz kupon kodu. (Örn: TREND10, TREND20, HOSGELDIN15)",
+      };
+    }
+    const newCoupon: AppliedCoupon = {
+      code: normalized,
+      discountRate: found.discountRate,
+      description: found.description,
+    };
+    setCoupon(newCoupon);
+    saveStoredCoupon(newCoupon);
+    return {
+      success: true,
+      message: `${newCoupon.code} kuponu başarıyla uygulandı! (${found.description})`,
+    };
+  }, []);
+
+  const removeCoupon = useCallback(() => {
+    setCoupon(null);
+    saveStoredCoupon(null);
+  }, []);
+
   const clearCart = useCallback(() => {
     setItems([]);
     saveStoredCart([]);
+    setCoupon(null);
+    saveStoredCoupon(null);
     const channel = getChannel();
     if (channel) {
       const msg: CartSyncMessage = {
@@ -510,11 +587,14 @@ export function useCartSync(source: "home" | "cart" = "home") {
     }
   }, [source]);
 
-  const totals = calculateCartTotals(items);
+  const totals = calculateCartTotals(items, coupon);
 
   return {
     items,
     totals,
+    coupon,
+    applyCoupon,
+    removeCoupon,
     addItem,
     removeItem,
     updateQuantity,

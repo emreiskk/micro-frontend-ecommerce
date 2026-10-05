@@ -95,6 +95,12 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
               <span>-${totals.totalSavings.toFixed(2)}</span>
             </div>
           )}
+          {totals.couponDiscount && totals.couponDiscount > 0 ? (
+            <div className="flex justify-between text-emerald-600 font-semibold">
+              <span>Kupon İndirimi ({totals.couponCode}):</span>
+              <span>-${totals.couponDiscount.toFixed(2)}</span>
+            </div>
+          ) : null}
           <div className="flex justify-between">
             <span>Kargo Durumu:</span>
             <span className={`font-semibold ${totals.shipping === 0 ? "text-emerald-600" : "text-slate-900"}`}>
