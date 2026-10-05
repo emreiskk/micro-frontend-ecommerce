@@ -46,6 +46,9 @@ export async function fetchProducts(): Promise<Product[]> {
 
 export async function fetchProductById(id: string | number): Promise<Product | null> {
   const numericId = Number(id);
+  if (isNaN(numericId) || numericId <= 0) {
+    return null;
+  }
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 1800);
