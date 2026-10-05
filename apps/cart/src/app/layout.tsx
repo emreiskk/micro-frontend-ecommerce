@@ -7,7 +7,9 @@ export const metadata: Metadata = {
   title: "Sepetim | TrendSphere Cart Mikro Frontend Servisi",
   description: "Next.js App Router ile izole geliştirilmiş bağımsız Cart mikro frontend servisi.",
   icons: {
-    icon: "/icon.svg",
+    icon: "/cart/icon.svg",
+    shortcut: "/cart/icon.svg",
+    apple: "/cart/icon.svg",
   },
 };
 

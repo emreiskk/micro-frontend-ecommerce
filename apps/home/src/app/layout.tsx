@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Next.js App Router, Multi-Zone mimarisi ve Tailwind CSS ile geliştirilmiş mikro frontend ana uygulaması.",
   icons: {
     icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
 };
 

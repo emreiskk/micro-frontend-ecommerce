@@ -11,6 +11,18 @@ const nextConfig = {
         basePath: false,
         permanent: false,
       },
+      {
+        source: "/favicon.ico",
+        destination: "/cart/icon.svg",
+        basePath: false,
+        permanent: false,
+      },
+      {
+        source: "/icon.svg",
+        destination: "/cart/icon.svg",
+        basePath: false,
+        permanent: false,
+      },
     ];
   },
   images: {
