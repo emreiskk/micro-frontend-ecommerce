@@ -76,26 +76,18 @@ export default function StoreCartHeader({
               <BadgeCheck className="w-3 h-3 text-indigo-600" />
               <span className="hidden xs:inline sm:inline">Resmi Satıcı</span>
             </span>
-            <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 flex-shrink-0" />
           </div>
         </div>
       </div>
 
-      {/* Right: Selected Status Indicator */}
-      <div className="flex items-center gap-1.5 flex-shrink-0 text-[11px] sm:text-xs">
-        {totalInStockCount === 0 ? (
-          <span className="text-rose-500 font-medium">Stokta Ürün Yok</span>
-        ) : allSelected ? (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-            Tümü Seçili
-          </span>
-        ) : (
-          <span className="text-slate-500 font-medium">
-            <strong className="font-semibold text-slate-700">{selectedInStockCount}</strong>
-            <span className="text-slate-400">/{totalInStockCount}</span>
-            <span className="hidden sm:inline ml-1">seçildi</span>
-          </span>
-        )}
+      {/* Right: Chevron Action Icon */}
+      <div
+        onClick={isInteractive ? handleToggle : undefined}
+        className={`flex items-center text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0 ${
+          isInteractive ? "cursor-pointer" : ""
+        }`}
+      >
+        <ChevronRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-slate-400" />
       </div>
     </div>
   );

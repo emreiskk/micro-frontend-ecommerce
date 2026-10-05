@@ -91,7 +91,7 @@ export default function CheckoutModal({ isOpen, totals, items, onClose }: Checko
           </div>
           {totals.totalSavings > 0 && (
             <div className="flex justify-between text-emerald-600 font-semibold">
-              <span>Toplam Kampanya Tasarrufu:</span>
+              <span>Mağaza İndirimi:</span>
               <span>-${totals.totalSavings.toFixed(2)}</span>
             </div>
           )}

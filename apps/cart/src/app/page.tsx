@@ -139,15 +139,10 @@ export default function CartPage() {
           Alışveriş Sepetim
           {items.length > 0 && (
             <span className="ml-2 font-bold text-slate-500 text-xl sm:text-2xl">
-              ({totals.selectedCount} ürün)
+              ({items.length})
             </span>
           )}
         </h1>
-        {items.length > 0 && totals.totalCount !== totals.selectedCount && (
-          <p className="text-xs text-slate-400 mt-1">
-            Sepetinizde kayıtlı toplam {totals.totalCount} adet ürün bulunmaktadır.
-          </p>
-        )}
       </div>
 
       {items.length > 0 ? (

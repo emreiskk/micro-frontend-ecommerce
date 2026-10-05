@@ -63,23 +63,21 @@ export default function OrderSummary({ totals, onCheckout, onClearCart }: OrderS
         </div>
         {totals.totalSavings > 0 && (
           <div className="flex justify-between text-emerald-600 font-medium">
-            <span>Kampanya Tasarrufu:</span>
+            <span>Mağaza İndirimi:</span>
             <span className="font-bold">-${totals.totalSavings.toFixed(2)}</span>
           </div>
         )}
         <div className="flex justify-between items-center">
           <span>Kargo:</span>
-          <span className="font-semibold">
-            {totals.selectedCount === 0 ? (
-              <span className="text-slate-400 font-medium">$0.00</span>
-            ) : totals.shipping === 0 ? (
-              <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 font-semibold uppercase text-[10px] px-2 py-0.5 rounded-lg">
-                Ücretsiz
-              </span>
-            ) : (
-              `$${totals.shipping.toFixed(2)}`
-            )}
-          </span>
+          {totals.selectedCount === 0 ? (
+            <span className="text-slate-400 font-medium">$0.00</span>
+          ) : totals.shipping === 0 ? (
+            <span className="text-emerald-600 font-semibold">
+              Ücretsiz
+            </span>
+          ) : (
+            <span className="font-semibold text-slate-900">${totals.shipping.toFixed(2)}</span>
+          )}
         </div>
         <div className="flex justify-between">
           <span>Vergi (%8 KDV):</span>

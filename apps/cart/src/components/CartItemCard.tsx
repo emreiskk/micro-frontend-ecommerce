@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Trash2, Plus, Minus, AlertCircle, Tag, SlidersHorizontal, Check, X, BadgeCheck } from "lucide-react";
+import { Trash2, Plus, Minus, AlertCircle, Tag, SlidersHorizontal, Check, X } from "lucide-react";
 import type { CartItem, SelectedAttributes } from "@repo/shared-types";
 import {
   getProductAttributes,
@@ -179,15 +179,6 @@ export default function CartItemCard({
                 {product.title}
               </h4>
             </a>
-
-            {/* Corporate Seller Line */}
-            <div className="mt-1 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 font-medium">
-              <span className="text-slate-400">Satıcı:</span>
-              <span className="font-semibold text-slate-700">
-                {product.seller?.name || "TrendSphere"}
-              </span>
-              <BadgeCheck className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
-            </div>
 
             {/* Clean Selected Attributes Badge & Dedicated Edit Button */}
             <div className="mt-1.5 sm:mt-2.5 flex items-center justify-start gap-1.5 sm:gap-2 max-w-full">
