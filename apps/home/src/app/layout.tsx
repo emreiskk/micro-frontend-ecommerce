@@ -6,6 +6,9 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "TrendSphere | Mikro-Frontend E-Ticaret Platformu (Home MFE)",
   description: "Next.js App Router, Multi-Zone mimarisi ve Tailwind CSS ile geliştirilmiş mikro frontend ana uygulaması.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

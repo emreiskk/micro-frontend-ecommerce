@@ -6,6 +6,9 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Sepetim | TrendSphere Cart Mikro Frontend Servisi",
   description: "Next.js App Router ile izole geliştirilmiş bağımsız Cart mikro frontend servisi.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function CartLayout({

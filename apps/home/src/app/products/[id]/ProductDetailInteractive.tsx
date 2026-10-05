@@ -13,6 +13,7 @@ import {
   Star,
   Bell,
   BadgeCheck,
+  ShoppingBag,
 } from "lucide-react";
 import type { Product, SelectedAttributes } from "@repo/shared-types";
 import {
@@ -199,8 +200,8 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
 
           {/* Corporate Seller Trust Box (Trendyol-style Responsive Card) */}
           <div className="mt-3.5 sm:mt-4 p-2.5 sm:p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/80 flex items-center gap-2.5 sm:gap-3.5">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs shadow-xs flex-shrink-0">
-              TS
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs flex-shrink-0">
+              <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
             </div>
             <div className="flex flex-col min-w-0 justify-center">
               <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
