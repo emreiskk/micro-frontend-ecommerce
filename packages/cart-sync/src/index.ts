@@ -549,7 +549,7 @@ export function useCartSync(source: "home" | "cart" = "home") {
     if (!found) {
       return {
         success: false,
-        message: "Geçersiz kupon kodu. (Örn: TREND10, TREND20, HOSGELDIN15)",
+        message: "Geçersiz kupon kodu.",
       };
     }
     const newCoupon: AppliedCoupon = {

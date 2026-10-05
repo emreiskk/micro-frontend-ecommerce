@@ -154,13 +154,13 @@ export default function OrderSummary({
                 setCouponInput(e.target.value);
                 if (couponFeedback) setCouponFeedback(null);
               }}
-              placeholder="Kupon Kodu"
-              className={`w-full px-3 py-2 text-xs rounded-xl border transition-all uppercase placeholder:normal-case font-medium focus:outline-none ${
+              placeholder="TrendSphere Kupon Kodu"
+              className={`w-full px-3.5 py-2.5 text-xs rounded-xl border transition-all duration-200 uppercase placeholder:normal-case font-medium focus:outline-none placeholder:text-slate-400 ${
                 appliedCoupon
                   ? "border-emerald-300 bg-emerald-50/40 text-emerald-950 font-bold pr-8"
                   : couponFeedback?.type === "error"
-                  ? "border-rose-300 bg-rose-50/30 text-rose-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
-                  : "border-slate-200 bg-slate-50/70 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 text-slate-800"
+                  ? "border-rose-300 bg-rose-50/40 text-rose-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10"
+                  : "border-slate-200 bg-slate-50/60 hover:border-slate-300 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/10 text-slate-800"
               }`}
             />
             {appliedCoupon && (
@@ -180,7 +180,7 @@ export default function OrderSummary({
             <button
               type="button"
               onClick={handleRemoveCoupon}
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 group/btn"
+              className="px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-all duration-200 cursor-pointer flex items-center gap-1.5 flex-shrink-0 group/btn shadow-xs"
               title="Kuponu kaldırmak için tıklayın"
             >
               <Check className="w-3.5 h-3.5 group-hover/btn:hidden text-emerald-600" />
@@ -192,7 +192,7 @@ export default function OrderSummary({
             <button
               type="submit"
               disabled={!couponInput.trim()}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-slate-900 hover:bg-slate-800 text-white cursor-pointer active:scale-95 flex-shrink-0"
+              className="px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white shadow-xs cursor-pointer flex-shrink-0"
             >
               Uygula
             </button>
