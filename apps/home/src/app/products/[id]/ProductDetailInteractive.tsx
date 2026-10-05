@@ -211,8 +211,8 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                   <BadgeCheck className="w-3 h-3 text-indigo-600" />
                   <span>Resmi Satıcı</span>
                 </span>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60 flex-shrink-0">
-                  <Star className="w-3 h-3 fill-amber-400 stroke-amber-400" />
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60 flex-shrink-0">
+                  <Star className="w-3 h-3 fill-indigo-600 text-indigo-600" />
                   <span>{product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}</span>
                 </span>
               </div>
