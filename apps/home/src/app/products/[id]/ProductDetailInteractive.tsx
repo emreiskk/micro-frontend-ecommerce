@@ -14,6 +14,7 @@ import {
   Bell,
   BadgeCheck,
   ShoppingBag,
+  AlertCircle,
 } from "lucide-react";
 import type { Product, SelectedAttributes } from "@repo/shared-types";
 import {
@@ -438,15 +439,23 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             )}
           </div>
 
-          {/* Max Order Limit Indicator & Warning */}
+          {/* Max Order Limit Indicator & Warning with breathing space and responsive alignment */}
           {inStock && maxStock > 0 && (
-            <div className="flex items-center justify-between text-[11px] px-1 text-slate-500">
-              <span className="text-slate-500">
-                Sipariş Limiti: <strong className="font-semibold text-slate-700">Maks. {maxStock} adet</strong>
-              </span>
+            <div className="mt-3.5 sm:mt-4 pt-1 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="inline-flex items-center gap-1.5 text-slate-500 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
+                <span>
+                  Sipariş Limiti:{" "}
+                  <strong className="font-bold text-slate-800">
+                    Maks. {maxStock} adet
+                  </strong>
+                </span>
+              </div>
+
               {quantity >= maxStock && (
-                <span className="font-semibold text-amber-600 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md">
-                  Maksimum sipariş adedine ulaşıldı
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200/80 shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                  <span>Maksimum sipariş adedine ulaşıldı</span>
                 </span>
               )}
             </div>
