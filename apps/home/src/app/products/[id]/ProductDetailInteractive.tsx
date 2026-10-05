@@ -476,16 +476,16 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
 
             {/* Full-width Centered Max Order Limit Warning Box */}
             {inStock && maxStock > 0 && (quantity >= maxStock || isMaxInCart) && (
-              <div className="mt-3 sm:mt-3.5 w-full p-2.5 sm:p-3 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-800 flex items-center justify-center gap-2 text-xs font-bold shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200 text-center">
-                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                <div>
+              <div className="mt-3 sm:mt-3.5 w-full p-2.5 sm:p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-900 flex flex-col items-center justify-center text-center shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-bold text-amber-900 leading-snug">
+                  <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
                   <span>Maksimum sipariş adedine ulaşıldı (Maks. {maxStock} adet)</span>
-                  {product.attributes && product.attributes.length > 0 && (
-                    <span className="font-normal block text-[11px] text-amber-700/90 mt-0.5">
-                      Farklı seçenekler (beden/renk) seçerek sepete eklemeye devam edebilirsiniz.
-                    </span>
-                  )}
                 </div>
+                {product.attributes && product.attributes.length > 0 && (
+                  <p className="text-[11px] sm:text-xs text-amber-700/90 font-medium leading-relaxed mt-1">
+                    Farklı seçenekler (beden/renk) seçerek sepete eklemeye devam edebilirsiniz.
+                  </p>
+                )}
               </div>
             )}
           </div>
