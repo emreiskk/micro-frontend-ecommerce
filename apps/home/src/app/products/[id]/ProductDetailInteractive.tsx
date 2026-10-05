@@ -27,6 +27,7 @@ import {
   getCategoryDisplayName,
   getVariantMaxStock,
   DEFAULT_MAX_ORDER_QUANTITY,
+  getCartItemId,
 } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
 import Toast from "@/components/Toast";
@@ -37,7 +38,7 @@ interface ProductDetailInteractiveProps {
 }
 
 export default function ProductDetailInteractive({ product }: ProductDetailInteractiveProps) {
-  const { addItem } = useCartSync("home");
+  const { items, addItem } = useCartSync("home");
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
@@ -72,12 +73,31 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
     return getVariantMaxStock(product, selectedAttributes);
   }, [product, selectedAttributes]);
 
-  // Clamp selected quantity if switching to a variant with lower stock limit
+  // Track how many units of this exact variant are already in the cart
+  const currentCartKey = useMemo(() => {
+    return getCartItemId(product.id, selectedAttributes);
+  }, [product.id, selectedAttributes]);
+
+  const existingCartItem = useMemo(() => {
+    return items.find(
+      (i) => (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) === currentCartKey
+    );
+  }, [items, currentCartKey]);
+
+  const inCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
+  const remainingStockAllowed = Math.max(0, maxStock - inCartQuantity);
+  const isMaxInCart = inStock && maxStock > 0 && inCartQuantity >= maxStock;
+
+  // Clamp selected quantity to remaining available stock or maxStock
   React.useEffect(() => {
-    if (maxStock > 0 && quantity > maxStock) {
+    if (isMaxInCart) {
+      setQuantity(1);
+    } else if (remainingStockAllowed > 0 && quantity > remainingStockAllowed) {
+      setQuantity(remainingStockAllowed);
+    } else if (maxStock > 0 && quantity > maxStock) {
       setQuantity(maxStock);
     }
-  }, [maxStock, quantity]);
+  }, [isMaxInCart, remainingStockAllowed, maxStock, quantity]);
 
   // Dynamically computed price and specifications based on selected variant
   const currentUnitPrice = useMemo(() => {
@@ -350,18 +370,18 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
           )}
 
           {/* Add to Cart Actions */}
-          <div className="mt-6 flex flex-col gap-2">
+          <div className="mt-6 sm:mt-7 flex flex-col">
             <div className="flex items-center gap-3 sm:gap-4">
               {/* Quantity selector */}
               <div
                 className={`flex items-center h-[48px] sm:h-[52px] border border-slate-200 rounded-2xl bg-slate-50 p-1 sm:p-1.5 transition-opacity ${
-                  !inStock ? "opacity-40 cursor-not-allowed" : ""
+                  !inStock || isMaxInCart ? "opacity-40 cursor-not-allowed" : ""
                 }`}
               >
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  disabled={!inStock || quantity <= 1}
+                  disabled={!inStock || isMaxInCart || quantity <= 1}
                   className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
                   aria-label="Azalt"
                 >
@@ -372,15 +392,17 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                 </span>
                 <button
                   type="button"
-                  onClick={() => setQuantity((q) => Math.min(maxStock, q + 1))}
-                  disabled={!inStock || quantity >= maxStock}
+                  onClick={() => setQuantity((q) => Math.min(remainingStockAllowed, q + 1))}
+                  disabled={!inStock || isMaxInCart || quantity >= remainingStockAllowed}
                   className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-xl hover:bg-white transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
                   aria-label="Artır"
                   title={
                     !inStock
                       ? "Ürün tükendi"
-                      : quantity >= maxStock
-                      ? `Maksimum sipariş limitine ulaşıldı (${maxStock} adet)`
+                      : isMaxInCart
+                      ? `Maksimum adet sepetinizde (${maxStock} adet)`
+                      : quantity >= remainingStockAllowed
+                      ? `Kalan limit ${remainingStockAllowed} adet`
                       : "Artır"
                   }
                 >
@@ -388,65 +410,75 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                 </button>
               </div>
 
-            {/* Action button: Sepete Ekle or Gelince Haber Ver */}
-            {inStock ? (
-              <button
-                onClick={handleAdd}
-                disabled={isAdding}
-                aria-label={`Sepete Ekle - ${product.title}`}
-                data-testid="add-to-cart-button"
-                className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
-                  isAdding
-                    ? "bg-emerald-600 text-white shadow-emerald-500/20"
-                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
-                }`}
-              >
-                {isAdding ? (
-                  <>
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
-                    <span>Sepete Eklendi!</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span>Sepete Ekle (${(currentUnitPrice * quantity).toFixed(2)})</span>
-                  </>
-                )}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleNotify}
-                disabled={isNotified}
-                className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
-                  isNotified
-                    ? "bg-emerald-600 text-white shadow-emerald-500/20"
-                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
-                }`}
-              >
-                {isNotified ? (
-                  <>
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
-                    <span>Talebiniz Alındı!</span>
-                  </>
-                ) : (
-                  <>
-                    <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span>Gelince Haber Ver</span>
-                  </>
-                )}
-              </button>
+              {/* Action button: Sepete Ekle, Bu Ürün Zaten Sepetinizde or Gelince Haber Ver */}
+              {isMaxInCart ? (
+                <button
+                  type="button"
+                  disabled
+                  aria-label="Bu ürün zaten sepetinizde (Maksimum adede ulaşıldı)"
+                  className="flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-md bg-indigo-600/70 text-white cursor-not-allowed opacity-90 transition-all"
+                >
+                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-200" />
+                  <span>Bu Ürün Zaten Sepetinizde</span>
+                </button>
+              ) : inStock ? (
+                <button
+                  onClick={handleAdd}
+                  disabled={isAdding}
+                  aria-label={`Sepete Ekle - ${product.title}`}
+                  data-testid="add-to-cart-button"
+                  className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
+                    isAdding
+                      ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
+                  }`}
+                >
+                  {isAdding ? (
+                    <>
+                      <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
+                      <span>Sepete Eklendi!</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span>Sepete Ekle (${(currentUnitPrice * quantity).toFixed(2)})</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleNotify}
+                  disabled={isNotified}
+                  className={`flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg transition-all ${
+                    isNotified
+                      ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98 cursor-pointer"
+                  }`}
+                >
+                  {isNotified ? (
+                    <>
+                      <Check className="w-4 h-4 sm:w-5 sm:h-5 animate-in zoom-in" />
+                      <span>Talebiniz Alındı!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span>Gelince Haber Ver</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {/* Full-width Centered Max Order Limit Warning Box */}
+            {inStock && maxStock > 0 && (quantity >= maxStock || isMaxInCart) && (
+              <div className="mt-3 sm:mt-3.5 w-full p-2.5 sm:p-3 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-800 flex items-center justify-center gap-2 text-xs font-bold shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200 text-center">
+                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <span>Maksimum sipariş adedine ulaşıldı (Maks. {maxStock} adet)</span>
+              </div>
             )}
           </div>
-
-          {/* Full-width Centered Max Order Limit Warning Box */}
-          {inStock && maxStock > 0 && quantity >= maxStock && (
-            <div className="mt-3 sm:mt-3.5 w-full p-2.5 sm:p-3 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-800 flex items-center justify-center gap-2 text-xs font-bold shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200 text-center">
-              <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-              <span>Maksimum sipariş adedine ulaşıldı (Maks. {maxStock} adet)</span>
-            </div>
-          )}
-        </div>
 
           {/* Guarantees */}
           <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-slate-100 grid grid-cols-3 gap-2 sm:gap-3 text-[11px] sm:text-xs text-slate-600">

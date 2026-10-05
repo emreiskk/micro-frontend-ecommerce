@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, ShoppingCart, Check, Eye, BadgeCheck } from "lucide-react";
 import type { Product } from "@repo/shared-types";
-import { getCategoryDisplayName } from "@repo/shared-types";
+import { getCategoryDisplayName, getVariantMaxStock, getCartItemId } from "@repo/shared-types";
 import { useCartSync } from "@repo/cart-sync";
 
 interface ProductCardProps {
@@ -14,20 +14,42 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onAddedToCart }: ProductCardProps) {
-  const { addItem } = useCartSync("home");
+  const { items, addItem } = useCartSync("home");
   const [isAdding, setIsAdding] = useState(false);
   const [imgSrc, setImgSrc] = useState(product.image);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsAdding(true);
-    const hasAttributes = Boolean(product.attributes && product.attributes.length > 0);
-    const defaultAttrs: Record<string, string> = {};
+  const hasAttributes = Boolean(product.attributes && product.attributes.length > 0);
+  const defaultAttrs: Record<string, string> = useMemo(() => {
+    const map: Record<string, string> = {};
     if (hasAttributes && product.attributes) {
       product.attributes.forEach((attr) => {
-        defaultAttrs[attr.name] = attr.defaultValue || attr.options[0];
+        map[attr.name] = attr.defaultValue || attr.options[0];
       });
     }
+    return map;
+  }, [hasAttributes, product.attributes]);
+
+  const defaultMaxStock = useMemo(() => {
+    return getVariantMaxStock(product, defaultAttrs);
+  }, [product, defaultAttrs]);
+
+  const defaultCartKey = useMemo(() => {
+    return getCartItemId(product.id, defaultAttrs);
+  }, [product.id, defaultAttrs]);
+
+  const existingCartItem = useMemo(() => {
+    return items.find(
+      (i) => (i.cartItemId || getCartItemId(i.product.id, i.selectedAttributes)) === defaultCartKey
+    );
+  }, [items, defaultCartKey]);
+
+  const inCartQty = existingCartItem ? existingCartItem.quantity : 0;
+  const isDefaultMaxInCart = defaultMaxStock > 0 && inCartQty >= defaultMaxStock;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isDefaultMaxInCart) return;
+    setIsAdding(true);
     addItem(product, 1, defaultAttrs, hasAttributes);
     if (onAddedToCart) {
       onAddedToCart(product);
@@ -117,16 +139,23 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
 
           <button
             onClick={handleAddToCart}
-            disabled={isAdding}
+            disabled={isAdding || isDefaultMaxInCart}
             aria-label={`Sepete Ekle - ${product.title}`}
             data-testid="add-to-cart-button"
-            className={`w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl sm:rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm cursor-pointer ${
-              isAdding
-                ? "bg-emerald-600 text-white shadow-emerald-500/20"
-                : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-[0.98]"
+            className={`w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl sm:rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm ${
+              isDefaultMaxInCart
+                ? "bg-indigo-600/70 text-white cursor-not-allowed opacity-90 shadow-none"
+                : isAdding
+                ? "bg-emerald-600 text-white shadow-emerald-500/20 cursor-pointer"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-[0.98] cursor-pointer"
             }`}
           >
-            {isAdding ? (
+            {isDefaultMaxInCart ? (
+              <>
+                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-200" />
+                <span>Sepetinizde (Maks. Adet)</span>
+              </>
+            ) : isAdding ? (
               <>
                 <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-in zoom-in" />
                 <span>Eklendi</span>
