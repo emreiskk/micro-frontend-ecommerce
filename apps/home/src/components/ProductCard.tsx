@@ -144,7 +144,7 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
             data-testid="add-to-cart-button"
             className={`w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl sm:rounded-2xl font-semibold text-xs transition-all duration-200 shadow-sm ${
               isDefaultMaxInCart
-                ? "bg-indigo-600/70 text-white cursor-not-allowed opacity-90 shadow-none"
+                ? "bg-indigo-600 text-white cursor-not-allowed shadow-sm"
                 : isAdding
                 ? "bg-emerald-600 text-white shadow-emerald-500/20 cursor-pointer"
                 : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-indigo-500/25 active:scale-[0.98] cursor-pointer"
@@ -152,7 +152,7 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
           >
             {isDefaultMaxInCart ? (
               <>
-                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-200" />
+                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 <span>Sepetinizde (Maks. Adet)</span>
               </>
             ) : isAdding ? (

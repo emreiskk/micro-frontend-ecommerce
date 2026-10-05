@@ -416,9 +416,9 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
                   type="button"
                   disabled
                   aria-label="Bu ürün zaten sepetinizde (Maksimum adede ulaşıldı)"
-                  className="flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-md bg-indigo-600/70 text-white cursor-not-allowed opacity-90 transition-all"
+                  className="flex-1 h-[48px] sm:h-[52px] inline-flex items-center justify-center gap-2 sm:gap-2.5 px-4 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm shadow-lg shadow-indigo-500/20 bg-indigo-600 text-white cursor-not-allowed transition-all"
                 >
-                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-200" />
+                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   <span>Bu Ürün Zaten Sepetinizde</span>
                 </button>
               ) : inStock ? (
@@ -538,7 +538,17 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
         </div>
 
         <div className="flex items-center gap-2">
-          {inStock ? (
+          {isMaxInCart ? (
+            <button
+              type="button"
+              disabled
+              aria-label="Bu ürün zaten sepetinizde"
+              className="h-11 px-5 rounded-xl font-bold text-xs text-white shadow-md bg-indigo-600 transition-all flex items-center gap-2 cursor-not-allowed"
+            >
+              <Check className="w-4 h-4 text-white" />
+              <span>Sepetinizde</span>
+            </button>
+          ) : inStock ? (
             <button
               onClick={handleAdd}
               disabled={isAdding}
