@@ -219,12 +219,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               </div>
             </div>
 
-            {/* Frameless Seller Score */}
-            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0 pr-1">
-              <span className="text-xs sm:text-sm font-black text-slate-800 tracking-tight">
+            {/* Harmonious Seller Score (Identical to product rating style) */}
+            <div className="flex items-center text-amber-500 flex-shrink-0">
+              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 stroke-amber-400" />
+              <span className="ml-1 text-xs sm:text-sm font-bold text-slate-800">
                 {product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}
               </span>
-              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 stroke-amber-400" />
             </div>
           </div>
 
