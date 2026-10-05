@@ -78,14 +78,14 @@ export default function ProductCard({ product, onAddedToCart }: ProductCardProps
 
             {/* Title */}
             <Link href={`/products/${product.id}`} className="block">
-              <h3 className="font-semibold text-slate-900 text-xs sm:text-sm line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] leading-snug hover:text-indigo-600 transition-colors">
+              <h3 className="font-semibold text-slate-900 text-xs sm:text-sm line-clamp-2 min-h-[2.2rem] sm:min-h-[2.6rem] leading-snug hover:text-indigo-600 transition-colors">
                 {product.title}
               </h3>
             </Link>
           </div>
 
           {/* Corporate Seller Badge (Fixed directly above the price separator line) */}
-          <div className="mt-3 sm:mt-4 pb-2.5 sm:pb-3 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] text-slate-500 font-medium">
+          <div className="mt-2 sm:mt-2.5 pb-2 sm:pb-2.5 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] text-slate-500 font-medium">
             <div className="flex items-center gap-1 min-w-0">
               <span className="text-slate-400 text-[10px]">Satıcı:</span>
               <span className="font-semibold text-slate-700 truncate">
