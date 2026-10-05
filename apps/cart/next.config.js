@@ -3,6 +3,16 @@ const path = require("path");
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   basePath: "/cart",
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/cart",
+        basePath: false,
+        permanent: false,
+      },
+    ];
+  },
   images: {
     unoptimized: true,
     remotePatterns: [
