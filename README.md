@@ -33,24 +33,24 @@ Proje, iki bağımsız Next.js App Router mikro uygulamasının izole portlarda 
 
 ```mermaid
 graph TD
-    User([Kullanıcı / Tarayıcı]) -->|İstek: / veya /products/:id | HomeApp["Home MFE (Port: 3000)"]
-    User -->|İstek: /cart | HomeApp
-    User -.->|Doğrudan Erişim: :3001 veya :3001/cart | CartApp["Cart MFE (Port: 3001 - basePath: /cart)"]
+    User["Kullanıcı / Tarayıcı"] -->|"İstek: / veya /products/:id"| HomeApp["Home MFE (Port: 3000)"]
+    User -->|"İstek: /cart"| HomeApp
+    User -.->|"Doğrudan Erişim: :3001 veya :3001/cart"| CartApp["Cart MFE (Port: 3001 - basePath: /cart)"]
     
     subgraph MultiZoneGateway ["Next.js Multi-Zone Gateway (Port 3000)"]
-        HomeApp -->|rewrites: /cart/:path* -> :3001/cart| CartApp
+        HomeApp -->|"rewrites: /cart/:path* -> :3001/cart"| CartApp
     end
     
     subgraph ExternalAPI ["Veri Kaynağı"]
-        HomeApp -->|SSR / ISR GET /products| FakeStoreAPI["Fake Store API (Cloudflare Fallback Kalkanlı)"]
-        HomeApp -->|Dynamic SSR GET /products/:id| FakeStoreAPI
+        HomeApp -->|"SSR / ISR: GET /products"| FakeStoreAPI["Fake Store API (Cloudflare Fallback Kalkanlı)"]
+        HomeApp -->|"Dynamic SSR: GET /products/:id"| FakeStoreAPI
     end
     
     subgraph ReactiveSync ["4 Katmanlı Cross-MFE Veri Senkronizasyonu"]
-        HomeApp <==>|BroadcastChannel ('ecommerce_cart_channel')| CartApp
-        HomeApp <==>|Cross-Port Cookie Bridge (<500B LeanCartItem)| CartApp
-        HomeApp <==>|LocalStorage ('ecommerce_cart_v1')| CartApp
-        HomeApp <==>|Hydration-Safe React Hook ('useCartSync')| CartApp
+        HomeApp <-->|"BroadcastChannel API"| CartApp
+        HomeApp <-->|"Cross-Port Cookie Bridge"| CartApp
+        HomeApp <-->|"LocalStorage Senkronizasyonu"| CartApp
+        HomeApp <-->|"useCartSync Reaktif Hook"| CartApp
     end
 
     subgraph DockerNetwork ["Docker Compose Köprü Ağı (trend-sphere-mfe-network)"]
