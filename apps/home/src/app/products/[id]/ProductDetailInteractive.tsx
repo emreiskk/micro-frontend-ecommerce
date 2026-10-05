@@ -219,12 +219,12 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
               </div>
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0 bg-white px-2 sm:px-2.5 py-1 rounded-xl border border-slate-200/80 shadow-2xs">
-              <span className="text-[10px] text-slate-400 font-medium hidden xs:inline">Puan</span>
-              <span className="text-xs sm:text-sm font-bold text-slate-800">
+            {/* Frameless Seller Score */}
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0 pr-1">
+              <span className="text-xs sm:text-sm font-black text-slate-800 tracking-tight">
                 {product.seller?.rating ? product.seller.rating.toFixed(1) : "9.8"}
               </span>
-              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 stroke-amber-400" />
+              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 stroke-amber-400" />
             </div>
           </div>
 
